@@ -338,6 +338,7 @@
         mlsPackage: '',
         quoteItems: [],
         quoteOpen: false,
+        priceBreakdownOpen: false,
         startExpand: '',
         mlsPrices: {
             '0-1999':    { '25': 139, '36': 179, '40': 189, '50': 224 },
@@ -395,6 +396,7 @@
         haptic() { if (window.navigator.vibrate) window.navigator.vibrate(10); },
         triggerNudge() { this.sqftError = true; this.haptic(); setTimeout(() => { this.sqftError = false; }, 400); },
         resetPrice() { 
+            this.priceBreakdownOpen = false;
             this.sqft = ''; this.customQty = ''; this.selectedTier = ''; this.mpCustomSqft = ''; this.videoType = ''; this.mlsPackage = '';
             this.aerialType = ''; this.aerialQty = 0; this.planType = '2D'; this.numFloors = 1; this.mpService = 'Standard';
             this.selectedAddOn = ''; this.addOnQty = 0; this.addOnHours = '1.0'; this.addOnCategory = ''; this.brand = '';
@@ -813,8 +815,11 @@
     <div class="app-container max-w-md mx-auto shadow-xl relative flex flex-col sm:rounded-[2.5rem] sm:h-[600px] sm:my-4" style="background:#F7F7F8;">
         
         <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 flex-none" x-show="screen !== 'START'" x-cloak>
-            <!-- Left spacer matches home button width -->
-            <div class="w-9"></div>
+            <!-- Global tax toggle — matches home button width -->
+            <button @click="includeTax = !includeTax; haptic()" class="w-9 h-9 flex flex-col items-center justify-center gap-0.5 rounded-full transition-colors" :class="includeTax ? 'text-red-600' : 'text-gray-400 hover:bg-gray-100'">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20.59 13.41L11 3.83V3H4v7l.83.83L14.41 20.4a2 2 0 002.83 0l3.35-3.35a2 2 0 000-2.83z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>
+                <span class="text-[6px] font-black uppercase leading-none">Tax</span>
+            </button>
             <!-- Mode pill — centered -->
             <div class="flex-1 flex justify-center">
                 <span class="mode-pill-enter bg-black text-white text-[11px] font-black tracking-widest uppercase px-3 py-1 rounded-full"
@@ -1731,7 +1736,7 @@
                             <svg class="flex-none transition-all duration-200" :class="mlsPackage && mlsPackage !== 'EXT' ? 'w-5 h-5' : 'w-9 h-9'" viewBox="0 -1 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(1,2)"><path d="M14,49 L14,57 C14,58.1 13.1,59 12,59 L2,59 C0.9,59 0,58.1 0,57 L0,9 C0,7.9 7,1 7,1 C7,1 14,7.9 14,9 L14,19"/><path d="M14,23 L14,45"/><path d="M38,49 L38,57 C38,58.1 37.1,59 36,59 L26,59 C24.9,59 24,58.1 24,57 L24,49"/><path d="M38,23 L38,45"/><path d="M24,19 L24,9 C24,7.9 31,0 31,0 C31,0 38,7.9 38,9 L38,19"/><path d="M24,45 L24,23"/><path d="M48,45 L48,23"/><path d="M48,19 L48,9 C48,7.9 55,0 55,0 C55,0 62,7.9 62,9 L62,57 C62,58.1 61.1,59 60,59 L50,59 C48.9,59 48,58.1 48,57 L48,49"/><path d="M38,43 L48,43"/><path d="M14,43 L24,43"/><path d="M24,51 L14,51"/><path d="M48,51 L38,51"/><path d="M38,17 L48,17"/><path d="M14,17 L24,17"/><path d="M24,25 L14,25"/><path d="M48,25 L38,25"/></g></svg>
                         </div>
                         <div class="flex-1 flex items-center justify-between px-4 bg-white" :class="mlsPackage && mlsPackage !== 'EXT' ? 'py-1.5' : 'py-3'">
-                            <span class="font-black tracking-tighter leading-none transition-all duration-200" :class="[mlsPackage === 'EXT' ? 'text-red-600' : 'text-black', mlsPackage && mlsPackage !== 'EXT' ? 'text-sm' : 'text-xl']">EXT. ONLY</span>
+                            <span class="font-black tracking-tighter leading-none transition-all duration-200" :class="[mlsPackage === 'EXT' ? 'text-red-600' : 'text-black', mlsPackage && mlsPackage !== 'EXT' ? 'text-sm' : 'text-xl']">EXTERIOR ONLY</span>
                             <svg class="w-4 h-4 text-gray-300 transition-transform flex-none" :class="mlsPackage==='EXT'?'rotate-180':''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
                         </div>
                     </button>
@@ -2043,42 +2048,58 @@
 
             </div>
             <div class="px-4 pb-3 pt-2 flex-none" x-show="mode !== 'ADD ONS' || selectedAddOn !== ''" x-cloak>
-            <div class="price-card-dark relative rounded-[1.5rem] border-2 flex-none flex items-stretch overflow-hidden" style="height:52px;">
+            <div class="price-card-dark relative rounded-[1.5rem] border-2 overflow-hidden">
 
-                <!-- Left cluster: reset + tax, stacked small -->
-                <div class="flex flex-col items-center justify-center gap-0.5" style="z-index:20;flex:none;padding:0 8px;">
-                    <button @click="resetPrice(); haptic()" class="rounded-md text-gray-600 hover:text-red-500 transition-colors" style="padding:2px;">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                <!-- Collapsed row: price (tap to expand breakdown) + Add -->
+                <div class="flex items-stretch" style="height:52px;">
+                    <button @click="finalTotal > 0 && (priceBreakdownOpen = !priceBreakdownOpen); haptic()"
+                            style="flex:1;min-width:0;"
+                            class="flex items-center justify-center gap-1.5"
+                            x-effect="morphPrice(finalTotal); morphPrice(finalTotal + (includeTax ? 0.0001 : 0))">
+                        <span id="price-dollar-sign"
+                              class="price-dollar font-black leading-none"
+                              style="display:none;font-size:1.1rem;margin-right:1px;margin-bottom:1px;">$</span>
+                        <div id="price-morph-wrap"
+                             class="relative font-black leading-none"
+                             style="font-size:clamp(1.6rem,7vw,2.25rem);min-width:2ch;">
+                            <span id="price-layer-a" style="display:block;white-space:nowrap;"
+                                  :class="finalTotal > 0 ? '' : 'price-skeleton'"
+                                  :style="finalTotal > 0 ? 'color:#555' : 'color:transparent;min-width:3ch;'">--</span>
+                            <span id="price-layer-b" style="position:absolute;top:0;left:0;width:100%;opacity:0;color:#fff;white-space:nowrap;"></span>
+                        </div>
+                        <svg x-show="finalTotal > 0" x-cloak class="w-3.5 h-3.5 flex-none transition-transform" style="color:#666;" :style="priceBreakdownOpen ? 'transform:rotate(180deg)' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
-                    <button @click="includeTax = !includeTax; haptic()"
-                            class="px-1.5 py-0.5 rounded text-[7px] font-bold uppercase border transition-all leading-none"
-                            :class="includeTax ? 'bg-red-600 border-red-700 text-white' : 'bg-transparent border-gray-700 text-gray-500'">Tax</button>
+
+                    <button @click="addToQuote(); haptic()" x-show="finalTotal > 0" x-cloak
+                            class="flex items-center justify-center bg-red-600 hover:bg-red-700 transition-all flex-none"
+                            style="width:76px;">
+                        <span class="text-[11px] font-black uppercase tracking-wide text-white leading-none">Add</span>
+                    </button>
                 </div>
 
-                <!-- Price number — the hero -->
-                <div style="flex:1;min-width:0;pointer-events:none;display:flex;align-items:center;justify-content:center;"
-                     x-effect="morphPrice(finalTotal); morphPrice(finalTotal + (includeTax ? 0.0001 : 0))">
-                    <span id="price-dollar-sign"
-                          class="price-dollar font-black leading-none"
-                          style="display:none;font-size:1.1rem;margin-right:1px;margin-bottom:1px;">$</span>
-                    <div id="price-morph-wrap"
-                         class="relative font-black leading-none"
-                         style="font-size:clamp(1.6rem,7vw,2.25rem);min-width:2ch;">
-                        <span id="price-layer-a" style="display:block;white-space:nowrap;"
-                              :class="finalTotal > 0 ? '' : 'price-skeleton'"
-                              :style="finalTotal > 0 ? 'color:#555' : 'color:transparent;min-width:3ch;'">--</span>
-                        <span id="price-layer-b" style="position:absolute;top:0;left:0;width:100%;opacity:0;color:#fff;white-space:nowrap;"></span>
+                <!-- Expanded breakdown: subtotal / tax / total -->
+                <div x-show="priceBreakdownOpen && finalTotal > 0" x-cloak x-transition:enter="transition-all ease-out duration-150" x-transition:enter-start="opacity-0 max-h-0" x-transition:enter-end="opacity-100 max-h-[120px]" x-transition:leave="transition-all ease-in duration-100" x-transition:leave-start="opacity-100 max-h-[120px]" x-transition:leave-end="opacity-0 max-h-0" class="overflow-hidden border-t" style="border-color:#222;">
+                    <div class="flex flex-col gap-1 px-4 py-2.5">
+                        <div class="flex items-center justify-between text-[10px]" style="color:#999;">
+                            <span x-text="describeCurrentService()"></span>
+                            <span x-text="'$' + subtotal.toFixed(2)"></span>
+                        </div>
+                        <div class="flex items-center justify-between text-[10px]" style="color:#999;">
+                            <span x-text="'Tax (' + (taxRate*100).toFixed(2) + '%)'"></span>
+                            <span x-text="includeTax ? '$' + (subtotal * taxRate).toFixed(2) : '—'"></span>
+                        </div>
+                        <div class="flex items-center justify-between pt-1.5 mt-0.5" style="border-top:1px solid #222;">
+                            <span class="text-[10px] font-black text-white">Total</span>
+                            <span class="text-[11px] font-black text-white" x-text="'$' + finalTotal.toFixed(2)"></span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Add zone — same pill, right-side accent segment -->
-                <button @click="addToQuote(); haptic()" x-show="finalTotal > 0" x-cloak
-                        class="flex flex-col items-center justify-center gap-0.5 bg-red-600 hover:bg-red-700 transition-all flex-none"
-                        style="width:60px;">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-                    <span class="text-[7px] font-black uppercase tracking-wide text-white leading-none">Add</span>
-                </button>
+            </div>
 
+            <!-- Clear selection — low-emphasis text link, not a bar control -->
+            <div class="flex justify-end pt-1.5" x-show="finalTotal > 0" x-cloak>
+                <button @click="resetPrice(); haptic()" class="text-[9px] font-bold text-gray-400 hover:text-red-500 transition-colors" style="text-decoration:underline;text-underline-offset:2px;">Clear selection</button>
             </div>
             </div>
 
