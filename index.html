@@ -220,14 +220,13 @@
     <script>
         let _prevPrice = -1;
 
-        function morphPrice(val) {
+        function morphPrice(val, inclTax) {
             const dollar = document.getElementById('price-dollar-sign');
             const la     = document.getElementById('price-layer-a');
             const lb     = document.getElementById('price-layer-b');
             if (!la || !lb) return;
 
             const active  = val > 0;
-            const inclTax = document.querySelector('[x-data]')?._x_dataStack?.[0]?.includeTax;
             const newText = active
                 ? (inclTax
                     ? parseFloat(val.toFixed(2)).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})
@@ -321,7 +320,7 @@
         brand: '',
         customQty: '', 
         selectedTier: '', 
-        includeTax: false, 
+        includeTax: true, 
         taxRate: 0.0825,
         sqftError: false,
         planType: '2D',
@@ -655,9 +654,16 @@
             this.quoteItems.push({
                 id: Date.now() + Math.random(),
                 description: this.describeCurrentService(),
-                price: this.finalTotal
+                subtotal: this.subtotal,
+                taxIncluded: this.includeTax
             });
             this.saveQuote();
+        },
+        addMlsPackageDirect(pkg, defaultQty) {
+            // One-tap add at default qty, without requiring the pill to be expanded first.
+            this.mlsPackage = pkg; this.sqft = ''; this.selectedTier = 'custom'; this.customQty = String(defaultQty);
+            this.addToQuote();
+            this.mlsPackage = ''; this.selectedTier = ''; this.customQty = '';
         },
         removeFromQuote(id) {
             this.haptic();
@@ -671,8 +677,18 @@
             this.saveQuote();
         },
         get quoteTotal() {
-            const sub = this.quoteItems.reduce((sum, i) => sum + i.price, 0);
+            const sub = this.quoteItems.reduce((sum, i) => sum + this.itemPrice(i), 0);
             return Math.round(sub * 100) / 100;
+        },
+        itemPrice(item) {
+            const total = item.taxIncluded ? item.subtotal * (1 + this.taxRate) : item.subtotal;
+            return Math.round(total * 100) / 100;
+        },
+        toggleItemTax(id) {
+            this.haptic();
+            const item = this.quoteItems.find(i => i.id === id);
+            if (item) item.taxIncluded = !item.taxIncluded;
+            this.saveQuote();
         },
         saveQuote() {
             try { sessionStorage.setItem('pricex_quote', JSON.stringify(this.quoteItems)); } catch(e) {}
@@ -680,12 +696,18 @@
         loadQuote() {
             try {
                 const saved = sessionStorage.getItem('pricex_quote');
-                if (saved) this.quoteItems = JSON.parse(saved);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    // Migrate old {price} shaped items (pre tax-toggle) to {subtotal, taxIncluded}
+                    this.quoteItems = parsed.map(i => (i.subtotal !== undefined) ? i : {
+                        id: i.id, description: i.description, subtotal: i.price || 0, taxIncluded: false
+                    });
+                }
             } catch(e) {}
         },
         copyQuote() {
             this.haptic();
-            const lines = this.quoteItems.map(i => `${i.description} — $${i.price.toFixed(2)}`);
+            const lines = this.quoteItems.map(i => `${i.description} — $${this.itemPrice(i).toFixed(2)}`);
             const text = lines.join('\n') + `\n\nTOTAL: $${this.quoteTotal.toFixed(2)}`;
             if (navigator.clipboard) navigator.clipboard.writeText(text).catch(()=>{});
         }
@@ -815,11 +837,8 @@
     <div class="app-container max-w-md mx-auto shadow-xl relative flex flex-col sm:rounded-[2.5rem] sm:h-[600px] sm:my-4" style="background:#F7F7F8;">
         
         <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 flex-none" x-show="screen !== 'START'" x-cloak>
-            <!-- Global tax toggle — matches home button width -->
-            <button @click="includeTax = !includeTax; haptic()" class="w-9 h-9 flex flex-col items-center justify-center gap-0.5 rounded-full transition-colors" :class="includeTax ? 'text-red-600' : 'text-gray-400 hover:bg-gray-100'">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20.59 13.41L11 3.83V3H4v7l.83.83L14.41 20.4a2 2 0 002.83 0l3.35-3.35a2 2 0 000-2.83z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>
-                <span class="text-[6px] font-black uppercase leading-none">Tax</span>
-            </button>
+            <!-- Left spacer matches home button width -->
+            <div class="w-9"></div>
             <!-- Mode pill — centered -->
             <div class="flex-1 flex justify-center">
                 <span class="mode-pill-enter bg-black text-white text-[11px] font-black tracking-widest uppercase px-3 py-1 rounded-full"
@@ -1587,22 +1606,25 @@
 
             <div x-show="mode === 'MLS'" class="flex-grow flex flex-col gap-2 fade-in">
 
-                <!-- FULL SHOOT pill -->
+                <!-- FULL SHOOT: tiered, grey, "from $X", needs sq ft selection -->
                 <div class="rounded-2xl overflow-hidden card-frosted transition-all duration-200"
                      x-ref="pillFULL" style="scroll-margin-top: 72px;"
-                     :class="mlsPackage === 'FULL' ? 'tile-sel-wrap is-sel border-red-600' : (mlsPackage ? 'border-gray-200' : 'border-gray-200')">
-                    <button @click="mlsPackage=(mlsPackage==='FULL'?'':'FULL');sqft='';selectedTier='';customQty='';haptic();$nextTick(()=>{ if(mlsPackage==='FULL') $refs.pillFULL.scrollIntoView({behavior:'smooth', block:'start'}); })"
-                            class="w-full flex flex-row transition-all duration-200"
-                            :class="mlsPackage && mlsPackage !== 'FULL' ? 'min-h-[48px]' : 'min-h-[76px]'">
-                        <div class="w-[30%] flex items-center justify-center transition-all duration-200"
-                             :class="mlsPackage === 'FULL' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600'">
-                            <svg class="flex-none transition-all duration-200" :class="mlsPackage && mlsPackage !== 'FULL' ? 'w-6 h-6' : 'w-12 h-12'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.91" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"><polyline points="20.59 8.18 20.59 22.5 3.41 22.5 3.41 8.18"/><line x1="0.55" y1="22.5" x2="23.45" y2="22.5"/><polyline points="0.55 11.04 12 1.5 23.45 11.04"/><rect x="9.14" y="14.86" width="5.73" height="7.64"/><circle cx="12" cy="9.14" r="1.91"/><polyline points="16.77 5.48 16.77 1.5 20.59 1.5 20.59 8.66"/></svg>
-                        </div>
-                        <div class="flex-1 flex items-center justify-between px-4 bg-white" :class="mlsPackage && mlsPackage !== 'FULL' ? 'py-1.5' : 'py-3'">
-                            <span class="font-black tracking-tighter leading-none transition-all duration-200" :class="[mlsPackage === 'FULL' ? 'text-red-600' : 'text-black', mlsPackage && mlsPackage !== 'FULL' ? 'text-sm' : 'text-xl']">FULL SHOOT</span>
-                            <svg class="w-4 h-4 text-gray-300 transition-transform flex-none" :class="mlsPackage==='FULL'?'rotate-180':''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-                        </div>
-                    </button>
+                     :class="mlsPackage === 'FULL' ? 'tile-sel-wrap is-sel border-red-600' : 'border-gray-200'">
+                    <div class="w-full flex items-center" style="height:44px;">
+                        <button @click="mlsPackage=(mlsPackage==='FULL'?'':'FULL');sqft='';selectedTier='';customQty='';haptic();$nextTick(()=>{ if(mlsPackage==='FULL') $refs.pillFULL.scrollIntoView({behavior:'smooth', block:'start'}); })"
+                                class="flex items-center flex-1 min-w-0 h-full">
+                            <div class="h-full flex items-center justify-center flex-none" style="width:44px;"
+                                 :class="mlsPackage === 'FULL' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-500'">
+                                <svg class="w-5 h-5 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.91" stroke-linecap="round" stroke-linejoin="round"><polyline points="20.59 8.18 20.59 22.5 3.41 22.5 3.41 8.18"/><line x1="0.55" y1="22.5" x2="23.45" y2="22.5"/><polyline points="0.55 11.04 12 1.5 23.45 11.04"/><rect x="9.14" y="14.86" width="5.73" height="7.64"/><circle cx="12" cy="9.14" r="1.91"/><polyline points="16.77 5.48 16.77 1.5 20.59 1.5 20.59 8.66"/></svg>
+                            </div>
+                            <span class="font-black text-[11px] tracking-tighter truncate px-2" :class="mlsPackage === 'FULL' ? 'text-red-600' : 'text-black'">FULL SHOOT</span>
+                        </button>
+                        <span class="text-[9px] font-bold uppercase text-gray-400 flex-none px-1.5">from $139</span>
+                        <button @click="mlsPackage=(mlsPackage==='FULL'?'':'FULL');sqft='';selectedTier='';customQty='';haptic();$nextTick(()=>{ if(mlsPackage==='FULL') $refs.pillFULL.scrollIntoView({behavior:'smooth', block:'start'}); })"
+                                class="h-full flex items-center flex-none px-2.5">
+                            <svg class="w-3.5 h-3.5 text-gray-300 transition-transform" :class="mlsPackage==='FULL'?'rotate-180':''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                    </div>
 
                     <!-- Expanded: sqft bracket accordion + tier prices -->
                     <div x-show="mlsPackage==='FULL'" x-transition:enter="transition-all ease-out duration-200" x-transition:enter-start="opacity-0 max-h-0" x-transition:enter-end="opacity-100 max-h-[3000px]" x-transition:leave="transition-all ease-in duration-150" x-transition:leave-start="opacity-100 max-h-[3000px]" x-transition:leave-end="opacity-0 max-h-0" class="overflow-hidden">
@@ -1660,22 +1682,28 @@
                     </div>
                 </div>
 
-                <!-- RESHOOT pill -->
+                <!-- RESHOOT: flat-ish, live price in row 1, one-tap add -->
                 <div class="rounded-2xl overflow-hidden card-frosted transition-all duration-200"
                      x-ref="pillRESHOOT" style="scroll-margin-top: 72px;"
                      :class="mlsPackage === 'RESHOOT' ? 'tile-sel-wrap is-sel border-red-600' : 'border-gray-200'">
-                    <button @click="mlsPackage=(mlsPackage==='RESHOOT'?'':'RESHOOT');sqft='';selectedTier='custom';customQty='8';haptic();$nextTick(()=>{ if(mlsPackage==='RESHOOT') $refs.pillRESHOOT.scrollIntoView({behavior:'smooth', block:'start'}); })"
-                            class="w-full flex flex-row transition-all duration-200"
-                            :class="mlsPackage && mlsPackage !== 'RESHOOT' ? 'min-h-[48px]' : 'min-h-[76px]'">
-                        <div class="w-[30%] flex items-center justify-center transition-all duration-200"
-                             :class="mlsPackage === 'RESHOOT' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600'">
-                            <svg class="flex-none transition-all duration-200" :class="mlsPackage && mlsPackage !== 'RESHOOT' ? 'w-5 h-5' : 'w-10 h-10'" viewBox="0 0 256 256" fill="currentColor"><path d="M240,56v48a8,8,0,0,1-8,8H184a8,8,0,0,1,0-16H211.4L184.81,71.64l-.25-.24a80,80,0,1,0-1.67,114.78,8,8,0,0,1,11,11.63A95.44,95.44,0,0,1,128,224h-1.32A96,96,0,1,1,195.75,60L224,85.8V56a8,8,0,1,1,16,0Z"/></svg>
-                        </div>
-                        <div class="flex-1 flex items-center justify-between px-4 bg-white" :class="mlsPackage && mlsPackage !== 'RESHOOT' ? 'py-1.5' : 'py-3'">
-                            <span class="font-black tracking-tighter leading-none transition-all duration-200" :class="[mlsPackage === 'RESHOOT' ? 'text-red-600' : 'text-black', mlsPackage && mlsPackage !== 'RESHOOT' ? 'text-sm' : 'text-xl']">RESHOOT</span>
-                            <svg class="w-4 h-4 text-gray-300 transition-transform flex-none" :class="mlsPackage==='RESHOOT'?'rotate-180':''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-                        </div>
-                    </button>
+                    <div class="w-full flex items-center" style="height:44px;">
+                        <button @click="mlsPackage=(mlsPackage==='RESHOOT'?'':'RESHOOT');sqft='';selectedTier='custom';customQty='8';haptic();$nextTick(()=>{ if(mlsPackage==='RESHOOT') $refs.pillRESHOOT.scrollIntoView({behavior:'smooth', block:'start'}); })"
+                                class="flex items-center flex-1 min-w-0 h-full">
+                            <div class="h-full flex items-center justify-center flex-none" style="width:44px;"
+                                 :class="mlsPackage === 'RESHOOT' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-500'">
+                                <svg class="w-5 h-5 flex-none" viewBox="0 0 256 256" fill="currentColor"><path d="M240,56v48a8,8,0,0,1-8,8H184a8,8,0,0,1,0-16H211.4L184.81,71.64l-.25-.24a80,80,0,1,0-1.67,114.78,8,8,0,0,1,11,11.63A95.44,95.44,0,0,1,128,224h-1.32A96,96,0,1,1,195.75,60L224,85.8V56a8,8,0,1,1,16,0Z"/></svg>
+                            </div>
+                            <span class="font-black text-[11px] tracking-tighter truncate px-2" :class="mlsPackage === 'RESHOOT' ? 'text-red-600' : 'text-black'">RESHOOT</span>
+                        </button>
+                        <span class="text-[12px] font-black flex-none px-1.5">$89</span>
+                        <button @click="addMlsPackageDirect('RESHOOT', 8)" class="h-full flex items-center flex-none px-2.5 bg-red-600 hover:bg-red-700 transition-colors">
+                            <span class="text-[9px] font-black uppercase text-white">Add</span>
+                        </button>
+                        <button @click="mlsPackage=(mlsPackage==='RESHOOT'?'':'RESHOOT');sqft='';selectedTier='custom';customQty='8';haptic();$nextTick(()=>{ if(mlsPackage==='RESHOOT') $refs.pillRESHOOT.scrollIntoView({behavior:'smooth', block:'start'}); })"
+                                class="h-full flex items-center flex-none px-2">
+                            <svg class="w-3.5 h-3.5 text-gray-300 transition-transform" :class="mlsPackage==='RESHOOT'?'rotate-180':''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                    </div>
                     <div x-show="mlsPackage==='RESHOOT'" x-transition:enter="transition-all ease-out duration-200" x-transition:enter-start="opacity-0 max-h-0" x-transition:enter-end="opacity-100 max-h-[200px]" x-transition:leave="transition-all ease-in duration-150" x-transition:leave-start="opacity-100 max-h-[200px]" x-transition:leave-end="opacity-0 max-h-0" class="overflow-hidden">
                         <div class="p-3 border-t border-gray-100">
                             <div class="grid grid-cols-2 border-2 border-red-600 rounded-xl h-[56px] overflow-hidden">
@@ -1690,22 +1718,25 @@
                     </div>
                 </div>
 
-                <!-- RANCH pill -->
+                <!-- RANCH: tiered (25/36-base), grey, "from $X" — same treatment as FULL SHOOT -->
                 <div class="rounded-2xl overflow-hidden card-frosted transition-all duration-200"
                      x-ref="pillRANCH" style="scroll-margin-top: 72px;"
                      :class="mlsPackage === 'RANCH' ? 'tile-sel-wrap is-sel border-red-600' : 'border-gray-200'">
-                    <button @click="mlsPackage=(mlsPackage==='RANCH'?'':'RANCH');sqft='';selectedTier='custom';customQty='25';haptic();$nextTick(()=>{ if(mlsPackage==='RANCH') $refs.pillRANCH.scrollIntoView({behavior:'smooth', block:'start'}); })"
-                            class="w-full flex flex-row transition-all duration-200"
-                            :class="mlsPackage && mlsPackage !== 'RANCH' ? 'min-h-[48px]' : 'min-h-[76px]'">
-                        <div class="w-[30%] flex items-center justify-center transition-all duration-200"
-                             :class="mlsPackage === 'RANCH' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600'">
-                            <svg class="flex-none transition-all duration-200" :class="mlsPackage && mlsPackage !== 'RANCH' ? 'w-6 h-6' : 'w-11 h-11'" viewBox="0 0 256 256" fill="currentColor"><path d="M240,192h-8V130.57l1.49,2.08a8,8,0,1,0,13-9.3l-40-56a8,8,0,0,0-2-1.94L137,18.77l-.1-.07a16,16,0,0,0-17.76,0l-.1.07L51.45,65.42a8,8,0,0,0-2,1.94l-40,56a8,8,0,1,0,13,9.3L24,130.57V192H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM40,108.17,61.7,77.79,128,32l66.3,45.78L216,108.17V192H192V120a8,8,0,0,0-8-8H72a8,8,0,0,0-8,8v72H40Zm88,42L97,128H159Zm48-14.62v48.91L141.76,160ZM114.24,160,80,184.46V135.55ZM128,169.83,159,192H97ZM104,88a8,8,0,0,1,8-8h32a8,8,0,1,1,0,16H112A8,8,0,0,1,104,88Z"/></svg>
-                        </div>
-                        <div class="flex-1 flex items-center justify-between px-4 bg-white" :class="mlsPackage && mlsPackage !== 'RANCH' ? 'py-1.5' : 'py-3'">
-                            <span class="font-black tracking-tighter leading-none transition-all duration-200" :class="[mlsPackage === 'RANCH' ? 'text-red-600' : 'text-black', mlsPackage && mlsPackage !== 'RANCH' ? 'text-sm' : 'text-xl']">RANCH</span>
-                            <svg class="w-4 h-4 text-gray-300 transition-transform flex-none" :class="mlsPackage==='RANCH'?'rotate-180':''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-                        </div>
-                    </button>
+                    <div class="w-full flex items-center" style="height:44px;">
+                        <button @click="mlsPackage=(mlsPackage==='RANCH'?'':'RANCH');sqft='';selectedTier='custom';customQty='25';haptic();$nextTick(()=>{ if(mlsPackage==='RANCH') $refs.pillRANCH.scrollIntoView({behavior:'smooth', block:'start'}); })"
+                                class="flex items-center flex-1 min-w-0 h-full">
+                            <div class="h-full flex items-center justify-center flex-none" style="width:44px;"
+                                 :class="mlsPackage === 'RANCH' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-500'">
+                                <svg class="w-5 h-5 flex-none" viewBox="0 0 256 256" fill="currentColor"><path d="M240,192h-8V130.57l1.49,2.08a8,8,0,1,0,13-9.3l-40-56a8,8,0,0,0-2-1.94L137,18.77l-.1-.07a16,16,0,0,0-17.76,0l-.1.07L51.45,65.42a8,8,0,0,0-2,1.94l-40,56a8,8,0,1,0,13,9.3L24,130.57V192H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM40,108.17,61.7,77.79,128,32l66.3,45.78L216,108.17V192H192V120a8,8,0,0,0-8-8H72a8,8,0,0,0-8,8v72H40Zm88,42L97,128H159Zm48-14.62v48.91L141.76,160ZM114.24,160,80,184.46V135.55ZM128,169.83,159,192H97ZM104,88a8,8,0,0,1,8-8h32a8,8,0,1,1,0,16H112A8,8,0,0,1,104,88Z"/></svg>
+                            </div>
+                            <span class="font-black text-[11px] tracking-tighter truncate px-2" :class="mlsPackage === 'RANCH' ? 'text-red-600' : 'text-black'">RANCH</span>
+                        </button>
+                        <span class="text-[9px] font-bold uppercase text-gray-400 flex-none px-1.5">from $299</span>
+                        <button @click="mlsPackage=(mlsPackage==='RANCH'?'':'RANCH');sqft='';selectedTier='custom';customQty='25';haptic();$nextTick(()=>{ if(mlsPackage==='RANCH') $refs.pillRANCH.scrollIntoView({behavior:'smooth', block:'start'}); })"
+                                class="h-full flex items-center flex-none px-2.5">
+                            <svg class="w-3.5 h-3.5 text-gray-300 transition-transform" :class="mlsPackage==='RANCH'?'rotate-180':''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                    </div>
                     <div x-show="mlsPackage==='RANCH'" x-transition:enter="transition-all ease-out duration-200" x-transition:enter-start="opacity-0 max-h-0" x-transition:enter-end="opacity-100 max-h-[240px]" x-transition:leave="transition-all ease-in duration-150" x-transition:leave-start="opacity-100 max-h-[240px]" x-transition:leave-end="opacity-0 max-h-0" class="overflow-hidden">
                         <div class="p-3 border-t border-gray-100">
                             <div class="flex gap-2 mb-2">
@@ -1724,22 +1755,28 @@
                     </div>
                 </div>
 
-                <!-- EXT ONLY pill -->
+                <!-- EXTERIOR ONLY: flat-ish, live price in row 1, one-tap add -->
                 <div class="rounded-2xl overflow-hidden card-frosted transition-all duration-200"
                      x-ref="pillEXT" style="scroll-margin-top: 72px;"
                      :class="mlsPackage === 'EXT' ? 'tile-sel-wrap is-sel border-red-600' : 'border-gray-200'">
-                    <button @click="mlsPackage=(mlsPackage==='EXT'?'':'EXT');sqft='';selectedTier='custom';customQty='8';haptic();$nextTick(()=>{ if(mlsPackage==='EXT') $refs.pillEXT.scrollIntoView({behavior:'smooth', block:'start'}); })"
-                            class="w-full flex flex-row transition-all duration-200"
-                            :class="mlsPackage && mlsPackage !== 'EXT' ? 'min-h-[48px]' : 'min-h-[76px]'">
-                        <div class="w-[30%] flex items-center justify-center transition-all duration-200"
-                             :class="mlsPackage === 'EXT' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600'">
-                            <svg class="flex-none transition-all duration-200" :class="mlsPackage && mlsPackage !== 'EXT' ? 'w-5 h-5' : 'w-9 h-9'" viewBox="0 -1 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(1,2)"><path d="M14,49 L14,57 C14,58.1 13.1,59 12,59 L2,59 C0.9,59 0,58.1 0,57 L0,9 C0,7.9 7,1 7,1 C7,1 14,7.9 14,9 L14,19"/><path d="M14,23 L14,45"/><path d="M38,49 L38,57 C38,58.1 37.1,59 36,59 L26,59 C24.9,59 24,58.1 24,57 L24,49"/><path d="M38,23 L38,45"/><path d="M24,19 L24,9 C24,7.9 31,0 31,0 C31,0 38,7.9 38,9 L38,19"/><path d="M24,45 L24,23"/><path d="M48,45 L48,23"/><path d="M48,19 L48,9 C48,7.9 55,0 55,0 C55,0 62,7.9 62,9 L62,57 C62,58.1 61.1,59 60,59 L50,59 C48.9,59 48,58.1 48,57 L48,49"/><path d="M38,43 L48,43"/><path d="M14,43 L24,43"/><path d="M24,51 L14,51"/><path d="M48,51 L38,51"/><path d="M38,17 L48,17"/><path d="M14,17 L24,17"/><path d="M24,25 L14,25"/><path d="M48,25 L38,25"/></g></svg>
-                        </div>
-                        <div class="flex-1 flex items-center justify-between px-4 bg-white" :class="mlsPackage && mlsPackage !== 'EXT' ? 'py-1.5' : 'py-3'">
-                            <span class="font-black tracking-tighter leading-none transition-all duration-200" :class="[mlsPackage === 'EXT' ? 'text-red-600' : 'text-black', mlsPackage && mlsPackage !== 'EXT' ? 'text-sm' : 'text-xl']">EXTERIOR ONLY</span>
-                            <svg class="w-4 h-4 text-gray-300 transition-transform flex-none" :class="mlsPackage==='EXT'?'rotate-180':''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-                        </div>
-                    </button>
+                    <div class="w-full flex items-center" style="height:44px;">
+                        <button @click="mlsPackage=(mlsPackage==='EXT'?'':'EXT');sqft='';selectedTier='custom';customQty='8';haptic();$nextTick(()=>{ if(mlsPackage==='EXT') $refs.pillEXT.scrollIntoView({behavior:'smooth', block:'start'}); })"
+                                class="flex items-center flex-1 min-w-0 h-full">
+                            <div class="h-full flex items-center justify-center flex-none" style="width:44px;"
+                                 :class="mlsPackage === 'EXT' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-500'">
+                                <svg class="w-4 h-4 flex-none" viewBox="0 -1 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(1,2)"><path d="M14,49 L14,57 C14,58.1 13.1,59 12,59 L2,59 C0.9,59 0,58.1 0,57 L0,9 C0,7.9 7,1 7,1 C7,1 14,7.9 14,9 L14,19"/><path d="M14,23 L14,45"/><path d="M38,49 L38,57 C38,58.1 37.1,59 36,59 L26,59 C24.9,59 24,58.1 24,57 L24,49"/><path d="M38,23 L38,45"/><path d="M24,19 L24,9 C24,7.9 31,0 31,0 C31,0 38,7.9 38,9 L38,19"/><path d="M24,45 L24,23"/><path d="M48,45 L48,23"/><path d="M48,19 L48,9 C48,7.9 55,0 55,0 C55,0 62,7.9 62,9 L62,57 C62,58.1 61.1,59 60,59 L50,59 C48.9,59 48,58.1 48,57 L48,49"/><path d="M38,43 L48,43"/><path d="M14,43 L24,43"/><path d="M24,51 L14,51"/><path d="M48,51 L38,51"/><path d="M38,17 L48,17"/><path d="M14,17 L24,17"/><path d="M24,25 L14,25"/><path d="M48,25 L38,25"/></g></svg>
+                            </div>
+                            <span class="font-black text-[11px] tracking-tighter truncate px-2" :class="mlsPackage === 'EXT' ? 'text-red-600' : 'text-black'">EXTERIOR ONLY</span>
+                        </button>
+                        <span class="text-[12px] font-black flex-none px-1.5">$79</span>
+                        <button @click="addMlsPackageDirect('EXT', 8)" class="h-full flex items-center flex-none px-2.5 bg-red-600 hover:bg-red-700 transition-colors">
+                            <span class="text-[9px] font-black uppercase text-white">Add</span>
+                        </button>
+                        <button @click="mlsPackage=(mlsPackage==='EXT'?'':'EXT');sqft='';selectedTier='custom';customQty='8';haptic();$nextTick(()=>{ if(mlsPackage==='EXT') $refs.pillEXT.scrollIntoView({behavior:'smooth', block:'start'}); })"
+                                class="h-full flex items-center flex-none px-2">
+                            <svg class="w-3.5 h-3.5 text-gray-300 transition-transform" :class="mlsPackage==='EXT'?'rotate-180':''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                    </div>
                     <div x-show="mlsPackage==='EXT'" x-transition:enter="transition-all ease-out duration-200" x-transition:enter-start="opacity-0 max-h-0" x-transition:enter-end="opacity-100 max-h-[200px]" x-transition:leave="transition-all ease-in duration-150" x-transition:leave-start="opacity-100 max-h-[200px]" x-transition:leave-end="opacity-0 max-h-0" class="overflow-hidden">
                         <div class="p-3 border-t border-gray-100">
                             <div class="grid grid-cols-2 border-2 border-red-600 rounded-xl h-[56px] overflow-hidden">
@@ -1754,22 +1791,28 @@
                     </div>
                 </div>
 
-                <!-- MINI pill -->
+                <!-- MINI: flat-ish, live price in row 1, one-tap add -->
                 <div class="rounded-2xl overflow-hidden card-frosted transition-all duration-200"
                      x-ref="pillMINI" style="scroll-margin-top: 72px;"
                      :class="mlsPackage === 'MINI' ? 'tile-sel-wrap is-sel border-red-600' : 'border-gray-200'">
-                    <button @click="mlsPackage=(mlsPackage==='MINI'?'':'MINI');sqft='';selectedTier='custom';customQty='12';haptic();$nextTick(()=>{ if(mlsPackage==='MINI') $refs.pillMINI.scrollIntoView({behavior:'smooth', block:'start'}); })"
-                            class="w-full flex flex-row transition-all duration-200"
-                            :class="mlsPackage && mlsPackage !== 'MINI' ? 'min-h-[48px]' : 'min-h-[76px]'">
-                        <div class="w-[30%] flex items-center justify-center transition-all duration-200"
-                             :class="mlsPackage === 'MINI' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600'">
-                            <svg class="flex-none transition-all duration-200" :class="mlsPackage && mlsPackage !== 'MINI' ? 'w-5 h-5' : 'w-10 h-10'" viewBox="0 0 433.506 433.506" fill="currentColor"><path d="M76.888,302.386H25.938c0,0-25.938-0.039-25.938,39.483c1.234,25.526,21.148,29.605,24.7,29.605s103.744,0,103.744,0s25.986,0.033,27.133-31.15c0.043-1.19,0.139-0.033,0.153-1.229c0.052-4.604,0-28.4,0-28.4c0.062-3.386,2.648-7.229,6.134-7.229h81.233c1.195,0,2.229,0.966,2.338,2.151l19.188,43.399c7.158,17.748,21.076,30.772,44.328,22.405c22.012-7.923,23.15-25.364,19.264-37.614l-47.713-144.633c-7.172-17.131-25.26-27.124-47.898-27.124h-48.578h-63.299c-60.559,0-111.36,70.552-42.577,138.374C78.637,301.511,78.078,302.386,76.888,302.386z"/><circle cx="358.346" cy="134.649" r="75.161"/></svg>
-                        </div>
-                        <div class="flex-1 flex items-center justify-between px-4 bg-white" :class="mlsPackage && mlsPackage !== 'MINI' ? 'py-1.5' : 'py-3'">
-                            <span class="font-black tracking-tighter leading-none transition-all duration-200" :class="[mlsPackage === 'MINI' ? 'text-red-600' : 'text-black', mlsPackage && mlsPackage !== 'MINI' ? 'text-sm' : 'text-xl']">MINI</span>
-                            <svg class="w-4 h-4 text-gray-300 transition-transform flex-none" :class="mlsPackage==='MINI'?'rotate-180':''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-                        </div>
-                    </button>
+                    <div class="w-full flex items-center" style="height:44px;">
+                        <button @click="mlsPackage=(mlsPackage==='MINI'?'':'MINI');sqft='';selectedTier='custom';customQty='12';haptic();$nextTick(()=>{ if(mlsPackage==='MINI') $refs.pillMINI.scrollIntoView({behavior:'smooth', block:'start'}); })"
+                                class="flex items-center flex-1 min-w-0 h-full">
+                            <div class="h-full flex items-center justify-center flex-none" style="width:44px;"
+                                 :class="mlsPackage === 'MINI' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-500'">
+                                <svg class="w-4 h-4 flex-none" viewBox="0 0 433.506 433.506" fill="currentColor"><path d="M76.888,302.386H25.938c0,0-25.938-0.039-25.938,39.483c1.234,25.526,21.148,29.605,24.7,29.605s103.744,0,103.744,0s25.986,0.033,27.133-31.15c0.043-1.19,0.139-0.033,0.153-1.229c0.052-4.604,0-28.4,0-28.4c0.062-3.386,2.648-7.229,6.134-7.229h81.233c1.195,0,2.229,0.966,2.338,2.151l19.188,43.399c7.158,17.748,21.076,30.772,44.328,22.405c22.012-7.923,23.15-25.364,19.264-37.614l-47.713-144.633c-7.172-17.131-25.26-27.124-47.898-27.124h-48.578h-63.299c-60.559,0-111.36,70.552-42.577,138.374C78.637,301.511,78.078,302.386,76.888,302.386z"/><circle cx="358.346" cy="134.649" r="75.161"/></svg>
+                            </div>
+                            <span class="font-black text-[11px] tracking-tighter truncate px-2" :class="mlsPackage === 'MINI' ? 'text-red-600' : 'text-black'">MINI</span>
+                        </button>
+                        <span class="text-[12px] font-black flex-none px-1.5">$119</span>
+                        <button @click="addMlsPackageDirect('MINI', 12)" class="h-full flex items-center flex-none px-2.5 bg-red-600 hover:bg-red-700 transition-colors">
+                            <span class="text-[9px] font-black uppercase text-white">Add</span>
+                        </button>
+                        <button @click="mlsPackage=(mlsPackage==='MINI'?'':'MINI');sqft='';selectedTier='custom';customQty='12';haptic();$nextTick(()=>{ if(mlsPackage==='MINI') $refs.pillMINI.scrollIntoView({behavior:'smooth', block:'start'}); })"
+                                class="h-full flex items-center flex-none px-2">
+                            <svg class="w-3.5 h-3.5 text-gray-300 transition-transform" :class="mlsPackage==='MINI'?'rotate-180':''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                    </div>
                     <div x-show="mlsPackage==='MINI'" x-transition:enter="transition-all ease-out duration-200" x-transition:enter-start="opacity-0 max-h-0" x-transition:enter-end="opacity-100 max-h-[200px]" x-transition:leave="transition-all ease-in duration-150" x-transition:leave-start="opacity-100 max-h-[200px]" x-transition:leave-end="opacity-0 max-h-0" class="overflow-hidden">
                         <div class="p-3 border-t border-gray-100">
                             <div class="grid grid-cols-2 border-2 border-red-600 rounded-xl h-[56px] overflow-hidden">
@@ -2047,15 +2090,16 @@
 
 
             </div>
-            <div class="px-4 pb-3 pt-2 flex-none" x-show="mode !== 'ADD ONS' || selectedAddOn !== ''" x-cloak>
+            <div class="px-4 pb-3 pt-2 flex-none" x-show="mode !== 'MLS' && (mode !== 'ADD ONS' || selectedAddOn !== '')" x-cloak>
             <div class="price-card-dark relative rounded-[1.5rem] border-2 overflow-hidden">
 
                 <!-- Collapsed row: price (tap to expand breakdown) + Add -->
                 <div class="flex items-stretch" style="height:52px;">
                     <button @click="finalTotal > 0 && (priceBreakdownOpen = !priceBreakdownOpen); haptic()"
                             style="flex:1;min-width:0;"
-                            class="flex items-center justify-center gap-1.5"
-                            x-effect="morphPrice(finalTotal); morphPrice(finalTotal + (includeTax ? 0.0001 : 0))">
+                            class="flex items-center justify-center gap-1.5">
+                        <div style="display:flex;align-items:center;justify-content:center;gap:1.5px;"
+                             x-effect="morphPrice(finalTotal, includeTax)">
                         <span id="price-dollar-sign"
                               class="price-dollar font-black leading-none"
                               style="display:none;font-size:1.1rem;margin-right:1px;margin-bottom:1px;">$</span>
@@ -2066,6 +2110,7 @@
                                   :class="finalTotal > 0 ? '' : 'price-skeleton'"
                                   :style="finalTotal > 0 ? 'color:#555' : 'color:transparent;min-width:3ch;'">--</span>
                             <span id="price-layer-b" style="position:absolute;top:0;left:0;width:100%;opacity:0;color:#fff;white-space:nowrap;"></span>
+                        </div>
                         </div>
                         <svg x-show="finalTotal > 0" x-cloak class="w-3.5 h-3.5 flex-none transition-transform" style="color:#666;" :style="priceBreakdownOpen ? 'transform:rotate(180deg)' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
@@ -2121,13 +2166,19 @@
                     <div x-show="quoteOpen" x-transition:enter="transition-all ease-out duration-200" x-transition:enter-start="opacity-0 max-h-0" x-transition:enter-end="opacity-100 max-h-[280px]" x-transition:leave="transition-all ease-in duration-150" x-transition:leave-start="opacity-100 max-h-[280px]" x-transition:leave-end="opacity-0 max-h-0" class="overflow-y-auto" style="max-height:280px;">
                         <div class="border-t border-gray-100">
                             <template x-for="item in quoteItems" :key="item.id">
-                                <div class="flex items-center justify-between px-4 py-2 border-b border-gray-50">
-                                    <span class="text-[10px] font-semibold text-gray-700 leading-tight pr-2" x-text="item.description"></span>
-                                    <div class="flex items-center gap-2 flex-none">
-                                        <span class="text-xs font-black" x-text="'$' + item.price.toFixed(2)"></span>
-                                        <button @click="removeFromQuote(item.id)" class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-red-600">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                                        </button>
+                                <div class="px-4 py-2 border-b border-gray-50">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[10px] font-semibold text-gray-700 leading-tight pr-2" x-text="item.description"></span>
+                                        <div class="flex items-center gap-2 flex-none">
+                                            <span class="text-xs font-black" x-text="'$' + itemPrice(item).toFixed(2)"></span>
+                                            <button @click="removeFromQuote(item.id)" class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-red-600">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-end gap-1.5 pt-1">
+                                        <span class="text-[8px] text-gray-400" x-text="item.taxIncluded ? ('tax incl. $' + (item.subtotal * taxRate).toFixed(2)) : 'tax not included'"></span>
+                                        <button @click="toggleItemTax(item.id)" class="text-[8px] font-bold uppercase text-gray-500 hover:text-red-600" style="text-decoration:underline;text-underline-offset:2px;" x-text="item.taxIncluded ? 'remove tax' : 'add tax'"></button>
                                     </div>
                                 </div>
                             </template>
