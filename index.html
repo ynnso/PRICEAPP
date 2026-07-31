@@ -418,7 +418,7 @@
             let cleanCustom = this.customQty.toString().replace(/,/g, '');
             if (this.selectedTier === 'custom' && cleanCustom !== '') {
                 let val = parseInt(cleanCustom) || 0;
-                if (this.mode === 'MLS' && this.mlsPackage === 'FULL') return val < 26 ? 26 : val;
+                if (this.mode === 'MLS' && this.mlsPackage === 'FULL') return val < 25 ? 25 : val;
                 return val;
             }
             if (this.selectedTier.includes('-')) {
@@ -1628,7 +1628,8 @@
                             {key:'7000-9999',label:'7,000 – 9,999 Sq Ft'},
                             {key:'10000+',   label:'10,000+ Sq Ft'}
                         ]" :key="bracket.key">
-                            <div class="bg-gray-50 rounded-xl overflow-hidden border border-gray-100">
+                            <div class="rounded-xl overflow-hidden border transition-all duration-150"
+                                 :class="sqft === bracket.key ? 'bg-gray-50 border-gray-100 opacity-100' : (sqft ? 'bg-gray-100 border-gray-100 opacity-50' : 'bg-gray-50 border-gray-100 opacity-100')">
                                 <button @click="sqft = (sqft === bracket.key ? '' : bracket.key); selectedTier=''; customQty=''; haptic()"
                                         class="w-full flex items-center justify-between px-3 py-2.5"
                                         :class="sqft === bracket.key ? 'bg-black text-white' : 'bg-transparent text-black'">
