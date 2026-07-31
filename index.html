@@ -1669,6 +1669,13 @@
                             </div>
                         </template>
                     </div>
+                    <div class="px-4 pb-3" x-show="mlsPackage==='FULL' && finalTotal > 0">
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-lg font-black flex-none" style="font-variant-numeric:tabular-nums;" x-text="'$' + finalTotal.toFixed(2)"></span>
+                            <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''"
+                                    class="flex-1 bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-wide text-[12px] rounded-xl py-2.5 transition-all">Add to Quote</button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- RESHOOT -->
@@ -1690,6 +1697,11 @@
                                 <button @click="customQty=(parseInt(customQty)||8)+1;haptic()" class="w-8 h-8 bg-red-600 text-white rounded-full font-bold flex-none">+</button>
                             </div>
                             <div class="bg-white flex items-center justify-center font-black text-black text-sm uppercase tracking-wider">Photos</div>
+                        </div>
+                        <div class="flex items-center justify-between gap-3 mt-2.5" x-show="mlsPackage==='RESHOOT' && finalTotal > 0">
+                            <span class="text-lg font-black flex-none" style="font-variant-numeric:tabular-nums;" x-text="'$' + finalTotal.toFixed(2)"></span>
+                            <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''"
+                                    class="flex-1 bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-wide text-[12px] rounded-xl py-2.5 transition-all">Add to Quote</button>
                         </div>
                     </div>
                 </div>
@@ -1718,6 +1730,11 @@
                             </div>
                             <div class="bg-white flex items-center justify-center font-black text-black text-sm uppercase tracking-wider">Photos</div>
                         </div>
+                        <div class="flex items-center justify-between gap-3 mt-2.5" x-show="mlsPackage==='RANCH' && finalTotal > 0">
+                            <span class="text-lg font-black flex-none" style="font-variant-numeric:tabular-nums;" x-text="'$' + finalTotal.toFixed(2)"></span>
+                            <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''"
+                                    class="flex-1 bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-wide text-[12px] rounded-xl py-2.5 transition-all">Add to Quote</button>
+                        </div>
                     </div>
                 </div>
 
@@ -1741,6 +1758,11 @@
                             </div>
                             <div class="bg-white flex items-center justify-center font-black text-black text-sm uppercase tracking-wider">Photos</div>
                         </div>
+                        <div class="flex items-center justify-between gap-3 mt-2.5" x-show="mlsPackage==='EXT' && finalTotal > 0">
+                            <span class="text-lg font-black flex-none" style="font-variant-numeric:tabular-nums;" x-text="'$' + finalTotal.toFixed(2)"></span>
+                            <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''"
+                                    class="flex-1 bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-wide text-[12px] rounded-xl py-2.5 transition-all">Add to Quote</button>
+                        </div>
                     </div>
                 </div>
 
@@ -1763,6 +1785,11 @@
                                 <button @click="customQty=(parseInt(customQty)||12)+1;haptic()" class="w-8 h-8 bg-red-600 text-white rounded-full font-bold flex-none">+</button>
                             </div>
                             <div class="bg-white flex items-center justify-center font-black text-black text-sm uppercase tracking-wider">Photos</div>
+                        </div>
+                        <div class="flex items-center justify-between gap-3 mt-2.5" x-show="mlsPackage==='MINI' && finalTotal > 0">
+                            <span class="text-lg font-black flex-none" style="font-variant-numeric:tabular-nums;" x-text="'$' + finalTotal.toFixed(2)"></span>
+                            <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''"
+                                    class="flex-1 bg-red-600 hover:bg-red-700 text-white font-black uppercase tracking-wide text-[12px] rounded-xl py-2.5 transition-all">Add to Quote</button>
                         </div>
                     </div>
                 </div>
@@ -2030,7 +2057,7 @@
 
 
             </div>
-            <div class="px-4 pb-3 pt-2 flex-none" x-show="mode !== 'ADD ONS' || selectedAddOn !== ''" x-cloak>
+            <div class="px-4 pb-3 pt-2 flex-none" x-show="mode !== 'MLS' && (mode !== 'ADD ONS' || selectedAddOn !== '')" x-cloak>
             <div class="price-card-dark relative rounded-[1.5rem] border-2 overflow-hidden">
 
                 <!-- Collapsed row: price (tap to expand breakdown) + Add -->
