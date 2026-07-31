@@ -836,8 +836,10 @@
     <div class="app-container max-w-md mx-auto shadow-xl relative flex flex-col sm:rounded-[2.5rem] sm:h-[600px] sm:my-4" style="background:#F7F7F8;">
         
         <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 flex-none" x-show="screen !== 'START'" x-cloak>
-            <!-- Left spacer matches home button width -->
-            <div class="w-9"></div>
+            <!-- S2S logo — top-left, tap to reset (placeholder text mark until a real logo asset is supplied) -->
+            <button @click="resetAll()" class="w-9 h-9 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors flex-none">
+                <span class="font-black text-[13px] tracking-tighter text-gray-700 leading-none">S2S</span>
+            </button>
             <!-- Mode pill — centered -->
             <div class="flex-1 flex justify-center">
                 <span class="mode-pill-enter bg-black text-white text-[11px] font-black tracking-widest uppercase px-3 py-1 rounded-full"
@@ -846,11 +848,10 @@
                       x-effect="$el.classList.remove('mode-pill-enter'); void $el.getBoundingClientRect(); $el.classList.add('mode-pill-enter')">
                 </span>
             </div>
-            <!-- Home button -->
-            <button @click="resetAll()" class="w-9 h-9 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors">
-                <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
-                </svg>
+            <!-- Cart / Quote — top-right, opens the quote bottom sheet -->
+            <button @click="quoteSheetOpen = true; haptic()" class="w-9 h-9 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors relative flex-none">
+                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                <span x-show="quoteItems.length > 0" x-cloak class="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-600 text-white text-[9px] font-black flex items-center justify-center" x-text="quoteItems.length"></span>
             </button>
         </div>
 
@@ -1682,7 +1683,7 @@
                         <svg class="w-3.5 h-3.5 text-gray-300 flex-none mr-3 transition-transform" :class="mlsPackage==='RESHOOT'?'rotate-180':''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
                     </button>
                     <div x-show="mlsPackage==='RESHOOT'" class="px-4 pb-3 border-t border-gray-100 pt-3">
-                        <div class="grid grid-cols-2 border-2 border-red-600 rounded-xl h-[56px] overflow-hidden">
+                        <div class="grid grid-cols-2 border-2 border-red-600 rounded-xl h-[48px] overflow-hidden">
                             <div class="bg-gray-100 border-r-2 border-black flex items-center justify-between px-3">
                                 <button @click="customQty=Math.max(8,(parseInt(customQty)||8)-1);haptic()" class="w-8 h-8 bg-red-600 text-white rounded-full font-bold flex-none">-</button>
                                 <span class="text-2xl font-black text-red-600" x-text="customQty||8"></span>
@@ -1709,7 +1710,7 @@
                             <button @click="customQty='25';haptic()" :class="customQty=='25'?'tile-sel':'bg-white border-gray-200'" class="flex-1 h-[40px] border-2 rounded-xl font-black text-sm">25</button>
                             <button @click="customQty='36';haptic()" :class="customQty=='36'?'tile-sel':'bg-white border-gray-200'" class="flex-1 h-[40px] border-2 rounded-xl font-black text-sm">36</button>
                         </div>
-                        <div class="grid grid-cols-2 border-2 border-red-600 rounded-xl h-[56px] overflow-hidden">
+                        <div class="grid grid-cols-2 border-2 border-red-600 rounded-xl h-[48px] overflow-hidden">
                             <div class="bg-gray-100 border-r-2 border-black flex items-center justify-between px-3">
                                 <button @click="customQty=Math.max(25,(parseInt(customQty)||25)-1);haptic()" class="w-8 h-8 bg-red-600 text-white rounded-full font-bold flex-none">-</button>
                                 <span class="text-2xl font-black text-red-600" x-text="customQty||25"></span>
@@ -1732,7 +1733,7 @@
                         <svg class="w-3.5 h-3.5 text-gray-300 flex-none mr-3 transition-transform" :class="mlsPackage==='EXT'?'rotate-180':''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
                     </button>
                     <div x-show="mlsPackage==='EXT'" class="px-4 pb-3 border-t border-gray-100 pt-3">
-                        <div class="grid grid-cols-2 border-2 border-red-600 rounded-xl h-[56px] overflow-hidden">
+                        <div class="grid grid-cols-2 border-2 border-red-600 rounded-xl h-[48px] overflow-hidden">
                             <div class="bg-gray-100 border-r-2 border-black flex items-center justify-between px-3">
                                 <button @click="customQty=Math.max(8,(parseInt(customQty)||8)-1);haptic()" class="w-8 h-8 bg-red-600 text-white rounded-full font-bold flex-none">-</button>
                                 <span class="text-2xl font-black text-red-600" x-text="customQty||8"></span>
@@ -1755,7 +1756,7 @@
                         <svg class="w-3.5 h-3.5 text-gray-300 flex-none mr-3 transition-transform" :class="mlsPackage==='MINI'?'rotate-180':''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
                     </button>
                     <div x-show="mlsPackage==='MINI'" class="px-4 pb-3 border-t border-gray-100 pt-3">
-                        <div class="grid grid-cols-2 border-2 border-red-600 rounded-xl h-[56px] overflow-hidden">
+                        <div class="grid grid-cols-2 border-2 border-red-600 rounded-xl h-[48px] overflow-hidden">
                             <div class="bg-gray-100 border-r-2 border-black flex items-center justify-between px-3">
                                 <button @click="customQty=Math.max(12,(parseInt(customQty)||12)-1);haptic()" class="w-8 h-8 bg-red-600 text-white rounded-full font-bold flex-none">-</button>
                                 <span class="text-2xl font-black text-red-600" x-text="customQty||12"></span>
@@ -2076,29 +2077,13 @@
                             <span class="text-[10px] font-black text-white">Total</span>
                             <span class="text-[11px] font-black text-white" x-text="'$' + finalTotal.toFixed(2)"></span>
                         </div>
+                        <div class="flex justify-end pt-0.5">
+                            <button @click="resetPrice(); haptic()" class="text-[9px] font-bold text-gray-500 hover:text-red-400 transition-colors" style="text-decoration:underline;text-underline-offset:2px;">Clear selection</button>
+                        </div>
                     </div>
                 </div>
 
             </div>
-
-            <!-- Clear selection — low-emphasis text link, not a bar control -->
-            <div class="flex justify-end pt-1.5" x-show="finalTotal > 0" x-cloak>
-                <button @click="resetPrice(); haptic()" class="text-[9px] font-bold text-gray-400 hover:text-red-500 transition-colors" style="text-decoration:underline;text-underline-offset:2px;">Clear selection</button>
-            </div>
-            </div>
-
-            <!-- Quote — collapsed bar opens the same shared sheet pattern as products -->
-            <div class="px-4 pb-2 flex-none" x-show="quoteItems.length > 0" x-cloak>
-                <button @click="quoteSheetOpen = true; haptic()" class="w-full flex items-center justify-between px-4 rounded-2xl card-frosted" style="height:44px;background:#111;">
-                    <div class="flex items-center gap-2">
-                        <span class="w-5 h-5 rounded-full bg-white text-black text-[10px] font-bold flex items-center justify-center" x-text="quoteItems.length"></span>
-                        <span class="text-[10px] font-semibold uppercase tracking-wide text-gray-300">Quote</span>
-                    </div>
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-[13px] font-bold text-white" style="font-variant-numeric:tabular-nums;" x-text="'$' + quoteTotal.toFixed(2)"></span>
-                        <svg class="w-3.5 h-3.5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
-                    </div>
-                </button>
             </div>
 
             <div x-show="quoteSheetOpen" x-cloak
