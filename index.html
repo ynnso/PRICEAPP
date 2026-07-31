@@ -630,6 +630,9 @@
             if (!this.sqft) return 0;
             return this.zillowPrices[this.sqft] || 0;
         },
+        get sheetOpen() {
+            return this.mode === 'MLS' && this.mlsPackage !== '';
+        },
         get finalTotal() { 
             if (this.selectedAddOn === 'Cancellation Fee') return 49;
             let total = this.includeTax ? this.subtotal * (1 + this.taxRate) : this.subtotal;
@@ -1664,13 +1667,13 @@
             </div>
 
             <!-- Shared bottom sheet: backdrop + sliding panel, content switches per mlsPackage -->
-            <div x-show="mode === 'MLS' && mlsPackage !== ''" x-cloak
+            <div x-show="sheetOpen" x-cloak
                  x-transition:enter="transition-opacity ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
                  x-transition:leave="transition-opacity ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
                  class="fixed inset-0 z-40" style="background:rgba(0,0,0,0.4);"
                  @click="mlsPackage=''; sqft=''; selectedTier=''; customQty=''; haptic()">
             </div>
-            <div x-show="mode === 'MLS' && mlsPackage !== ''" x-cloak
+            <div x-show="sheetOpen" x-cloak
                  x-transition:enter="transition-transform ease-out duration-250" x-transition:enter-start="translate-y-full" x-transition:enter-end="translate-y-0"
                  x-transition:leave="transition-transform ease-in duration-200" x-transition:leave-start="translate-y-0" x-transition:leave-end="translate-y-full"
                  class="fixed left-0 right-0 bottom-0 z-50 bg-white rounded-t-[1.75rem] shadow-2xl max-w-md mx-auto flex flex-col"
