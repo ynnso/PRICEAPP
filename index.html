@@ -1701,42 +1701,43 @@
                                         <svg class="w-3.5 h-3.5 transition-transform" :style="sqft === bracket.key ? 'transform:rotate(180deg)' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
                                     </div>
                                 </button>
-                                <div x-show="sqft === bracket.key && !sqftPickerOpen" class="overflow-hidden">
-                                    <div class="flex items-center justify-center gap-4 py-5 px-3 bg-white">
-                                        <div class="text-[40px] font-black leading-none" :class="finalTotal > 0 ? 'text-red-600' : 'text-gray-300'" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="finalTotal > 0 ? ('$' + Math.floor(finalTotal)) : 'Select'"></div>
-                                        <div class="flex items-center gap-2 bg-gray-100 rounded-2xl px-3 py-2 border-2 border-black">
-                                            <div class="flex flex-col gap-1">
-                                                <button @click="selectedTier='custom'; customQty = (parseInt((customQty||'24').toString().replace(/,/g,'')) || 24) + 1; haptic()" class="w-7 h-7 bg-white text-black rounded-full font-bold flex-none text-[13px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
-                                                <button @click="selectedTier='custom'; customQty = Math.max(1, (parseInt((customQty||'26').toString().replace(/,/g,'')) || 26) - 1); haptic()" class="w-7 h-7 bg-white text-black rounded-full font-bold flex-none text-[13px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
-                                            </div>
-                                            <span class="text-[17px] font-black text-black" style="font-variant-numeric:tabular-nums;" x-text="selectedTier==='custom' ? formatNumber(customQty) : '—'"></span>
-                                        </div>
-                                    </div>
-                                    <div class="h-0.5 bg-red-600"></div>
-                                    <div class="grid grid-cols-2 gap-3 p-4 bg-black">
-                                        <template x-for="t in ['25','36','40','50']" :key="t">
-                                            <button @click="selectedTier='custom'; customQty=t; haptic()"
-                                                    :class="(selectedTier==='custom' && customQty==t) ? 'bg-red-600' : 'bg-white'"
-                                                    class="flex flex-col items-center justify-center gap-1 rounded-2xl py-5">
-                                                <span class="text-[15px]" :class="(selectedTier==='custom' && customQty==t) ? 'text-red-200' : 'text-gray-500'" x-text="t"></span>
-                                                <span class="text-[22px] font-black" :class="(selectedTier==='custom' && customQty==t) ? 'text-white' : 'text-black'" style="font-variant-numeric:tabular-nums;" x-text="'$' + mlsPrices[bracket.key][t]"></span>
-                                            </button>
-                                        </template>
-                                    </div>
-                                    <div class="px-4 pb-4 pt-1 bg-black">
-                                        <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''; sqftPickerOpen=false" x-show="finalTotal > 0" x-cloak
-                                                class="w-full h-14 rounded-2xl flex items-center justify-center gap-2.5 transition-all"
-                                                :class="justAdded ? 'bg-red-600' : 'bg-white'">
-                                            <svg x-show="!justAdded" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                                            <svg x-show="justAdded" x-cloak class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                            <span class="text-[17px] font-black" :class="justAdded ? 'text-white' : 'text-black'" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
-                                        </button>
-                                    </div>
-                                </div>
                             </div>
                         </template>
                         </div>
                         </template>
+
+                        <div x-show="sqft !== '' && !sqftPickerOpen" x-cloak class="rounded-xl overflow-hidden border bg-gray-50 border-gray-100">
+                            <div class="flex items-center justify-center gap-4 py-5 px-3 bg-white">
+                                <div class="text-[40px] font-black leading-none" :class="finalTotal > 0 ? 'text-red-600' : 'text-gray-300'" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="finalTotal > 0 ? ('$' + Math.floor(finalTotal)) : 'Select'"></div>
+                                <div class="flex items-center gap-2 bg-gray-100 rounded-2xl px-3 py-2 border-2 border-black">
+                                    <div class="flex flex-col gap-1">
+                                        <button @click="selectedTier='custom'; customQty = (parseInt((customQty||'24').toString().replace(/,/g,'')) || 24) + 1; haptic()" class="w-7 h-7 bg-white text-black rounded-full font-bold flex-none text-[13px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
+                                        <button @click="selectedTier='custom'; customQty = Math.max(1, (parseInt((customQty||'26').toString().replace(/,/g,'')) || 26) - 1); haptic()" class="w-7 h-7 bg-white text-black rounded-full font-bold flex-none text-[13px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
+                                    </div>
+                                    <span class="text-[17px] font-black text-black" style="font-variant-numeric:tabular-nums;" x-text="selectedTier==='custom' ? formatNumber(customQty) : '—'"></span>
+                                </div>
+                            </div>
+                            <div class="h-0.5 bg-red-600"></div>
+                            <div class="grid grid-cols-2 gap-3 p-4 bg-black">
+                                <template x-for="t in ['25','36','40','50']" :key="t">
+                                    <button @click="selectedTier='custom'; customQty=t; haptic()"
+                                            :class="(selectedTier==='custom' && customQty==t) ? 'bg-red-600' : 'bg-white'"
+                                            class="flex flex-col items-center justify-center gap-1 rounded-2xl py-5">
+                                        <span class="text-[15px]" :class="(selectedTier==='custom' && customQty==t) ? 'text-red-200' : 'text-gray-500'" x-text="t"></span>
+                                        <span class="text-[22px] font-black" :class="(selectedTier==='custom' && customQty==t) ? 'text-white' : 'text-black'" style="font-variant-numeric:tabular-nums;" x-text="'$' + (mlsPrices[sqft] ? mlsPrices[sqft][t] : '')"></span>
+                                    </button>
+                                </template>
+                            </div>
+                            <div class="px-4 pb-4 pt-1 bg-black">
+                                <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''; sqftPickerOpen=false" x-show="finalTotal > 0" x-cloak
+                                        class="w-full h-14 rounded-2xl flex items-center justify-center gap-2.5 transition-all"
+                                        :class="justAdded ? 'bg-red-600' : 'bg-white'">
+                                    <svg x-show="!justAdded" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                                    <svg x-show="justAdded" x-cloak class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                    <span class="text-[17px] font-black" :class="justAdded ? 'text-white' : 'text-black'" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
