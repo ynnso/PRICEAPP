@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PRICEX 2026</title>
+    <title>Price App 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@400;600;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -838,13 +838,13 @@
         <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100 flex-none" x-cloak>
             <!-- S2S logo — top-left, tap to reset (placeholder text mark until a real logo asset is supplied) -->
             <button @click="resetAll()" class="w-9 h-9 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors flex-none">
-                <span class="font-black text-[13px] tracking-tighter text-gray-700 leading-none">S2S</span>
+                <span class="font-black text-[13px] tracking-tighter leading-none"><span class="text-black">S</span><span class="text-red-600">2</span><span class="text-black">S</span></span>
             </button>
             <!-- Mode pill — centered -->
             <div class="flex-1 flex justify-center">
                 <span class="mode-pill-enter bg-black text-white text-[11px] font-black tracking-widest uppercase px-3 py-1 rounded-full"
                       :key="screen === 'START' ? 'START' : mode"
-                      x-text="screen === 'START' ? 'PRICEX' : (mode === 'MLS' ? 'MLS PHOTOS' : mode === 'PORT' ? 'PORT PHOTOS' : mode === 'AIRBNB' ? 'AIRBNB' : mode)"
+                      x-text="screen === 'START' ? 'PRICE APP' : (mode === 'MLS' ? 'MLS PHOTOS' : mode === 'PORT' ? 'PORT PHOTOS' : mode === 'AIRBNB' ? 'AIRBNB' : mode)"
                       x-effect="$el.classList.remove('mode-pill-enter'); void $el.getBoundingClientRect(); $el.classList.add('mode-pill-enter')">
                 </span>
             </div>
@@ -868,8 +868,8 @@
                 </svg>
             </div>
 
-            <!-- PRICEX wordmark -->
-            <div class="splash-word text-white font-black tracking-[-0.04em] leading-none" style="font-size:3.5rem;">PRICEX</div>
+            <!-- PRICE APP wordmark -->
+            <div class="splash-word text-white font-black tracking-[-0.04em] leading-none" style="font-size:2.6rem;">Price App</div>
 
             <!-- Red accent bar -->
             <div class="splash-bar h-[3px] bg-red-600 rounded-full mt-3 mb-3"></div>
