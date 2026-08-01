@@ -659,12 +659,20 @@
         // ── Quote Cart ──
         describeCurrentService() {
             const m = this.mode;
-            const mlsPackageNames = { 'FULL': 'Full Shoot', 'RESHOOT': 'Reshoot', 'RANCH': 'Ranch', 'EXT': 'Exterior Only', 'MINI': 'Mini' };
+            const mlsPackageNames = { 'FULL': 'Full Shoot', 'RESHOOT': 'Reshoot', 'RANCH': 'Ranch Shoot', 'EXT': 'Exterior Only', 'MINI': 'Mini Shoot' };
+            const sqftFormatted = (key) => {
+                if (!key) return '';
+                if (key === '10000+') return '10,000+ Sq Ft';
+                const [lo, hi] = key.split('-');
+                if (!hi) return '';
+                return Number(lo).toLocaleString() + ' – ' + Number(hi).toLocaleString() + ' Sq Ft';
+            };
             if (m === 'MLS' || m === 'PORT') {
-                const pkg = this.mlsPackage ? (mlsPackageNames[this.mlsPackage] || this.mlsPackage) + ' — ' : '';
-                const sqftLabel = this.sqft || '';
+                const category = (m === 'MLS' ? 'MLS Photos' : 'Port Photos') + ': ';
+                const pkg = this.mlsPackage ? (mlsPackageNames[this.mlsPackage] || this.mlsPackage) : '';
+                const sqftLabel = sqftFormatted(this.sqft);
                 const qtyLabel = this.qty ? this.qty + ' imgs' : '';
-                return [pkg + (m === 'MLS' ? 'MLS Photos' : 'Port Photos'), sqftLabel, qtyLabel].filter(Boolean).join(' · ');
+                return category + [pkg, sqftLabel, qtyLabel].filter(Boolean).join(' · ');
             }
             if (m === 'AIRBNB') return 'Airbnb — ' + (this.qty || '') + ' imgs';
             if (m.includes('AERIAL')) return (m.includes('MLS') ? 'MLS' : 'PORT') + ' Aerial — ' + (this.aerialType || '');
@@ -2260,8 +2268,8 @@
                 <div class="w-9 h-1 rounded-full bg-gray-200 mx-auto mt-2.5 mb-1 flex-none"></div>
 
                 <div class="flex items-center gap-2.5 px-4 pt-1 pb-2 flex-none">
-                    <span class="w-6 h-6 rounded-full bg-black text-white text-[11px] font-black flex items-center justify-center flex-none" x-text="quoteItems.length"></span>
-                    <span class="font-bold text-[15px] tracking-tight flex-1">Cart</span>
+                    <span class="w-7 h-7 rounded-full bg-black text-white text-[13px] font-black flex items-center justify-center flex-none" x-text="quoteItems.length"></span>
+                    <span class="font-black text-[19px] tracking-tight flex-1">Cart</span>
                     <button @click="quoteSheetOpen = false; haptic()" class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-none">
                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
@@ -2269,20 +2277,17 @@
 
                 <div style="max-height:calc(88vh - 175px);overflow-y:auto;">
                     <div class="border-t border-gray-100">
-                        <template x-for="item in quoteItems" :key="item.id">
-                            <div class="px-4 py-2 border-b border-gray-50">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-[10px] font-semibold text-gray-700 leading-tight pr-2" x-text="item.description"></span>
-                                    <div class="flex items-center gap-2 flex-none">
-                                        <span class="text-xs font-black" style="font-variant-numeric:tabular-nums;" x-text="'$' + itemPrice(item).toFixed(2)"></span>
-                                        <button @click="removeFromQuote(item.id)" class="w-5 h-5 flex items-center justify-center text-gray-400 hover:text-red-600">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-end gap-1.5 pt-1">
-                                    <span class="text-[10px] text-gray-400" x-text="item.taxIncluded ? ('tax incl. $' + (item.subtotal * taxRate).toFixed(2)) : 'tax not included'"></span>
-                                    <button @click="toggleItemTax(item.id)" class="text-[10px] font-bold uppercase text-gray-500 hover:text-red-600" style="text-decoration:underline;text-underline-offset:2px;" x-text="item.taxIncluded ? 'remove tax' : 'add tax'"></button>
+                        <template x-for="(item, idx) in quoteItems" :key="item.id">
+                            <div class="px-4 py-3.5 flex items-center justify-between gap-3" :class="idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'">
+                                <span class="text-[14px] font-semibold text-black leading-snug pr-2" x-text="item.description"></span>
+                                <div class="flex items-center gap-2.5 flex-none">
+                                    <button @click="toggleItemTax(item.id)" class="w-6 h-6 rounded-full flex items-center justify-center flex-none" :class="item.taxIncluded ? 'bg-black text-white' : 'bg-gray-200 text-gray-500'" :aria-label="item.taxIncluded ? 'Remove tax' : 'Add tax'">
+                                        <span class="text-[9px] font-black">TX</span>
+                                    </button>
+                                    <span class="text-[17px] font-black" style="font-variant-numeric:tabular-nums;" x-text="'$' + itemPrice(item).toFixed(2)"></span>
+                                    <button @click="removeFromQuote(item.id)" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-600 flex-none" aria-label="Remove item">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                    </button>
                                 </div>
                             </div>
                         </template>
@@ -2291,8 +2296,8 @@
 
                 <div class="border-t border-gray-100 px-4 py-3 flex-none">
                     <div class="flex items-center justify-between mb-2.5">
-                        <span class="text-[10px] font-black uppercase tracking-wide text-gray-500">Total</span>
-                        <span class="text-xl font-black" style="font-variant-numeric:tabular-nums;" x-text="'$' + quoteTotal.toFixed(2)"></span>
+                        <span class="text-[13px] font-black uppercase tracking-wide text-gray-500">Total</span>
+                        <span class="text-2xl font-black text-red-600" style="font-variant-numeric:tabular-nums;" x-text="'$' + quoteTotal.toFixed(2)"></span>
                     </div>
                     <div class="flex items-center gap-2">
                         <button @click="copyQuote()" class="flex-1 bg-black text-white text-[10px] font-black uppercase tracking-wide rounded-lg py-2.5">Copy Cart</button>
