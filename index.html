@@ -164,7 +164,7 @@
             border: none;
         }
         .nav-pill-wrap {
-            padding: 0 16px 14px 16px;
+            padding: 0 24px 14px 24px;
         }
         .nav-icon-circle {
             width: 38px; height: 38px; border-radius: 50%;
@@ -1672,8 +1672,8 @@
                             <span class="text-[32px] font-black text-black leading-none">Full Shoot</span>
                         </div>
 
-                        <button x-show="sqft !== '' && !sqftPickerOpen" x-cloak @click="sqftPickerOpen=true" class="w-full bg-gray-100 rounded-2xl px-4 py-3.5 flex items-center justify-between">
-                            <span class="text-[14px] text-gray-600">Square Feet</span>
+                        <button x-show="sqft !== '' && !sqftPickerOpen" x-cloak @click="sqftPickerOpen=true" class="w-full bg-gray-100 border-2 border-black rounded-2xl px-4 py-3.5 flex items-center justify-between">
+                            <span class="text-[14px] text-black">Square Feet</span>
                             <span class="flex items-center gap-2.5 text-[16px] font-semibold text-black" style="font-variant-numeric:tabular-nums;">
                                 <span x-text="({'0-1999':'0 – 1,999','2000-2999':'2,000 – 2,999','3000-3999':'3,000 – 3,999','4000-4999':'4,000 – 4,999','5000-6999':'5,000 – 6,999','7000-9999':'7,000 – 9,999','10000+':'10,000+'})[sqft]"></span>
                                 <span class="w-7 h-7 rounded-full bg-white flex items-center justify-center" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);"><svg class="w-3.5 h-3.5 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg></span>
@@ -1709,10 +1709,10 @@
                         <div x-show="sqft !== '' && !sqftPickerOpen" x-cloak class="rounded-xl overflow-hidden border bg-gray-50 border-gray-100">
                             <div class="flex flex-col items-center justify-center gap-4 py-8 px-3 bg-white">
                                 <div class="text-[64px] font-black leading-none" :class="finalTotal > 0 ? 'text-red-600' : 'text-gray-300'" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="finalTotal > 0 ? ('$' + Math.floor(finalTotal)) : 'Select'"></div>
-                                <div class="flex items-center justify-center gap-3 bg-gray-100 rounded-full px-3 py-2 border-2 border-black">
-                                    <button @click="selectedTier='custom'; customQty = Math.max(1, (parseInt((customQty||'26').toString().replace(/,/g,'')) || 26) - 1); haptic()" class="w-7 h-7 bg-white text-black rounded-full font-bold flex-none text-[14px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
-                                    <span class="text-[16px] font-black text-black min-w-[28px] text-center" style="font-variant-numeric:tabular-nums;" x-text="selectedTier==='custom' ? formatNumber(customQty) : '—'"></span>
-                                    <button @click="selectedTier='custom'; customQty = (parseInt((customQty||'24').toString().replace(/,/g,'')) || 24) + 1; haptic()" class="w-7 h-7 bg-white text-black rounded-full font-bold flex-none text-[14px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
+                                <div class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-black">
+                                    <button @click="selectedTier='custom'; customQty = Math.max(1, (parseInt((customQty||'26').toString().replace(/,/g,'')) || 26) - 1); haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
+                                    <span class="text-[20px] font-black text-black min-w-[34px] text-center" style="font-variant-numeric:tabular-nums;" x-text="selectedTier==='custom' ? formatNumber(customQty) : '—'"></span>
+                                    <button @click="selectedTier='custom'; customQty = (parseInt((customQty||'24').toString().replace(/,/g,'')) || 24) + 1; haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
                                 </div>
                             </div>
                             <div class="h-0.5 bg-red-600"></div>
