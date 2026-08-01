@@ -1676,7 +1676,7 @@
                             {key:'10000+',   label:'10,000+ Sq Ft'}
                         ]" :key="bracket.key">
                             <div x-show="sqft === '' || sqft === bracket.key" class="rounded-xl overflow-hidden border bg-gray-50 border-gray-100">
-                                <button @click="if (sqft === bracket.key) { sqft=''; selectedTier=''; customQty=''; } else { sqft = bracket.key; selectedTier='custom'; customQty='25'; } haptic()"
+                                <button @click="if (sqft === bracket.key) { sqft=''; selectedTier=''; customQty=''; } else { sqft = bracket.key; selectedTier=''; customQty=''; } haptic()"
                                         class="w-full flex items-center justify-between px-3 py-2.5"
                                         :class="sqft === bracket.key ? 'bg-black text-white' : 'bg-transparent text-black'">
                                     <span class="text-[11px] font-black uppercase tracking-wide" x-text="bracket.label"></span>
@@ -1687,13 +1687,13 @@
                                 </button>
                                 <div x-show="sqft === bracket.key" class="overflow-hidden">
                                     <div class="flex items-center justify-center gap-4 py-5 px-3 bg-white">
-                                        <div class="text-[40px] font-black text-red-600 leading-none" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="finalTotal > 0 ? ('$' + Math.floor(finalTotal)) : '$0'"></div>
+                                        <div class="text-[40px] font-black leading-none" :class="finalTotal > 0 ? 'text-red-600' : 'text-gray-300'" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="finalTotal > 0 ? ('$' + Math.floor(finalTotal)) : 'Select'"></div>
                                         <div class="flex items-center gap-2 bg-gray-100 rounded-2xl px-3 py-2 border-2 border-black">
                                             <div class="flex flex-col gap-1">
-                                                <button @click="selectedTier='custom'; customQty = (parseInt((customQty||'25').toString().replace(/,/g,'')) || 25) + 1; haptic()" class="w-7 h-7 bg-white text-black rounded-full font-bold flex-none text-[13px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
-                                                <button @click="selectedTier='custom'; customQty = Math.max(1, (parseInt((customQty||'25').toString().replace(/,/g,'')) || 25) - 1); haptic()" class="w-7 h-7 bg-white text-black rounded-full font-bold flex-none text-[13px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
+                                                <button @click="selectedTier='custom'; customQty = (parseInt((customQty||'24').toString().replace(/,/g,'')) || 24) + 1; haptic()" class="w-7 h-7 bg-white text-black rounded-full font-bold flex-none text-[13px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
+                                                <button @click="selectedTier='custom'; customQty = Math.max(1, (parseInt((customQty||'26').toString().replace(/,/g,'')) || 26) - 1); haptic()" class="w-7 h-7 bg-white text-black rounded-full font-bold flex-none text-[13px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
                                             </div>
-                                            <span class="text-[17px] font-black text-black" style="font-variant-numeric:tabular-nums;" x-text="formatNumber(customQty || '25')"></span>
+                                            <span class="text-[17px] font-black text-black" style="font-variant-numeric:tabular-nums;" x-text="selectedTier==='custom' ? formatNumber(customQty) : '—'"></span>
                                         </div>
                                     </div>
                                     <div class="h-0.5 bg-red-600"></div>
