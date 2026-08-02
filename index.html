@@ -1725,10 +1725,10 @@
                                     <button @click="selectedTier='custom'; customQty = (parseInt((customQty||'24').toString().replace(/,/g,'')) || 24) + 1; haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-2 gap-2.5 p-3 bg-black">
+                            <div class="grid grid-cols-2 gap-2.5 p-3 bg-white">
                                 <template x-for="t in ['25','36','40','50']" :key="t">
                                     <button @click="selectedTier='custom'; customQty=t; haptic()"
-                                            :class="(selectedTier==='custom' && customQty==t) ? 'bg-red-600' : 'bg-white'"
+                                            :class="(selectedTier==='custom' && customQty==t) ? 'bg-red-600' : 'bg-gray-100'"
                                             class="flex flex-col items-center justify-center gap-0.5 rounded-xl py-3.5">
                                         <span class="text-[13px]" :class="(selectedTier==='custom' && customQty==t) ? 'text-red-200' : 'text-gray-500'" x-text="t"></span>
                                         <span class="text-[18px] font-black" :class="(selectedTier==='custom' && customQty==t) ? 'text-white' : 'text-black'" style="font-variant-numeric:tabular-nums;" x-text="'$' + (mlsPrices[sqft] ? mlsPrices[sqft][t] : '')"></span>
@@ -1812,12 +1812,12 @@
                                     <button @click="customQty=(parseInt(customQty)||24)+1;haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-2 gap-2.5 p-3 bg-black">
-                                <button @click="customQty='25';haptic()" :class="customQty=='25' ? 'bg-red-600' : 'bg-white'" class="flex flex-col items-center justify-center gap-0.5 rounded-xl py-3.5">
+                            <div class="grid grid-cols-2 gap-2.5 p-3 bg-white">
+                                <button @click="customQty='25';haptic()" :class="customQty=='25' ? 'bg-red-600' : 'bg-gray-100'" class="flex flex-col items-center justify-center gap-0.5 rounded-xl py-3.5">
                                     <span class="text-[13px]" :class="customQty=='25' ? 'text-red-200' : 'text-gray-500'">25</span>
                                     <span class="text-[18px] font-black" :class="customQty=='25' ? 'text-white' : 'text-black'" style="font-variant-numeric:tabular-nums;">$299</span>
                                 </button>
-                                <button @click="customQty='36';haptic()" :class="customQty=='36' ? 'bg-red-600' : 'bg-white'" class="flex flex-col items-center justify-center gap-0.5 rounded-xl py-3.5">
+                                <button @click="customQty='36';haptic()" :class="customQty=='36' ? 'bg-red-600' : 'bg-gray-100'" class="flex flex-col items-center justify-center gap-0.5 rounded-xl py-3.5">
                                     <span class="text-[13px]" :class="customQty=='36' ? 'text-red-200' : 'text-gray-500'">36</span>
                                     <span class="text-[18px] font-black" :class="customQty=='36' ? 'text-white' : 'text-black'" style="font-variant-numeric:tabular-nums;">$349</span>
                                 </button>
