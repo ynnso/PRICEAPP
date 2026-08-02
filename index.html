@@ -1714,7 +1714,7 @@
                         </div>
                         </template>
 
-                        <div x-show="sqft !== '' && !sqftPickerOpen" x-cloak class="rounded-2xl overflow-hidden bg-gray-50">
+                        <div x-show="sqft !== '' && !sqftPickerOpen" x-cloak class="bg-gray-50">
                             <div class="flex flex-col items-center justify-center gap-4 py-8 px-3 bg-white">
                                 <div class="text-[64px] font-black leading-none" :class="subtotal > 0 ? 'text-red-600' : 'text-gray-300'" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="subtotal > 0 ? ('$' + Math.floor(subtotal)) : 'Select'"></div>
                                 <div class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-black">
@@ -1762,7 +1762,7 @@
                             <span class="text-[32px] font-black text-black leading-none">Reshoot</span>
                         </div>
 
-                        <div class="rounded-2xl overflow-hidden bg-gray-50">
+                        <div class="bg-gray-50">
                             <div class="flex flex-col items-center justify-center gap-4 py-8 px-3 bg-white">
                                 <div class="text-[64px] font-black leading-none text-red-600" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="'$' + Math.floor(subtotal)"></div>
                                 <div class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-black">
@@ -1801,7 +1801,7 @@
                             <span class="text-[32px] font-black text-black leading-none">Ranch Shoot</span>
                         </div>
 
-                        <div class="rounded-2xl overflow-hidden bg-gray-50">
+                        <div class="bg-gray-50">
                             <div class="flex flex-col items-center justify-center gap-4 py-8 px-3 bg-white">
                                 <div class="text-[64px] font-black leading-none" :class="customQty !== '' ? 'text-red-600' : 'text-gray-300'" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="customQty !== '' ? ('$' + Math.floor(subtotal)) : 'Select'"></div>
                                 <div class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-black">
@@ -1849,7 +1849,7 @@
                             <span class="text-[32px] font-black text-black leading-none">Exterior Only</span>
                         </div>
 
-                        <div class="rounded-2xl overflow-hidden bg-gray-50">
+                        <div class="bg-gray-50">
                             <div class="flex flex-col items-center justify-center gap-4 py-8 px-3 bg-white">
                                 <div class="text-[64px] font-black leading-none text-red-600" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="'$' + Math.floor(subtotal)"></div>
                                 <div class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-black">
@@ -1887,7 +1887,7 @@
                             <span class="text-[32px] font-black text-black leading-none">Mini Shoot</span>
                         </div>
 
-                        <div class="rounded-2xl overflow-hidden bg-gray-50">
+                        <div class="bg-gray-50">
                             <div class="flex flex-col items-center justify-center gap-4 py-8 px-3 bg-white">
                                 <div class="text-[64px] font-black leading-none text-red-600" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="'$' + Math.floor(subtotal)"></div>
                                 <div class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-black">
