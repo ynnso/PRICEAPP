@@ -1715,16 +1715,14 @@
  </div>
  </template>
 
- <div x-show="sqft !== '' && !sqftPickerOpen" x-cloak class="bg-gray-50">
- <div class="flex flex-col items-center justify-center gap-4 py-8 px-3 bg-white">
+ <div x-show="sqft !== '' && !sqftPickerOpen" x-cloak class="flex flex-col gap-4">
  <div class="text-[64px] font-black leading-none" :class="subtotal > 0 ? 'text-red-600' : 'text-gray-300'" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="subtotal > 0 ? ('$' + Math.floor(subtotal)) : 'Select'"></div>
  <div class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-black">
  <button @click="selectedTier='custom'; customQty = Math.max(1, (parseInt((customQty||'26').toString().replace(/,/g,'')) || 26) - 1); haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
  <input type="number" inputmode="numeric" :value="selectedTier==='custom' ? customQty : ''" @input="selectedTier='custom'; customQty=$event.target.value; haptic()" @focus="selectedTier='custom'" placeholder="—" class="text-[20px] font-black text-black text-center bg-transparent border-none outline-none" style="width:64px;font-variant-numeric:tabular-nums;-moz-appearance:textfield;">
  <button @click="selectedTier='custom'; customQty = (parseInt((customQty||'24').toString().replace(/,/g,'')) || 24) + 1; haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
  </div>
- </div>
- <div class="grid grid-cols-2 gap-2.5 p-3 bg-white">
+ <div class="grid grid-cols-2 gap-2.5">
  <template x-for="t in ['25','36','40','50']" :key="t">
  <button @click="selectedTier='custom'; customQty=t; haptic()"
  :class="(selectedTier==='custom' && customQty==t) ? 'bg-red-600' : 'bg-gray-100'"
@@ -1740,7 +1738,6 @@
  <svg x-show="justAdded" x-cloak class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
  <span class="text-[24px] font-black text-white" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
  </button>
- </div>
  </div>
  </div>
 
@@ -1762,15 +1759,11 @@
  <svg class="w-9 h-9 flex-none text-red-600" viewBox="0 0 256 256" fill="currentColor"><path d="M240,56v48a8,8,0,0,1-8,8H184a8,8,0,0,1,0-16H211.4L184.81,71.64l-.25-.24a80,80,0,1,0-1.67,114.78,8,8,0,0,1,11,11.63A95.44,95.44,0,0,1,128,224h-1.32A96,96,0,1,1,195.75,60L224,85.8V56a8,8,0,1,1,16,0Z"/></svg>
  <span class="text-[32px] font-black text-black leading-none">Reshoot</span>
  </div>
-
- <div class="bg-gray-50">
- <div class="flex flex-col items-center justify-center gap-4 py-8 px-3 bg-white">
  <div class="text-[64px] font-black leading-none text-red-600" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="'$' + Math.floor(subtotal)"></div>
  <div class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-black">
  <button @click="customQty=Math.max(8,(parseInt(customQty)||8)-1);haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
  <input type="number" inputmode="numeric" x-model="customQty" @input="haptic()" class="text-[20px] font-black text-black text-center bg-transparent border-none outline-none" style="width:64px;font-variant-numeric:tabular-nums;-moz-appearance:textfield;">
  <button @click="customQty=(parseInt(customQty)||8)+1;haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
- </div>
  </div>
  <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''" x-show="finalTotal > 0" x-cloak
  class="w-full h-14 flex items-center justify-center gap-2 transition-all bg-red-600 active:scale-[0.97]">
@@ -1778,7 +1771,6 @@
  <svg x-show="justAdded" x-cloak class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
  <span class="text-[24px] font-black text-white" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
  </button>
- </div>
  </div>
  </div>
 
@@ -1801,17 +1793,13 @@
  <svg class="w-9 h-9 flex-none text-red-600" viewBox="0 0 256 256" fill="currentColor"><path d="M240,192h-8V130.57l1.49,2.08a8,8,0,1,0,13-9.3l-40-56a8,8,0,0,0-2-1.94L137,18.77l-.1-.07a16,16,0,0,0-17.76,0l-.1.07L51.45,65.42a8,8,0,0,0-2,1.94l-40,56a8,8,0,1,0,13,9.3L24,130.57V192H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM40,108.17,61.7,77.79,128,32l66.3,45.78L216,108.17V192H192V120a8,8,0,0,0-8-8H72a8,8,0,0,0-8,8v72H40Zm88,42L97,128H159Zm48-14.62v48.91L141.76,160ZM114.24,160,80,184.46V135.55ZM128,169.83,159,192H97ZM104,88a8,8,0,0,1,8-8h32a8,8,0,1,1,0,16H112A8,8,0,0,1,104,88Z"/></svg>
  <span class="text-[32px] font-black text-black leading-none">Ranch Shoot</span>
  </div>
-
- <div class="bg-gray-50">
- <div class="flex flex-col items-center justify-center gap-4 py-8 px-3 bg-white">
  <div class="text-[64px] font-black leading-none" :class="customQty !== '' ? 'text-red-600' : 'text-gray-300'" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="customQty !== '' ? ('$' + Math.floor(subtotal)) : 'Select'"></div>
  <div class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-black">
  <button @click="customQty=Math.max(25,(parseInt(customQty)||26)-1);haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
  <input type="number" inputmode="numeric" x-model="customQty" @input="haptic()" placeholder="—" class="text-[20px] font-black text-black text-center bg-transparent border-none outline-none" style="width:64px;font-variant-numeric:tabular-nums;-moz-appearance:textfield;">
  <button @click="customQty=(parseInt(customQty)||24)+1;haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
  </div>
- </div>
- <div class="grid grid-cols-2 gap-2.5 p-3 bg-white">
+ <div class="grid grid-cols-2 gap-2.5 w-full">
  <button @click="customQty='25';haptic()" :class="customQty=='25' ? 'bg-red-600' : 'bg-gray-100'" class="flex flex-col items-center justify-center gap-0.5 rounded-xl py-3.5">
  <span class="text-[13px]" :class="customQty=='25' ? 'text-red-200' : 'text-gray-500'">25</span>
  <span class="text-[18px] font-black" :class="customQty=='25' ? 'text-white' : 'text-black'" style="font-variant-numeric:tabular-nums;">$299</span>
@@ -1827,7 +1815,6 @@
  <svg x-show="justAdded" x-cloak class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
  <span class="text-[24px] font-black text-white" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
  </button>
- </div>
  </div>
  </div>
 
@@ -1849,15 +1836,11 @@
  <svg class="w-9 h-9 flex-none text-red-600" viewBox="0 -1 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(1,2)"><path d="M14,49 L14,57 C14,58.1 13.1,59 12,59 L2,59 C0.9,59 0,58.1 0,57 L0,9 C0,7.9 7,1 7,1 C7,1 14,7.9 14,9 L14,19"/><path d="M14,23 L14,45"/><path d="M38,49 L38,57 C38,58.1 37.1,59 36,59 L26,59 C24.9,59 24,58.1 24,57 L24,49"/><path d="M38,23 L38,45"/><path d="M24,19 L24,9 C24,7.9 31,0 31,0 C31,0 38,7.9 38,9 L38,19"/><path d="M24,45 L24,23"/><path d="M48,45 L48,23"/><path d="M48,19 L48,9 C48,7.9 55,0 55,0 C55,0 62,7.9 62,9 L62,57 C62,58.1 61.1,59 60,59 L50,59 C48.9,59 48,58.1 48,57 L48,49"/><path d="M38,43 L48,43"/><path d="M14,43 L24,43"/><path d="M24,51 L14,51"/><path d="M48,51 L38,51"/><path d="M38,17 L48,17"/><path d="M14,17 L24,17"/><path d="M24,25 L14,25"/><path d="M48,25 L38,25"/></g></svg>
  <span class="text-[32px] font-black text-black leading-none">Exterior Only</span>
  </div>
-
- <div class="bg-gray-50">
- <div class="flex flex-col items-center justify-center gap-4 py-8 px-3 bg-white">
  <div class="text-[64px] font-black leading-none text-red-600" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="'$' + Math.floor(subtotal)"></div>
  <div class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-black">
  <button @click="customQty=Math.max(8,(parseInt(customQty)||8)-1);haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
  <input type="number" inputmode="numeric" x-model="customQty" @input="haptic()" class="text-[20px] font-black text-black text-center bg-transparent border-none outline-none" style="width:64px;font-variant-numeric:tabular-nums;-moz-appearance:textfield;">
  <button @click="customQty=(parseInt(customQty)||8)+1;haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
- </div>
  </div>
  <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''" x-show="finalTotal > 0" x-cloak
  class="w-full h-14 flex items-center justify-center gap-2 transition-all bg-red-600 active:scale-[0.97]">
@@ -1865,7 +1848,6 @@
  <svg x-show="justAdded" x-cloak class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
  <span class="text-[24px] font-black text-white" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
  </button>
- </div>
  </div>
  </div>
 
@@ -1887,15 +1869,11 @@
  <svg class="w-9 h-9 flex-none text-red-600" viewBox="0 0 433.506 433.506" fill="currentColor"><path d="M76.888,302.386H25.938c0,0-25.938-0.039-25.938,39.483c1.234,25.526,21.148,29.605,24.7,29.605s103.744,0,103.744,0s25.986,0.033,27.133-31.15c0.043-1.19,0.139-0.033,0.153-1.229c0.052-4.604,0-28.4,0-28.4c0.062-3.386,2.648-7.229,6.134-7.229h81.233c1.195,0,2.229,0.966,2.338,2.151l19.188,43.399c7.158,17.748,21.076,30.772,44.328,22.405c22.012-7.923,23.15-25.364,19.264-37.614l-47.713-144.633c-7.172-17.131-25.26-27.124-47.898-27.124h-48.578h-63.299c-60.559,0-111.36,70.552-42.577,138.374C78.637,301.511,78.078,302.386,76.888,302.386z"/><circle cx="358.346" cy="134.649" r="75.161"/></svg>
  <span class="text-[32px] font-black text-black leading-none">Mini Shoot</span>
  </div>
-
- <div class="bg-gray-50">
- <div class="flex flex-col items-center justify-center gap-4 py-8 px-3 bg-white">
  <div class="text-[64px] font-black leading-none text-red-600" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="'$' + Math.floor(subtotal)"></div>
  <div class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-black">
  <button @click="customQty=Math.max(12,(parseInt(customQty)||12)-1);haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
  <input type="number" inputmode="numeric" x-model="customQty" @input="haptic()" class="text-[20px] font-black text-black text-center bg-transparent border-none outline-none" style="width:64px;font-variant-numeric:tabular-nums;-moz-appearance:textfield;">
  <button @click="customQty=(parseInt(customQty)||12)+1;haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
- </div>
  </div>
  <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''" x-show="finalTotal > 0" x-cloak
  class="w-full h-14 flex items-center justify-center gap-2 transition-all bg-red-600 active:scale-[0.97]">
