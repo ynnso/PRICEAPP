@@ -879,11 +879,11 @@
         <div class="flex items-center justify-between px-6 py-4 flex-none" x-cloak>
             <!-- S2S logo — top-left, tap to reset (placeholder text mark until a real logo asset is supplied) -->
             <button @click="resetAll()" class="w-12 h-12 flex items-center justify-center hover:bg-white/10 rounded-full transition-colors flex-none">
-                <span class="font-black text-[23px] tracking-tighter leading-none"><span class="text-white">S</span><span class="text-red-600">2</span><span class="text-white">S</span></span>
+                <span class="tracking-tighter leading-none flex items-baseline"><span class="font-bold text-[23px] text-white">S</span><span class="font-black text-[31px] text-red-600">2</span><span class="font-bold text-[23px] text-white">S</span></span>
             </button>
             <!-- Mode pill — centered, icon + title-case label -->
             <div class="flex-1 flex justify-center">
-                <span class="mode-pill-enter bg-white/15 text-white text-[19px] font-black tracking-wide px-4 py-1.5 rounded-full flex items-center gap-1.5"
+                <span class="mode-pill-enter bg-white text-black text-[19px] font-black tracking-wide px-4 py-1.5 rounded-full flex items-center gap-1.5"
                       :key="screen === 'START' ? 'START' : mode"
                       x-effect="$el.classList.remove('mode-pill-enter'); void $el.getBoundingClientRect(); $el.classList.add('mode-pill-enter')">
                     <template x-if="screen !== 'START'">
