@@ -1715,8 +1715,8 @@
  </div>
  </template>
 
- <div x-show="sqft !== '' && !sqftPickerOpen" x-cloak class="flex flex-col gap-4">
- <div class="text-[64px] font-black leading-none" :class="subtotal > 0 ? 'text-red-600' : 'text-gray-300'" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="subtotal > 0 ? ('$' + Math.floor(subtotal)) : 'Select'"></div>
+ <div x-show="sqft !== '' && !sqftPickerOpen" x-cloak class="flex flex-col items-center gap-4">
+ <div class="text-[64px] font-black leading-none w-full text-center" :class="subtotal > 0 ? 'text-red-600' : 'text-gray-300'" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="subtotal > 0 ? ('$' + Math.floor(subtotal)) : 'Select'"></div>
  <div class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-black">
  <button @click="selectedTier='custom'; customQty = Math.max(1, (parseInt((customQty||'26').toString().replace(/,/g,'')) || 26) - 1); haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
  <input type="number" inputmode="numeric" :value="selectedTier==='custom' ? customQty : ''" @input="selectedTier='custom'; customQty=$event.target.value; haptic()" @focus="selectedTier='custom'" placeholder="—" class="text-[20px] font-black text-black text-center bg-transparent border-none outline-none" style="width:64px;font-variant-numeric:tabular-nums;-moz-appearance:textfield;">
