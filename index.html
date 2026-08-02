@@ -1908,8 +1908,8 @@
  </div>
 
  </div>
- <!-- Sqft dropdown for non-MLS modes (Floor Plan, Matterport, Zillow) -->
- <div class="mb-4" x-show="mode !== 'AIRBNB' && (mode.includes('FLOOR PLAN') || mode.includes('MATTERPORT') || mode === 'MLS ZILLOW 3D')">
+ <!-- Sqft dropdown for non-MLS modes (Floor Plan, Zillow) -->
+ <div class="mb-4 relative" x-show="mode !== 'AIRBNB' && (mode.includes('FLOOR PLAN') || mode === 'MLS ZILLOW 3D')">
  <select x-model="sqft" @change="haptic()" :class="sqftError ? 'shake-nudge border-black' : 'border-gray-300'" class="w-full h-[56px] rounded-xl text-xl font-[900] text-center focus:border-black outline-none appearance-none bg-gray-100 border-2 transition-colors">
  <option value="" disabled selected>Select Sq Ft</option>
  <template x-if="mode === 'MLS ZILLOW 3D'">
@@ -1922,12 +1922,75 @@
  <option :value="opt.replace(/ /g, '').replace(/,/g, '')" x-text="opt + ' Sq Ft'"></option>
  </template>
  </template>
- <template x-if="mode.includes('MATTERPORT')">
+ </select>
+ <svg class="w-4 h-4 text-gray-400 absolute pointer-events-none" style="right:16px;top:50%;transform:translateY(-50%);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+ </div>
+
+ <!-- MLS MATTERPORT hero card -->
+ <div x-show="mode === 'MLS MATTERPORT'" class="rounded-2xl overflow-hidden card-frosted border-black mb-4" style="border-width:2px;">
+ <div class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white">
+ <div class="flex flex-col items-center text-center gap-2">
+ <svg class="w-9 h-9 flex-none text-red-600" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="4" r="2"/><path d="M12 18h2v-5h2V9c0-1.103-.897-2-2-2h-4c-1.103 0-2 .897-2 2v4h2v5h2z"/><path d="m18.446 11.386-.893 1.789C19.108 13.95 20 14.98 20 16c0 1.892-3.285 4-8 4s-8-2.108-8-4c0-1.02.892-2.05 2.446-2.825l-.893-1.789C3.295 12.512 2 14.193 2 16c0 3.364 4.393 6 10 6s10-2.636 10-6c0-1.807-1.295-3.488-3.554-4.614z"/></svg>
+ <span class="text-[32px] font-black text-black leading-none">MLS Matterport</span>
+ </div>
+
+ <div class="relative">
+ <select x-model="sqft" @change="haptic()" :class="sqftError ? 'shake-nudge border-black' : 'border-gray-300'" class="w-full h-[56px] rounded-xl text-xl font-[900] text-center focus:border-black outline-none appearance-none bg-gray-100 border-2 transition-colors">
+ <option value="" disabled selected>Select Sq Ft</option>
  <template x-for="opt in ['0 - 1,999', '2,000 - 2,999', '3,000 - 3,999', '4,000 - 4,999', '5,000 - 5,999', '6,000']">
  <option :value="opt.replace(/ /g, '').replace(/,/g, '')" x-text="opt === '6000' ? '6,000+ Sq Ft' : opt + ' Sq Ft'"></option>
  </template>
+ </select>
+ <svg class="w-4 h-4 text-gray-400 absolute pointer-events-none" style="right:16px;top:50%;transform:translateY(-50%);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+ </div>
+
+ <div x-show="sqft === '6000'" x-init="$watch('sqft', v => { if(v === '6000') $nextTick(() => $refs.mpInput.focus()) })" class="grid grid-cols-2 border-2 border-red-600 rounded-xl h-[64px] overflow-hidden fade-in">
+ <div class="bg-gray-100 border-r-2 border-black flex items-center justify-between px-2">
+ <button @click="mpCustomSqft = Math.max(6000, (parseInt(mpCustomSqft.toString().replace(/,/g,'')) || 6000) - 1); haptic()" class="w-8 h-8 bg-red-600 text-white rounded-full font-bold flex-none">-</button>
+ <input x-ref="mpInput" type="text" inputmode="numeric" pattern="[0-9]*" :value="formatNumber(mpCustomSqft)" @input="mpCustomSqft = $event.target.value.replace(/[^0-9]/g, ''); haptic()" class="w-full bg-transparent text-center custom-field-input text-red-600 outline-none" placeholder="6,000">
+ <button @click="mpCustomSqft = (parseInt(mpCustomSqft.toString().replace(/,/g,'')) || 6000) + 1; haptic()" class="w-8 h-8 bg-red-600 text-white rounded-full font-bold flex-none">+</button>
+ </div>
+ <div class="bg-white flex items-center justify-center sqft-label-large uppercase text-black px-1">Sq Ft</div>
+ </div>
+
+ <div class="text-[64px] font-black leading-none text-center" :class="subtotal > 0 ? 'text-red-600' : 'text-gray-300'" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="subtotal > 0 ? ('$' + Math.floor(subtotal)) : 'Select'"></div>
+
+ <div class="grid grid-cols-2 gap-2">
+ <button @click="mpService = 'Standard'; haptic()" :class="mpService === 'Standard' ? 'tile-sel' : (mpService === 'Premium' ? 'bg-white border-gray-400 opacity-30' : 'bg-white border-gray-400')" class="h-[56px] border-2 rounded-xl font-black uppercase transition-opacity duration-200">Standard</button>
+ <button @click="mpService = 'Premium'; haptic()" :class="mpService === 'Premium' ? 'tile-sel' : (mpService === 'Standard' ? 'bg-white border-gray-400 opacity-30' : 'bg-white border-gray-400')" class="h-[56px] border-2 rounded-xl font-black uppercase transition-opacity duration-200">Premium</button>
+ </div>
+ <button @click="addToQuote(); haptic()"
+ class="w-full h-14 flex items-center justify-center gap-2 transition-all bg-red-600 active:scale-[0.97]">
+ <svg x-show="!justAdded" class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+ <svg x-show="justAdded" x-cloak class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+ <span class="text-[24px] font-black text-white" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
+ </button>
+ </div>
+ </div>
+
+ <!-- Sqft dropdown + Standard/Premium for PORT MATTERPORT (legacy layout, untouched) -->
+ <div class="mb-4 relative" x-show="mode === 'PORT MATTERPORT'">
+ <select x-model="sqft" @change="haptic()" :class="sqftError ? 'shake-nudge border-black' : 'border-gray-300'" class="w-full h-[56px] rounded-xl text-xl font-[900] text-center focus:border-black outline-none appearance-none bg-gray-100 border-2 transition-colors">
+ <option value="" disabled selected>Select Sq Ft</option>
+ <template x-for="opt in ['0 - 1,999', '2,000 - 2,999', '3,000 - 3,999', '4,000 - 4,999', '5,000 - 5,999', '6,000']">
+ <option :value="opt.replace(/ /g, '').replace(/,/g, '')" x-text="opt === '6000' ? '6,000+ Sq Ft' : opt + ' Sq Ft'"></option>
  </template>
  </select>
+ <svg class="w-4 h-4 text-gray-400 absolute pointer-events-none" style="right:16px;top:50%;transform:translateY(-50%);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+ </div>
+ <div x-show="mode === 'PORT MATTERPORT'" class="flex flex-col gap-4">
+ <div class="grid grid-cols-2 gap-2">
+ <button @click="mpService = 'Standard'; haptic()" :class="mpService === 'Standard' ? 'tile-sel' : (mpService === 'Premium' ? 'bg-white border-gray-400 opacity-30' : 'bg-white border-gray-400')" class="h-[56px] border-2 rounded-xl font-black uppercase transition-opacity duration-200">Standard</button>
+ <button @click="mpService = 'Premium'; haptic()" :class="mpService === 'Premium' ? 'tile-sel' : (mpService === 'Standard' ? 'bg-white border-gray-400 opacity-30' : 'bg-white border-gray-400')" class="h-[56px] border-2 rounded-xl font-black uppercase transition-opacity duration-200">Premium</button>
+ </div>
+ <div x-show="sqft === '6000'" x-init="$watch('sqft', v => { if(v === '6000') $nextTick(() => $refs.mpInput.focus()) })" class="grid grid-cols-2 border-2 border-red-600 rounded-xl h-[64px] overflow-hidden fade-in">
+ <div class="bg-gray-100 border-r-2 border-black flex items-center justify-between px-2">
+ <button @click="mpCustomSqft = Math.max(6000, (parseInt(mpCustomSqft.toString().replace(/,/g,'')) || 6000) - 1); haptic()" class="w-8 h-8 bg-red-600 text-white rounded-full font-bold flex-none">-</button>
+ <input x-ref="mpInput" type="text" inputmode="numeric" pattern="[0-9]*" :value="formatNumber(mpCustomSqft)" @input="mpCustomSqft = $event.target.value.replace(/[^0-9]/g, ''); haptic()" class="w-full bg-transparent text-center custom-field-input text-red-600 outline-none" placeholder="6,000">
+ <button @click="mpCustomSqft = (parseInt(mpCustomSqft.toString().replace(/,/g,'')) || 6000) + 1; haptic()" class="w-8 h-8 bg-red-600 text-white rounded-full font-bold flex-none">+</button>
+ </div>
+ <div class="bg-white flex items-center justify-center sqft-label-large uppercase text-black px-1">Sq Ft</div>
+ </div>
  </div>
 
  <div x-show="mode === 'PORT'" class="flex-grow flex flex-col gap-2">
@@ -2174,21 +2237,6 @@
  </template>
  </div>
 
- <div x-show="mode.includes('MATTERPORT')" class="flex flex-col gap-4">
- <div class="grid grid-cols-2 gap-2">
- <button @click="mpService = 'Standard'; haptic()" :class="mpService === 'Standard' ? 'tile-sel' : (mpService === 'Premium' ? 'bg-white border-gray-400 opacity-30' : 'bg-white border-gray-400')" class="h-[56px] border-2 rounded-xl font-black uppercase transition-opacity duration-200">Standard</button>
- <button @click="mpService = 'Premium'; haptic()" :class="mpService === 'Premium' ? 'tile-sel' : (mpService === 'Standard' ? 'bg-white border-gray-400 opacity-30' : 'bg-white border-gray-400')" class="h-[56px] border-2 rounded-xl font-black uppercase transition-opacity duration-200">Premium</button>
- </div>
- <div x-show="sqft === '6000'" x-init="$watch('sqft', v => { if(v === '6000') $nextTick(() => $refs.mpInput.focus()) })" class="grid grid-cols-2 border-2 border-red-600 rounded-xl h-[64px] overflow-hidden fade-in">
- <div class="bg-gray-100 border-r-2 border-black flex items-center justify-between px-2">
- <button @click="mpCustomSqft = Math.max(6000, (parseInt(mpCustomSqft.toString().replace(/,/g,'')) || 6000) - 1); haptic()" class="w-8 h-8 bg-red-600 text-white rounded-full font-bold flex-none">-</button>
- <input x-ref="mpInput" type="text" inputmode="numeric" pattern="[0-9]*" :value="formatNumber(mpCustomSqft)" @input="mpCustomSqft = $event.target.value.replace(/[^0-9]/g, ''); haptic()" class="w-full bg-transparent text-center custom-field-input text-red-600 outline-none" placeholder="6,000">
- <button @click="mpCustomSqft = (parseInt(mpCustomSqft.toString().replace(/,/g,'')) || 6000) + 1; haptic()" class="w-8 h-8 bg-red-600 text-white rounded-full font-bold flex-none">+</button>
- </div>
- <div class="bg-white flex items-center justify-center sqft-label-large uppercase text-black px-1">Sq Ft</div>
- </div>
- </div>
-
 
 
  <div x-show="mode.includes('FLOOR PLAN')" class="flex flex-col gap-2 mb-4">
@@ -2233,7 +2281,7 @@
  </div>
 
  </div>
- <div class="px-4 pb-3 pt-2 flex-none" x-show="mode !== 'MLS' && mode !== 'AIRBNB' && !mode.includes('AERIAL') && mode !== 'MLS VIDEO' && mode !== 'PORT VIDEO' && (mode !== 'ADD ONS' || selectedAddOn !== '')" x-cloak>
+ <div class="px-4 pb-3 pt-2 flex-none" x-show="mode !== 'MLS' && mode !== 'AIRBNB' && !mode.includes('AERIAL') && mode !== 'MLS MATTERPORT' && mode !== 'MLS VIDEO' && mode !== 'PORT VIDEO' && (mode !== 'ADD ONS' || selectedAddOn !== '')" x-cloak>
  <div class="price-card-dark relative rounded-[1.5rem] border-2 overflow-hidden">
 
  <!-- Collapsed row: price (tap to expand breakdown) + Add -->
