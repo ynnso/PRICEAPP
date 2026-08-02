@@ -1991,11 +1991,38 @@
  </div>
  </div>
 
- <div x-show="mode === 'MLS VIDEO'" class="flex-grow flex flex-col gap-4">
- <template x-for="(price, name) in videoPrices['MLS']">
- <button @click="videoType = name; haptic()" :class="videoType === name ? 'tile-sel' : (videoType && videoType !== 'pending' ? 'bg-white border-gray-400 opacity-30' : 'bg-white border-gray-400')" class="flex-1 border-2 rounded-2xl flex items-center justify-center p-4 transition-opacity duration-200">
- <span class="text-2xl font-black uppercase text-center" x-text="name"></span>
+ <div x-data="{ mlsVideoExpanded: '' }" x-show="mode === 'MLS VIDEO'" class="flex flex-col gap-1.5 flex-grow">
+ <template x-for="name in Object.keys(videoPrices['MLS'])" :key="name">
+ <div x-show="mlsVideoExpanded === '' || mlsVideoExpanded === name">
+ <button x-show="mlsVideoExpanded !== name"
+ @click="videoType = name; mlsVideoExpanded = name; haptic()"
+ class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 flex items-center justify-between mb-2">
+ <div class="text-left pr-2">
+ <div class="text-[14px] font-semibold text-black" x-text="name"></div>
+ </div>
+ <div class="flex items-center gap-2.5 flex-none">
+ <span class="text-[14px] font-semibold text-gray-500" style="font-variant-numeric:tabular-nums;" x-text="'$' + videoPrices['MLS'][name]"></span>
+ <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+ </div>
  </button>
+ <div x-show="mlsVideoExpanded === name" x-cloak @click.outside="mlsVideoExpanded = ''; videoType='';" class="bg-white rounded-2xl overflow-hidden mb-2 relative border-black card-frosted" style="border-width:2px;">
+ <div class="w-full px-5 pt-5 pb-4 flex flex-col items-center text-center gap-4">
+ <svg class="w-9 h-9 flex-none text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 10L18.5768 8.45392C19.3699 7.97803 19.7665 7.74009 20.0928 7.77051C20.3773 7.79703 20.6369 7.944 20.806 8.17433C21 8.43848 21 8.90095 21 9.8259V14.1741C21 15.099 21 15.5615 20.806 15.8257C20.6369 16.056 20.3773 16.203 20.0928 16.2295C19.7665 16.2599 19.3699 16.022 18.5768 15.5461L16 14M6.2 18H12.8C13.9201 18 14.4802 18 14.908 17.782C15.2843 17.5903 15.5903 17.2843 15.782 16.908C16 16.4802 16 15.9201 16 14.8V9.2C16 8.0799 16 7.51984 15.782 7.09202C15.5903 6.71569 15.2843 6.40973 14.908 6.21799C14.4802 6 13.9201 6 12.8 6H6.2C5.0799 6 4.51984 6 4.09202 6.21799C3.71569 6.40973 3.40973 6.71569 3.21799 7.09202C3 7.51984 3 8.07989 3 9.2V14.8C3 15.9201 3 16.4802 3.21799 16.908C3.40973 17.2843 3.71569 17.5903 4.09202 17.782C4.51984 18 5.07989 18 6.2 18Z"/></svg>
+ <div class="text-center">
+ <div class="text-[28px] font-black text-black leading-tight" x-text="name"></div>
+ </div>
+ <div class="text-[64px] font-black leading-none text-red-600" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="'$' + calcVideo()"></div>
+ </div>
+ <div class="bg-black">
+ <button @click="addToQuote(); videoType=''; mlsVideoExpanded=''"
+ class="w-full h-14 flex items-center justify-center gap-2 transition-all bg-red-600 active:scale-[0.97]" style="border-radius:0 0 1rem 1rem;">
+ <svg x-show="!justAdded" class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+ <svg x-show="justAdded" x-cloak class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+ <span class="text-[24px] font-black text-white" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
+ </button>
+ </div>
+ </div>
+ </div>
  </template>
  </div>
 
@@ -2041,11 +2068,44 @@
  </div>
  </template>
  <template x-if="videoType">
- <div class="flex-grow flex flex-col gap-4">
- <template x-for="(price, name) in videoPrices['PORT'][brand]">
- <button @click="videoType = name; haptic()" :class="videoType === name ? 'tile-sel' : (videoType && videoType !== 'pending' ? 'bg-white border-gray-400 opacity-30' : 'bg-white border-gray-400')" class="flex-1 border-2 rounded-2xl flex items-center justify-center p-4 transition-opacity duration-200">
- <span class="text-3xl font-black uppercase text-center" x-text="name"></span>
+ <div x-data="{ portVideoExpanded: '', portBrandLabels: { BCD: 'Builder | Contractor | Designer', CR: 'Commercial | Retail', AMF: 'Apartment | Multi-Family' } }" class="flex flex-col gap-1.5 flex-grow">
+ <div class="flex flex-col items-start px-1.5 mb-1">
+ <span class="text-[13px] font-black uppercase tracking-[0.04em] text-white" x-text="brand"></span>
+ <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400" x-text="portBrandLabels[brand]"></span>
+ </div>
+ <template x-for="name in Object.keys(videoPrices['PORT'][brand])" :key="name">
+ <div x-show="portVideoExpanded === '' || portVideoExpanded === name">
+ <button x-show="portVideoExpanded !== name"
+ @click="videoType = name; portVideoExpanded = name; haptic()"
+ class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3.5 flex items-center justify-between mb-2">
+ <div class="text-left pr-2">
+ <div class="text-[14px] font-semibold text-black" x-text="name"></div>
+ </div>
+ <div class="flex items-center gap-2.5 flex-none">
+ <span class="text-[14px] font-semibold text-gray-500" style="font-variant-numeric:tabular-nums;" x-text="'$' + videoPrices['PORT'][brand][name]"></span>
+ <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+ </div>
  </button>
+ <div x-show="portVideoExpanded === name" x-cloak @click.outside="portVideoExpanded = ''; videoType='pending';" class="bg-white rounded-2xl overflow-hidden mb-2 relative border-black card-frosted" style="border-width:2px;">
+ <div class="w-full px-5 pt-5 pb-4 flex flex-col items-center text-center gap-4">
+ <svg class="w-9 h-9 flex-none text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 10L18.5768 8.45392C19.3699 7.97803 19.7665 7.74009 20.0928 7.77051C20.3773 7.79703 20.6369 7.944 20.806 8.17433C21 8.43848 21 8.90095 21 9.8259V14.1741C21 15.099 21 15.5615 20.806 15.8257C20.6369 16.056 20.3773 16.203 20.0928 16.2295C19.7665 16.2599 19.3699 16.022 18.5768 15.5461L16 14M6.2 18H12.8C13.9201 18 14.4802 18 14.908 17.782C15.2843 17.5903 15.5903 17.2843 15.782 16.908C16 16.4802 16 15.9201 16 14.8V9.2C16 8.0799 16 7.51984 15.782 7.09202C15.5903 6.71569 15.2843 6.40973 14.908 6.21799C14.4802 6 13.9201 6 12.8 6H6.2C5.0799 6 4.51984 6 4.09202 6.21799C3.71569 6.40973 3.40973 6.71569 3.21799 7.09202C3 7.51984 3 8.07989 3 9.2V14.8C3 15.9201 3 16.4802 3.21799 16.908C3.40973 17.2843 3.71569 17.5903 4.09202 17.782C4.51984 18 5.07989 18 6.2 18Z"/></svg>
+ <div class="text-center">
+ <div class="text-[28px] font-black text-black leading-tight" x-text="name"></div>
+ <div class="text-[12px] font-bold uppercase tracking-widest text-gray-400 mt-1" x-text="brand + ' — ' + portBrandLabels[brand]"></div>
+ </div>
+ <div class="text-[64px] font-black leading-none text-red-600" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="'$' + calcVideo()"></div>
+ </div>
+ <div class="bg-black">
+ <button @click="addToQuote(); videoType='pending'; portVideoExpanded=''"
+ class="w-full h-14 flex items-center justify-center gap-2 transition-all bg-red-600 active:scale-[0.97]" style="border-radius:0 0 1rem 1rem;">
+ <svg x-show="!justAdded" class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+ <svg x-show="justAdded" x-cloak class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+ <span class="text-[24px] font-black text-white" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
+ </button>
+ </div>
+ </div>
+
+ </div>
  </template>
  </div>
  </template>
@@ -2173,7 +2233,7 @@
  </div>
 
  </div>
- <div class="px-4 pb-3 pt-2 flex-none" x-show="mode !== 'MLS' && mode !== 'AIRBNB' && !mode.includes('AERIAL') && (mode !== 'ADD ONS' || selectedAddOn !== '')" x-cloak>
+ <div class="px-4 pb-3 pt-2 flex-none" x-show="mode !== 'MLS' && mode !== 'AIRBNB' && !mode.includes('AERIAL') && mode !== 'MLS VIDEO' && mode !== 'PORT VIDEO' && (mode !== 'ADD ONS' || selectedAddOn !== '')" x-cloak>
  <div class="price-card-dark relative rounded-[1.5rem] border-2 overflow-hidden">
 
  <!-- Collapsed row: price (tap to expand breakdown) + Add -->
