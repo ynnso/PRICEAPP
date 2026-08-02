@@ -219,6 +219,7 @@
 
         /* ── Frosted card layers ── */
         .card-frosted {
+            background: #fff;
             box-shadow: 0 4px 16px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.08);
             border: 1px solid rgba(0,0,0,0.07) !important;
         }
@@ -938,7 +939,7 @@
 
         <div x-show="screen === 'START'" class="flex-grow overflow-hidden relative min-h-0"
              :class="screen==='START' ? (navDir==='back' ? 'screen-enter-back' : 'screen-enter-forward') : ''">
-            <div class="absolute inset-0" style="background:linear-gradient(180deg,#fff 0%,#fff 50%,#111 50%,#111 100%);"></div>
+            <div class="absolute inset-0" style="background:#111;"></div>
             <div class="grid grid-cols-2 grid-rows-3 gap-5 h-full relative p-6">
                 <!-- Photos -->
                 <button @click="haptic(); startExpand = (startExpand === 'PHOTOS' ? '' : 'PHOTOS')" @mousedown="animateStartIcon($el, 'icon-shutter')" class="bg-white text-black rounded-2xl border border-gray-150 shadow-sm flex flex-col items-center justify-center gap-0 py-4">
