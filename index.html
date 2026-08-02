@@ -11,7 +11,8 @@
         html, body { height: 100%; }
         body { font-family: 'Red Hat Display', sans-serif; transition: background-color 0.3s; margin: 0; padding: 0; }
         [x-cloak] { display: none !important; }
-        .app-container { height: 100dvh; width: 100%; }
+        .app-container { height: 100dvh; width: 100%; overflow-x: hidden; }
+        html, body { overflow-x: hidden; }
         .input-container::after {
             content: attr(data-value);
             position: absolute;
@@ -214,7 +215,7 @@
 
         /* ── Frosted card layers ── */
         .card-frosted {
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.08);
             border: 1px solid rgba(0,0,0,0.07) !important;
         }
         /* Subtle top-edge fade cue on scrollable lists, signals more content above */
@@ -931,7 +932,7 @@
             <div class="splash-sub text-gray-500 font-bold text-[10px] tracking-[0.35em] uppercase">Pricing Engine 2026</div>
         </div>
 
-        <div x-show="screen === 'START'" class="flex-grow p-4 overflow-hidden relative bg-gray-100"
+        <div x-show="screen === 'START'" class="flex-grow p-6 overflow-hidden relative bg-gray-100"
              :class="screen==='START' ? (navDir==='back' ? 'screen-enter-back' : 'screen-enter-forward') : ''">
             <div class="grid grid-cols-2 grid-rows-3 gap-4 h-full">
                 <!-- Photos -->
@@ -984,7 +985,7 @@
                     <button x-show="startExpand === 'PHOTOS'" @click="haptic(); type='AIRBNB'; mode='AIRBNB'; resetPrice(); startExpand=''; navigate('PRODUCT'); $nextTick(() => $refs.customInput.focus());"
                             class="w-full flex items-center gap-4 px-5 py-4 border-t border-gray-100 active:bg-red-50">
                         <svg class="w-9 h-9 flex-none" viewBox="0 0 24 24" fill="#dc2626"><path d="M12.001 16.709c-1.013-1.271-1.609-2.386-1.808-3.34-.197-.769-.12-1.385.218-1.848.357-.532.89-.791 1.589-.791s1.231.259 1.589.796c.335.458.419 1.075.215 1.848-.218.974-.813 2.087-1.808 3.341l.005-.006zm7.196.855c-.14.934-.775 1.708-1.65 2.085-1.687.734-3.359-.437-4.789-2.026 2.365-2.961 2.803-5.268 1.787-6.758-.596-.855-1.449-1.271-2.544-1.271-2.206 0-3.419 1.867-2.942 4.034.276 1.173 1.013 2.506 2.186 3.996-.735.813-1.432 1.391-2.047 1.748-.478.258-.934.418-1.37.456-2.008.299-3.582-1.647-2.867-3.656.1-.259.297-.734.634-1.471l.019-.039c1.097-2.382 2.43-5.088 3.961-8.09l.039-.1.435-.836c.338-.616.477-.892 1.014-1.231.258-.157.576-.235.934-.235.715 0 1.271.418 1.511.753.118.18.259.419.436.716l.419.815.06.119c1.53 3.001 2.863 5.702 3.955 8.089l.02.019.401.915.237.573c.183.459.221.915.16 1.393l.001.002zm.913-1.791c-.139-.438-.378-.953-.675-1.569v-.022a262.99 262.99 0 0 0-3.976-8.128l-.084-.121C14.486 4.109 13.849 3.014 12 3.014c-1.827 0-2.604 1.27-3.397 2.922l-.061.119c-1.251 2.426-2.564 5.128-3.975 8.13v.039l-.418.914c-.158.378-.237.575-.259.636C2.878 18.556 4.964 21 7.489 21c.021 0 .099 0 .198-.021h.278c1.313-.159 2.664-.993 4.035-2.485 1.371 1.49 2.725 2.326 4.033 2.485h.279c.1.021.18.021.2.021 2.525.002 4.61-2.444 3.598-5.227z"/></svg>
-                        <span class="text-2xl font-black italic tracking-tighter">AIRBNB</span>
+                        <span class="text-2xl font-black italic tracking-tighter">Airbnb</span>
                     </button>
                     <button @click="haptic(); type='PORT'; if(startExpand==='PHOTOS'){mode='PORT';}else if(startExpand==='VIDEO'){mode='PORT VIDEO';}else if(startExpand==='AERIAL'){mode='PORT AERIAL';}else if(startExpand==='FLOOR PLAN'){mode='PORT FLOOR PLAN';}else if(startExpand==='MATTERPORT'){mode='PORT MATTERPORT';}else{mode='PORT';} resetPrice(); startExpand=''; navigate('PRODUCT');"
                             class="w-full flex items-center gap-4 px-5 py-4 border-t border-b border-gray-100 active:bg-gray-50 mb-2">
@@ -1702,8 +1703,8 @@
                                 <button @click="if (sqft === bracket.key && !sqftPickerOpen) { sqft=''; selectedTier=''; customQty=''; } else { sqft = bracket.key; selectedTier=''; customQty=''; sqftPickerOpen=false; } haptic()"
                                         class="w-full flex items-center justify-between px-3 py-2.5"
                                         :class="(sqft === bracket.key && !sqftPickerOpen) ? 'bg-black text-white' : 'bg-transparent text-black'">
-                                    <span class="text-[11px] font-black uppercase tracking-wide" x-text="bracket.label"></span>
-                                    <div class="flex items-center gap-2">
+                                    <span class="text-[11px] font-black uppercase tracking-wide truncate pr-2" x-text="bracket.label"></span>
+                                    <div class="flex items-center gap-2 flex-none">
                                         <span class="text-[10px] font-bold uppercase tracking-wide opacity-60" x-text="'from $' + mlsPrices[bracket.key]['25']"></span>
                                         <svg class="w-3.5 h-3.5 transition-transform" :style="(sqft === bracket.key && !sqftPickerOpen) ? 'transform:rotate(180deg)' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
                                     </div>
@@ -1735,11 +1736,10 @@
                             </div>
                             <div class="bg-black">
                                 <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''; sqftPickerOpen=false" x-show="finalTotal > 0" x-cloak
-                                        class="w-full h-14 rounded-b-2xl flex items-center justify-center gap-2 transition-all"
-                                        :class="justAdded ? 'bg-red-600' : 'bg-white'">
-                                    <svg x-show="!justAdded" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                                    <svg x-show="justAdded" x-cloak class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                    <span class="text-[15px] font-black" :class="justAdded ? 'text-white' : 'text-black'" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
+                                        class="w-full h-14 rounded-b-2xl flex items-center justify-center gap-2 transition-all bg-red-600 active:scale-[0.97]">
+                                    <svg x-show="!justAdded" class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                                    <svg x-show="justAdded" x-cloak class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                    <span class="text-[24px] font-black text-white" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
                                 </button>
                             </div>
                         </div>
@@ -1777,11 +1777,10 @@
                             <div class="h-0.5 bg-red-600"></div>
                             <div class="bg-black">
                                 <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''" x-show="finalTotal > 0" x-cloak
-                                        class="w-full h-14 rounded-b-2xl flex items-center justify-center gap-2 transition-all"
-                                        :class="justAdded ? 'bg-red-600' : 'bg-white'">
-                                    <svg x-show="!justAdded" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                                    <svg x-show="justAdded" x-cloak class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                    <span class="text-[15px] font-black" :class="justAdded ? 'text-white' : 'text-black'" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
+                                        class="w-full h-14 rounded-b-2xl flex items-center justify-center gap-2 transition-all bg-red-600 active:scale-[0.97]">
+                                    <svg x-show="!justAdded" class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                                    <svg x-show="justAdded" x-cloak class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                    <span class="text-[24px] font-black text-white" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
                                 </button>
                             </div>
                         </div>
@@ -1830,11 +1829,10 @@
                             </div>
                             <div class="bg-black">
                                 <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''" x-show="customQty !== ''" x-cloak
-                                        class="w-full h-14 rounded-b-2xl flex items-center justify-center gap-2 transition-all"
-                                        :class="justAdded ? 'bg-red-600' : 'bg-white'">
-                                    <svg x-show="!justAdded" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                                    <svg x-show="justAdded" x-cloak class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                    <span class="text-[15px] font-black" :class="justAdded ? 'text-white' : 'text-black'" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
+                                        class="w-full h-14 rounded-b-2xl flex items-center justify-center gap-2 transition-all bg-red-600 active:scale-[0.97]">
+                                    <svg x-show="!justAdded" class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                                    <svg x-show="justAdded" x-cloak class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                    <span class="text-[24px] font-black text-white" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
                                 </button>
                             </div>
                         </div>
@@ -1872,11 +1870,10 @@
                             <div class="h-0.5 bg-red-600"></div>
                             <div class="bg-black">
                                 <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''" x-show="finalTotal > 0" x-cloak
-                                        class="w-full h-14 rounded-b-2xl flex items-center justify-center gap-2 transition-all"
-                                        :class="justAdded ? 'bg-red-600' : 'bg-white'">
-                                    <svg x-show="!justAdded" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                                    <svg x-show="justAdded" x-cloak class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                    <span class="text-[15px] font-black" :class="justAdded ? 'text-white' : 'text-black'" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
+                                        class="w-full h-14 rounded-b-2xl flex items-center justify-center gap-2 transition-all bg-red-600 active:scale-[0.97]">
+                                    <svg x-show="!justAdded" class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                                    <svg x-show="justAdded" x-cloak class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                    <span class="text-[24px] font-black text-white" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
                                 </button>
                             </div>
                         </div>
@@ -1914,11 +1911,10 @@
                             <div class="h-0.5 bg-red-600"></div>
                             <div class="bg-black">
                                 <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''" x-show="finalTotal > 0" x-cloak
-                                        class="w-full h-14 rounded-b-2xl flex items-center justify-center gap-2 transition-all"
-                                        :class="justAdded ? 'bg-red-600' : 'bg-white'">
-                                    <svg x-show="!justAdded" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                                    <svg x-show="justAdded" x-cloak class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                    <span class="text-[15px] font-black" :class="justAdded ? 'text-white' : 'text-black'" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
+                                        class="w-full h-14 rounded-b-2xl flex items-center justify-center gap-2 transition-all bg-red-600 active:scale-[0.97]">
+                                    <svg x-show="!justAdded" class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                                    <svg x-show="justAdded" x-cloak class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                    <span class="text-[24px] font-black text-white" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
                                 </button>
                             </div>
                         </div>
@@ -2103,7 +2099,7 @@
                                         <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
                                     </div>
                                 </button>
-                                <div x-show="aerialExpanded === item.name" x-cloak @click.outside="aerialExpanded = ''; aerialType=''; aerialQty=0;" class="bg-white rounded-2xl overflow-hidden mb-2 relative" style="box-shadow:0 0 0 2px #dc2626;">
+                                <div x-show="aerialExpanded === item.name" x-cloak @click.outside="aerialExpanded = ''; aerialType=''; aerialQty=0;" class="bg-white rounded-2xl overflow-hidden mb-2 relative border-red-600 card-frosted" style="border-width:2px;">
                                     <div class="w-full px-5 pt-5 pb-3 flex flex-col items-center text-center gap-2">
                                         <svg class="w-9 h-9 flex-none text-red-600" viewBox="0 0 24 24" fill="currentColor"><path d="M20,7H18V5h2a1,1,0,0,0,0-2H14a1,1,0,0,0,0,2h2V7H8V5h2a1,1,0,0,0,0-2H4A1,1,0,0,0,4,5H6V7H4a3,3,0,0,0,0,6H6.1a4.955,4.955,0,0,0,.99,2.092A5,5,0,0,0,3,20a1,1,0,0,0,2,0,3,3,0,0,1,3-3h3v2a1,1,0,0,0,2,0V17h3a3,3,0,0,1,3,3,1,1,0,0,0,2,0,5,5,0,0,0-4.091-4.908A4.955,4.955,0,0,0,17.9,13H20a3,3,0,0,0,0-6Zm0,4H17a1,1,0,0,0-1,1,3,3,0,0,1-3,3H11a3,3,0,0,1-3-3,1,1,0,0,0-1-1H4A1,1,0,0,1,4,9H20a1,1,0,0,1,0,2Zm-6,1a2,2,0,0,1-4,0,1.929,1.929,0,0,1,.1-.581A1,1,0,1,0,11.417,10.1,1.978,1.978,0,0,1,12,10,2,2,0,0,1,14,12Z"/></svg>
                                         <div class="text-center">
@@ -2124,11 +2120,10 @@
                                     <div class="h-0.5 bg-red-600"></div>
                                     <div class="bg-black">
                                         <button @click="addToQuote(); aerialType=''; aerialQty=0; aerialExpanded=''"
-                                                class="w-full h-14 rounded-b-2xl flex items-center justify-center gap-2 transition-all"
-                                                :class="justAdded ? 'bg-red-600' : 'bg-white'">
-                                            <svg x-show="!justAdded" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-                                            <svg x-show="justAdded" x-cloak class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                            <span class="text-[15px] font-black" :class="justAdded ? 'text-white' : 'text-black'" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
+                                                class="w-full h-14 rounded-b-2xl flex items-center justify-center gap-2 transition-all bg-red-600 active:scale-[0.97]">
+                                            <svg x-show="!justAdded" class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                                            <svg x-show="justAdded" x-cloak class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span class="text-[24px] font-black text-white" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
                                         </button>
                                     </div>
                                 </div>
