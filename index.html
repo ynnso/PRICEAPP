@@ -525,8 +525,15 @@
  let calculated = base25 + (Math.max(0, q - 25) * 5);
  return Math.min(calculated, base36);
  },
+ get portQty() {
+ if (this.selectedTier && this.selectedTier !== 'custom') {
+ return this.selectedTier.includes('-') ? (parseInt(this.selectedTier.split('-')[1]) || 0) : (parseInt(this.selectedTier) || 0);
+ }
+ let cleanCustom = this.customQty.toString().replace(/,/g, '');
+ return cleanCustom !== '' ? (parseInt(cleanCustom) || 0) : 0;
+ },
  calcPortPhotos() {
- let q = this.qty;
+ let q = this.portQty;
  if (q <= 0) return 0;
  return this.portTierPrice(this.brand, q);
  },
@@ -2091,7 +2098,7 @@
 
  <div class="text-[64px] font-black leading-none text-center" :class="subtotal > 0 ? 'text-red-600' : 'text-gray-300'" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="subtotal > 0 ? ('$' + Math.floor(subtotal).toLocaleString('en-US')) : ''"></div>
 
- <div x-init="$watch('selectedTier', v => { if(v && v.includes('-')) customQty = v.split('-')[0]; })" class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2 border-2 border-black self-center">
+ <div x-init="$watch('selectedTier', v => { if(v && v !== 'custom') customQty = v.includes('-') ? v.split('-')[0] : v; })" class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2 border-2 border-black self-center">
  <button @click="customQty = Math.max(0, (parseInt(customQty.toString().replace(/,/g,'')) || 0) - 1); selectedTier=''; haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
  <input x-ref="customInputPort" type="text" inputmode="numeric" pattern="[0-9]*" :value="customQty ? formatNumber(customQty) : ''" @input="$event.target.value = $event.target.value.replace(/[^0-9]/g, ''); customQty = $event.target.value; selectedTier=''; haptic()" class="bg-transparent text-center text-[20px] font-black outline-none" :class="customQty ? 'text-black' : 'text-gray-300'" style="width:4ch;" placeholder="– –">
  <button @click="customQty = (parseInt(customQty.toString().replace(/,/g,'')) || 0) + 1; selectedTier=''; haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
