@@ -528,29 +528,32 @@
  calcPortPhotos() {
  let q = this.qty;
  if (q <= 0) return 0;
- 
- let base = this.portBases[this.brand];
- 
+ return this.portTierPrice(this.brand, q);
+ },
+ portTierPrice(brandKey, q) {
+ if (!brandKey || q <= 0) return 0;
+ let base = this.portBases[brandKey];
+
  // Tier 1 (1-10)
  if (q <= 2) return base;
  if (q <= 9) return base + ((q - 2) * 20);
  if (q === 10) return base + 150;
- 
+
  // Decade Logic (Q > 10)
  // Determine the decade: 11-20 is decade 1, 21-30 is decade 2, etc.
- let decade = Math.floor((q - 1) / 10); 
- 
+ let decade = Math.floor((q - 1) / 10);
+
  // Base price at the start of this decade
  let decadeBase = base + 150 + ((decade - 1) * 100);
- 
+
  // Position within the current decade (1 to 10)
  let unitPlace = q - (decade * 10);
- 
- // Plateau Logic: 
+
+ // Plateau Logic:
  // Units 1-5 increase by $20 each.
  // Units 6-10 are flat (capped at the price of unit 5).
  let overageUnits = Math.min(unitPlace, 5);
- 
+
  return decadeBase + (overageUnits * 20);
  },
  calcAirbnb() {
@@ -2026,7 +2029,7 @@
  </div>
 
  <div x-show="mode === 'PORT'" class="flex-grow flex flex-col gap-2">
- <div class="flex-grow flex flex-col gap-2 mb-4">
+ <div x-show="!brand" class="flex-grow flex flex-col gap-2 mb-4">
  <button @click="brand = 'BCD'; haptic()"
  class="flex-1 rounded-2xl overflow-hidden card-frosted flex flex-row transition-all duration-200 min-h-[90px]"
  :class="brand === 'BCD' ? 'tile-sel-wrap is-sel border-red-600' : (brand ? 'border-gray-200 opacity-30' : 'border-gray-200')">
@@ -2070,19 +2073,45 @@
  </div>
  </button>
  </div>
- <div class="grid grid-cols-4 gap-2 mb-4">
- <template x-for="t in ['2', '10', '15-20', '25-30', '35-40', '45-50']">
- <button @click="selectedTier = t; customQty = ''; haptic()" :class="selectedTier == t ? 'tile-sel' : (selectedTier && selectedTier !== 'custom' ? 'bg-white border-gray-400 opacity-30' : 'bg-white border-gray-400')" class="h-[50px] border-2 rounded-xl font-black text-sm" x-text="t"></button>
+ <div x-data="{ portBrandLabelsPhotos: { BCD: 'Builder | Contractor | Designer', CR: 'Commercial | Retail', AMF: 'Apartment | Multi-Family' } }" x-show="brand" x-cloak class="rounded-2xl overflow-hidden card-frosted border-black mb-4 fade-in" style="border-width:2px;">
+ <div class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white">
+ <div class="flex flex-col items-center text-center gap-2">
+ <template x-if="brand === 'BCD'">
+ <svg class="w-9 h-9 flex-none text-red-600" viewBox="0 0 122.88 105.31" fill="currentColor"><path d="M112.29,98.08a1.84,1.84,0,0,1-1.84,1.84H87.85a12.07,12.07,0,0,0-1.54-5.23h20.74V52.31a2.2,2.2,0,0,1,0-.36L61.62,18.58,15.27,52a1.84,1.84,0,0,1,.06.47V94.69H34.65l-.07.14a11.85,11.85,0,0,0-1.41,5.09H11.93a1.83,1.83,0,0,1-1.83-1.84V54.36a8.14,8.14,0,0,1-5.57.26,6.52,6.52,0,0,1-3.07-2.15A6.74,6.74,0,0,1,.05,49a8.78,8.78,0,0,1,2.1-6.47h0a1.64,1.64,0,0,1,.3-.29L60.05.48A1.84,1.84,0,0,1,62.42.39l57.71,41.68h0a1.37,1.37,0,0,1,.22.2,8.27,8.27,0,0,1,2.34,7.62,7,7,0,0,1-4.44,5,7.67,7.67,0,0,1-5.95-.39V98.08Zm-40.65,6c4.27,3.58,10.48-1.75,7.11-6.23C73.07,91.56,68.34,86.45,66.14,84q4.31-5.16,8.62-10.3A12.54,12.54,0,0,0,89.6,70.76a12.48,12.48,0,0,0,2.91-10.62,12.86,12.86,0,0,0-.39-1.6l-2.75,2.31q-5.31,4.5-9.66,2.1t.85-8.75l3.08-3.75a11.15,11.15,0,0,0-2-.38C71.46,49,63.37,61.56,69.92,69.79c-3,2.88-5.87,5.82-8.74,8.78-1.57-1.69-4-4.37-15.09-16.62l3.4-3,1.57,1.81,4.67-4-7.66-8.92-4.74,4.05,1.72,2-3.41,3-2.15-2.48-5.62,4.82,2.18,2.51-3.19,2.76A8.38,8.38,0,0,0,31,66.72c-2.45,4.51,1.17,9.07,4.42,11.87-1.88-5.74,1.3-8.48,5.11-11.79q7.32,9,14.73,18c-3,3.14-8.8,9-12,12-1.26,1.22-2.07,2.35-2,4.16a4.48,4.48,0,0,0,1.54,3.2c2.58,2.28,5.32.9,7.23-1.38l10.29-11.8c3.31,4,7.94,9.24,11.29,13.2Z"/></svg>
  </template>
- <button @click="selectedTier = 'custom'; haptic(); $nextTick(() => $refs.customInput.focus())" :class="selectedTier == 'custom' ? 'tile-sel' : (selectedTier && selectedTier !== 'custom' ? 'bg-white border-gray-400 opacity-30' : 'bg-white border-gray-400')" class="col-span-2 h-[50px] border-2 rounded-xl font-black text-xs uppercase">Custom #</button>
+ <template x-if="brand === 'CR'">
+ <svg class="w-9 h-9 flex-none text-red-600" stroke-width="1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V10"/><path d="M14.8333 21V15C14.8333 13.8954 13.9379 13 12.8333 13H10.8333C9.72874 13 8.83331 13.8954 8.83331 15V21"/><path d="M21.8183 9.36418L20.1243 3.43517C20.0507 3.17759 19.8153 3 19.5474 3H15.5L15.9753 8.70377C15.9909 8.89043 16.0923 9.05904 16.2532 9.15495C16.6425 9.38698 17.4052 9.81699 18 10C19.0158 10.3125 20.5008 10.1998 21.3465 10.0958C21.6982 10.0526 21.9157 9.7049 21.8183 9.36418Z"/><path d="M14 10C14.5675 9.82538 15.2879 9.42589 15.6909 9.18807C15.8828 9.07486 15.9884 8.86103 15.9699 8.63904L15.5 3H8.5L8.03008 8.63904C8.01158 8.86103 8.11723 9.07486 8.30906 9.18807C8.71207 9.42589 9.4325 9.82538 10 10C11.493 10.4594 12.507 10.4594 14 10Z"/><path d="M3.87567 3.43517L2.18166 9.36418C2.08431 9.7049 2.3018 10.0526 2.6535 10.0958C3.49916 10.1998 4.98424 10.3125 6 10C6.59477 9.81699 7.35751 9.38698 7.74678 9.15495C7.90767 9.05904 8.00913 8.89043 8.02469 8.70377L8.5 3H4.45258C4.18469 3 3.94926 3.17759 3.87567 3.43517Z"/></svg>
+ </template>
+ <template x-if="brand === 'AMF'">
+ <svg class="w-9 h-9 flex-none text-red-600" stroke-width="1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10 9.01L10.01 8.99889"/><path d="M14 9.01L14.01 8.99889"/><path d="M10 13.01L10.01 12.9989"/><path d="M14 13.01L14.01 12.9989"/><path d="M10 17.01L10.01 16.9989"/><path d="M14 17.01L14.01 16.9989"/><path d="M6 20.4V5.6C6 5.26863 6.26863 5 6.6 5H12V3.6C12 3.26863 12.2686 3 12.6 3H17.4C17.7314 3 18 3.26863 18 3.6V20.4C18 20.7314 17.7314 21 17.4 21H6.6C6.26863 21 6 20.7314 6 20.4Z"/></svg>
+ </template>
+ <span class="text-[32px] font-black text-black leading-none" x-text="brand"></span>
+ <span class="text-[11px] font-bold tracking-widest text-gray-400" x-text="portBrandLabelsPhotos[brand]"></span>
  </div>
- <div x-show="selectedTier === 'custom'" class="grid grid-cols-2 border-2 border-red-600 rounded-xl h-[64px] overflow-hidden fade-in mb-2">
- <div class="bg-gray-100 border-r-2 border-black flex items-center justify-between px-2">
- <button @click="customQty = Math.max(1, (parseInt(customQty.toString().replace(/,/g,'')) || 1) - 1); haptic()" class="w-8 h-8 bg-red-600 text-white rounded-full font-bold flex-none">-</button>
- <input x-ref="customInput" type="text" inputmode="numeric" pattern="[0-9]*" :value="formatNumber(customQty)" @input="customQty = $event.target.value.replace(/[^0-9]/g, ''); haptic()" class="w-full bg-transparent text-center custom-field-input outline-none text-red-600" placeholder="0">
- <button @click="customQty = (parseInt(customQty.toString().replace(/,/g,'')) || 1) + 1; haptic()" class="w-8 h-8 bg-red-600 text-white rounded-full font-bold flex-none">+</button>
+
+ <div class="text-[64px] font-black leading-none text-center" :class="subtotal > 0 ? 'text-red-600' : 'text-gray-300'" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="subtotal > 0 ? ('$' + Math.floor(subtotal).toLocaleString('en-US')) : ''"></div>
+
+ <div x-init="$watch('selectedTier', v => { if(v && v.includes('-')) customQty = v.split('-')[0]; })" class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2 border-2 border-black self-center">
+ <button @click="customQty = Math.max(0, (parseInt(customQty.toString().replace(/,/g,'')) || 0) - 1); selectedTier=''; haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
+ <input x-ref="customInputPort" type="text" inputmode="numeric" pattern="[0-9]*" :value="customQty ? formatNumber(customQty) : ''" @input="$event.target.value = $event.target.value.replace(/[^0-9]/g, ''); customQty = $event.target.value; selectedTier=''; haptic()" class="bg-transparent text-center text-[20px] font-black outline-none" :class="customQty ? 'text-black' : 'text-gray-300'" style="width:4ch;" placeholder="– –">
+ <button @click="customQty = (parseInt(customQty.toString().replace(/,/g,'')) || 0) + 1; selectedTier=''; haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
  </div>
- <div class="bg-white flex items-center justify-center sqft-label-large uppercase text-black px-1">Photos</div>
+
+ <div class="grid grid-cols-2 gap-2">
+ <template x-for="t in ['2', '10', '15-20', '25-30', '35-40', '45-50']">
+ <button @click="selectedTier = t; customQty = ''; haptic()" :class="selectedTier == t ? 'tile-sel' : (selectedTier && selectedTier !== 'custom' ? 'bg-white border-gray-400 opacity-30' : 'bg-white border-gray-400')" class="h-[50px] border-2 rounded-xl font-black text-sm flex flex-col items-center justify-center leading-tight">
+ <span x-text="t"></span>
+ <span class="text-[11px] font-semibold" x-text="'$' + Math.floor(portTierPrice(brand, t.includes('-') ? parseInt(t.split('-')[1]) : parseInt(t))).toLocaleString('en-US')"></span>
+ </button>
+ </template>
+ </div>
+ </div>
+ <button @click="addToQuote(); haptic()"
+ class="w-full h-14 flex items-center justify-center gap-2 transition-all bg-red-600 active:scale-[0.97]">
+ <svg x-show="!justAdded" class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+ <svg x-show="justAdded" x-cloak class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+ <span class="text-[24px] font-black text-white" x-text="justAdded ? 'Added to cart' : 'Add to cart'"></span>
+ </button>
  </div>
  </div>
 
@@ -2382,7 +2411,7 @@
  </div>
 
  </div>
- <div class="px-4 pb-3 pt-2 flex-none" x-show="mode !== 'MLS' && mode !== 'AIRBNB' && !mode.includes('AERIAL') && mode !== 'MLS MATTERPORT' && mode !== 'PORT MATTERPORT' && mode !== 'MLS ZILLOW 3D' && mode !== 'MLS FLOOR PLAN' && mode !== 'PORT FLOOR PLAN' && mode !== 'MLS VIDEO' && mode !== 'PORT VIDEO' && (mode !== 'ADD ONS' || selectedAddOn !== '')" x-cloak>
+ <div class="px-4 pb-3 pt-2 flex-none" x-show="mode !== 'MLS' && mode !== 'PORT' && mode !== 'AIRBNB' && !mode.includes('AERIAL') && mode !== 'MLS MATTERPORT' && mode !== 'PORT MATTERPORT' && mode !== 'MLS ZILLOW 3D' && mode !== 'MLS FLOOR PLAN' && mode !== 'PORT FLOOR PLAN' && mode !== 'MLS VIDEO' && mode !== 'PORT VIDEO' && (mode !== 'ADD ONS' || selectedAddOn !== '')" x-cloak>
  <div class="price-card-dark relative rounded-[1.5rem] border-2 overflow-hidden">
 
  <!-- Collapsed row: price (tap to expand breakdown) + Add -->
