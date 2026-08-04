@@ -385,10 +385,10 @@
  },
  aerialPrices: {
  'MLS': {
- 'Aerial Mini 2 images': 79, 'Aerial Standard 5 images': 119, 'Aerial Curb Appeal Video 30 sec': 119, 'Aerial Mini 2 Images + Curb Appeal Vid 30 sec': 139, 'Aerial Standard 5 images + Curb Appeal Vid 30 sec': 179, 'Aerial Video 2 min': 249, 'Aerial Mini 2 images + Aerial Video 2 min': 259, 'Aerial Standard 5 images + Aerial Video 2 min': 299
+ 'Aerial Mini 2 Images': 79, 'Aerial Standard 5 Images': 119, 'Aerial Curb Appeal Video 30 sec': 119, 'Aerial Mini 2 Images + Curb Appeal Vid 30 sec': 139, 'Aerial Standard 5 Images + Curb Appeal Vid 30 sec': 179, 'Aerial Video 2 min': 249, 'Aerial Mini 2 Images + Aerial Video 2 min': 259, 'Aerial Standard 5 Images + Aerial Video 2 min': 299
  },
  'PORT': {
- 'Aerial Mini 2 images': 149, 'Aerial Standard 5 images': 199, 'Aerial Curb Appeal Video 30 sec': 199, 'Aerial Mini 2 Images + Curb Appeal Vid 30 sec': 249, 'Aerial Standard 5 images + Curb Appeal Vid 30 sec': 299, 'Aerial Video 2 min': 349, 'Aerial Mini 2 images + Aerial Video 2 min': 349, 'Aerial Standard 5 images + Aerial Video 2 min': 399
+ 'Aerial Mini 2 Images': 149, 'Aerial Standard 5 Images': 199, 'Aerial Curb Appeal Video 30 sec': 199, 'Aerial Mini 2 Images + Curb Appeal Vid 30 sec': 249, 'Aerial Standard 5 Images + Curb Appeal Vid 30 sec': 299, 'Aerial Video 2 min': 349, 'Aerial Mini 2 Images + Aerial Video 2 min': 349, 'Aerial Standard 5 Images + Aerial Video 2 min': 399
  }
  },
  portBases: { 'AMF': 249, 'CR': 199, 'BCD': 149 },
@@ -617,15 +617,15 @@
 
  // Mini-based packages: $15/img overage, max +2 extra (capped at Standard equivalent)
  const miniPackages = [
- 'Aerial Mini 2 images',
+ 'Aerial Mini 2 Images',
  'Aerial Mini 2 Images + Curb Appeal Vid 30 sec',
- 'Aerial Mini 2 images + Aerial Video 2 min'
+ 'Aerial Mini 2 Images + Aerial Video 2 min'
  ];
  // Standard-based packages: $10/img overage, no cap
  const standardPackages = [
- 'Aerial Standard 5 images',
- 'Aerial Standard 5 images + Curb Appeal Vid 30 sec',
- 'Aerial Standard 5 images + Aerial Video 2 min'
+ 'Aerial Standard 5 Images',
+ 'Aerial Standard 5 Images + Curb Appeal Vid 30 sec',
+ 'Aerial Standard 5 Images + Aerial Video 2 min'
  ];
 
  const isPort = this.mode === 'PORT AERIAL';
@@ -1804,7 +1804,7 @@
  <!-- Right text panel -->
  <div class="flex-1 flex flex-col justify-center px-4 py-3 bg-white">
  <span class="font-black text-4xl tracking-tighter leading-none" :class="brand === 'BCD' ? 'text-red-600' : 'text-black'">BCD</span>
- <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-1 leading-tight">Builder | Contractor | Designer</span>
+ <span class="text-[10px] font-bold tracking-widest text-black mt-1 leading-tight">Builder | Contractor | Designer</span>
  </div>
  </button>
  <button @click="brand = 'CR'; haptic()"
@@ -1818,7 +1818,7 @@
  <!-- Right text panel -->
  <div class="flex-1 flex flex-col justify-center px-4 py-3 bg-white">
  <span class="font-black text-4xl tracking-tighter leading-none" :class="brand === 'CR' ? 'text-red-600' : 'text-black'">CR</span>
- <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-1 leading-tight">Commercial | Retail</span>
+ <span class="text-[10px] font-bold tracking-widest text-black mt-1 leading-tight">Commercial | Retail</span>
  </div>
  </button>
  <button @click="brand = 'AMF'; haptic()"
@@ -1832,7 +1832,7 @@
  <!-- Right text panel -->
  <div class="flex-1 flex flex-col justify-center px-4 py-3 bg-white">
  <span class="font-black text-4xl tracking-tighter leading-none" :class="brand === 'AMF' ? 'text-red-600' : 'text-black'">AMF</span>
- <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-1 leading-tight">Apartment | Multi-Family</span>
+ <span class="text-[10px] font-bold tracking-widest text-black mt-1 leading-tight">Apartment | Multi-Family</span>
  </div>
  </button>
  </div>
@@ -1852,19 +1852,24 @@
  <span class="text-[11px] font-bold tracking-widest text-gray-400" x-text="portBrandLabelsPhotos[brand]"></span>
  </div>
 
- <div class="text-[64px] font-black leading-none text-center" :class="subtotal > 0 ? 'text-red-600' : 'text-gray-300'" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="subtotal > 0 ? ('$' + Math.floor(subtotal).toLocaleString('en-US')) : ''"></div>
-
- <div x-init="$watch('selectedTier', v => { if(v && v !== 'custom') customQty = v.includes('-') ? v.split('-')[0] : v; })" class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2 border-2 border-black self-center">
- <button @click="customQty = Math.max(0, (parseInt(customQty.toString().replace(/,/g,'')) || 0) - 1); selectedTier=''; haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
- <input x-ref="customInputPort" type="text" inputmode="numeric" pattern="[0-9]*" :value="customQty ? formatNumber(customQty) : ''" @input="$event.target.value = $event.target.value.replace(/[^0-9]/g, ''); customQty = $event.target.value; selectedTier=''; haptic()" class="bg-transparent text-center text-[20px] font-black outline-none" :class="customQty ? 'text-black' : 'text-gray-300'" style="width:4ch;" placeholder="– –">
- <button @click="customQty = (parseInt(customQty.toString().replace(/,/g,'')) || 0) + 1; selectedTier=''; haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
+ <div class="flex items-start justify-center leading-none" :class="subtotal > 0 ? 'text-red-600' : 'text-gray-300'" style="letter-spacing:-0.05em;font-variant-numeric:tabular-nums;">
+ <span x-show="subtotal > 0" x-cloak class="text-[26px] font-black" style="margin-top:6px;">$</span>
+ <span class="text-[64px] font-black" x-text="subtotal > 0 ? Math.floor(subtotal).toLocaleString('en-US') : ''"></span>
  </div>
 
- <div class="grid grid-cols-2 gap-2">
+ <div x-init="$watch('selectedTier', v => { if(v && v !== 'custom') customQty = v.includes('-') ? v.split('-')[0] : v; })" class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2 border-2 border-gray-300 self-center">
+ <button @click="customQty = Math.max(0, (parseInt(customQty.toString().replace(/,/g,'')) || 0) - 1); selectedTier=''; haptic()" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
+ <input x-ref="customInputPort" type="text" inputmode="numeric" pattern="[0-9]*" :value="customQty ? formatNumber(customQty) : ''" @input="$event.target.value = $event.target.value.replace(/[^0-9]/g, ''); customQty = $event.target.value; selectedTier=''; haptic()" class="bg-transparent text-center text-[24px] font-black outline-none" :class="customQty ? 'text-black' : 'text-gray-300'" style="width:4ch;" placeholder="– –">
+ <button @click="customQty = (parseInt(customQty.toString().replace(/,/g,'')) || 0) + 1; selectedTier=''; haptic()" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
+ </div>
+
+ <div class="grid grid-cols-2 gap-4 justify-items-center">
  <template x-for="t in ['2', '10', '15-20', '25-30', '35-40', '45-50']">
- <button @click="selectedTier = t; customQty = ''; haptic()" :class="selectedTier == t ? 'tile-sel' : (selectedTier && selectedTier !== 'custom' ? 'bg-white border-gray-400 opacity-30' : 'bg-white border-gray-400')" class="h-[50px] border-2 rounded-xl font-black text-sm flex flex-col items-center justify-center leading-tight">
- <span x-text="t"></span>
- <span class="text-[11px] font-semibold" x-text="'$' + Math.floor(portTierPrice(brand, t.includes('-') ? parseInt(t.split('-')[1]) : parseInt(t))).toLocaleString('en-US')"></span>
+ <button @click="selectedTier = t; customQty = ''; haptic()" :class="selectedTier == t ? 'bg-black scale-[1.02] shadow-lg' : 'bg-gray-100'" class="flex flex-col items-center justify-center gap-0.5 rounded-xl aspect-square transition-all duration-150" style="width:120px;">
+ <span class="text-[20px] font-black" :class="selectedTier == t ? 'text-white' : 'text-black'" x-text="t"></span>
+ <span class="flex items-start font-black" :class="selectedTier == t ? 'text-white' : 'text-black'" style="font-variant-numeric:tabular-nums;">
+ <span class="text-[13px]" style="margin-top:2px;">$</span><span class="text-[22px]" x-text="Math.floor(portTierPrice(brand, t.includes('-') ? parseInt(t.split('-')[1]) : parseInt(t))).toLocaleString('en-US')"></span>
+ </span>
  </button>
  </template>
  </div>
@@ -2002,8 +2007,8 @@
 
  <template x-for="group in [
  {label:'Aerial Photos', items:[
- {name:'Aerial Mini 2 images', qty:2, min:2, max:4, stepper:'mini'},
- {name:'Aerial Standard 5 images', qty:5, min:5, max:null, stepper:'standard'}
+ {name:'Aerial Mini 2 Images', qty:2, min:2, max:4, stepper:'mini'},
+ {name:'Aerial Standard 5 Images', qty:5, min:5, max:null, stepper:'standard'}
  ]},
  {label:'Aerial Video', items:[
  {name:'Aerial Curb Appeal Video 30 sec', qty:0, stepper:'none'},
@@ -2011,9 +2016,9 @@
  ]},
  {label:'Aerial Photos + Video', items:[
  {name:'Aerial Mini 2 Images + Curb Appeal Vid 30 sec', qty:2, min:2, max:4, stepper:'mini'},
- {name:'Aerial Standard 5 images + Curb Appeal Vid 30 sec', qty:5, min:5, max:null, stepper:'standard'},
- {name:'Aerial Mini 2 images + Aerial Video 2 min', qty:2, min:2, max:4, stepper:'mini'},
- {name:'Aerial Standard 5 images + Aerial Video 2 min', qty:5, min:5, max:null, stepper:'standard'}
+ {name:'Aerial Standard 5 Images + Curb Appeal Vid 30 sec', qty:5, min:5, max:null, stepper:'standard'},
+ {name:'Aerial Mini 2 Images + Aerial Video 2 min', qty:2, min:2, max:4, stepper:'mini'},
+ {name:'Aerial Standard 5 Images + Aerial Video 2 min', qty:5, min:5, max:null, stepper:'standard'}
  ]}
  ]" :key="group.label">
  <div x-show="aerialExpanded === '' || group.items.some(i => i.name === aerialExpanded)" class="flex flex-col gap-1.5 mb-1.5">
@@ -2028,7 +2033,7 @@
  <div x-show="item.name.includes(' + ')" x-cloak class="text-[14px] font-semibold text-black" x-text="'+ ' + item.name.split(' + ')[1]"></div>
  </div>
  <div class="flex items-center gap-2.5 flex-none">
- <span class="flex items-start leading-none text-black" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;"><span class="text-[13px] font-black" style="margin-top:2px;">$</span><span class="text-[19px] font-black" x-text="aerialPrices['MLS'][item.name]"></span></span>
+ <span class="flex items-start leading-none text-black" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;"><span class="text-[13px] font-black" style="margin-top:2px;">$</span><span class="text-[19px] font-black" x-text="aerialPrices[mode.includes('MLS') ? 'MLS' : 'PORT'][item.name]"></span></span>
  <svg class="w-4 h-4 text-gray-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
  </div>
  </button>
@@ -2036,14 +2041,14 @@
  <div class="w-full px-5 pt-5 pb-4 flex flex-col items-center text-center gap-4">
  <svg class="w-9 h-9 flex-none text-red-600" viewBox="0 0 24 24" fill="currentColor"><path d="M20,7H18V5h2a1,1,0,0,0,0-2H14a1,1,0,0,0,0,2h2V7H8V5h2a1,1,0,0,0,0-2H4A1,1,0,0,0,4,5H6V7H4a3,3,0,0,0,0,6H6.1a4.955,4.955,0,0,0,.99,2.092A5,5,0,0,0,3,20a1,1,0,0,0,2,0,3,3,0,0,1,3-3h3v2a1,1,0,0,0,2,0V17h3a3,3,0,0,1,3,3,1,1,0,0,0,2,0,5,5,0,0,0-4.091-4.908A4.955,4.955,0,0,0,17.9,13H20a3,3,0,0,0,0-6Zm0,4H17a1,1,0,0,0-1,1,3,3,0,0,1-3,3H11a3,3,0,0,1-3-3,1,1,0,0,0-1-1H4A1,1,0,0,1,4,9H20a1,1,0,0,1,0,2Zm-6,1a2,2,0,0,1-4,0,1.929,1.929,0,0,1,.1-.581A1,1,0,1,0,11.417,10.1,1.978,1.978,0,0,1,12,10,2,2,0,0,1,14,12Z"/></svg>
  <div class="text-center">
- <div class="text-[28px] font-black text-black leading-tight" x-text="item.name.includes(' + ') ? item.name.split(' + ')[0] : item.name"></div>
- <div x-show="item.name.includes(' + ')" x-cloak class="text-[28px] font-black text-black leading-tight" x-text="'+ ' + item.name.split(' + ')[1]"></div>
+ <div class="text-[32px] font-black text-black leading-none" x-text="item.name.includes(' + ') ? item.name.split(' + ')[0] : item.name"></div>
+ <div x-show="item.name.includes(' + ')" x-cloak class="text-[32px] font-black text-black leading-none" x-text="'+ ' + item.name.split(' + ')[1]"></div>
  </div>
- <div class="flex items-start justify-center leading-none text-red-600" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;"><span class="text-[26px] font-black" style="margin-top:6px;">$</span><span class="text-[64px] font-black" x-text="calcAerial()"></span></div>
- <div x-show="item.stepper !== 'none'" class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-black">
- <button @click="aerialQty = Math.max(item.min, aerialQty - 1); haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
- <span class="text-[20px] font-black text-black text-center" style="min-width:24px;" x-text="aerialQty"></span>
- <button @click="aerialQty = (item.max ? Math.min(item.max, aerialQty + 1) : aerialQty + 1); haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
+ <div class="flex items-start justify-center leading-none text-red-600" style="letter-spacing:-0.05em;font-variant-numeric:tabular-nums;"><span class="text-[26px] font-black" style="margin-top:6px;">$</span><span class="text-[64px] font-black" x-text="calcAerial()"></span></div>
+ <div x-show="item.stepper !== 'none'" class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-gray-300">
+ <button @click="aerialQty = Math.max(item.min, aerialQty - 1); haptic()" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
+ <span class="text-[24px] font-black text-black text-center" style="min-width:24px;" x-text="aerialQty"></span>
+ <button @click="aerialQty = (item.max ? Math.min(item.max, aerialQty + 1) : aerialQty + 1); haptic()" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
  </div>
  </div>
  <div class="bg-black">
@@ -2153,13 +2158,13 @@
  <div class="w-full px-5 pt-5 pb-4 flex flex-col items-center text-center gap-4">
  <svg class="w-9 h-9 flex-none text-red-600" viewBox="0 0 24 24" fill="#dc2626"><path d="M12.001 16.709c-1.013-1.271-1.609-2.386-1.808-3.34-.197-.769-.12-1.385.218-1.848.357-.532.89-.791 1.589-.791s1.231.259 1.589.796c.335.458.419 1.075.215 1.848-.218.974-.813 2.087-1.808 3.341l.005-.006zm7.196.855c-.14.934-.775 1.708-1.65 2.085-1.687.734-3.359-.437-4.789-2.026 2.365-2.961 2.803-5.268 1.787-6.758-.596-.855-1.449-1.271-2.544-1.271-2.206 0-3.419 1.867-2.942 4.034.276 1.173 1.013 2.506 2.186 3.996-.735.813-1.432 1.391-2.047 1.748-.478.258-.934.418-1.37.456-2.008.299-3.582-1.647-2.867-3.656.1-.259.297-.734.634-1.471l.019-.039c1.097-2.382 2.43-5.088 3.961-8.09l.039-.1.435-.836c.338-.616.477-.892 1.014-1.231.258-.157.576-.235.934-.235.715 0 1.271.418 1.511.753.118.18.259.419.436.716l.419.815.06.119c1.53 3.001 2.863 5.702 3.955 8.089l.02.019.401.915.237.573c.183.459.221.915.16 1.393l.001.002zm.913-1.791c-.139-.438-.378-.953-.675-1.569v-.022a262.99 262.99 0 0 0-3.976-8.128l-.084-.121C14.486 4.109 13.849 3.014 12 3.014c-1.827 0-2.604 1.27-3.397 2.922l-.061.119c-1.251 2.426-2.564 5.128-3.975 8.13v.039l-.418.914c-.158.378-.237.575-.259.636C2.878 18.556 4.964 21 7.489 21c.021 0 .099 0 .198-.021h.278c1.313-.159 2.664-.993 4.035-2.485 1.371 1.49 2.725 2.326 4.033 2.485h.279c.1.021.18.021.2.021 2.525.002 4.61-2.444 3.598-5.227z"/></svg>
  <div class="text-center">
- <div class="text-[28px] font-black text-black leading-tight">Airbnb / Lease</div>
+ <div class="text-[32px] font-black text-black leading-none">Airbnb / Lease</div>
  </div>
- <div class="text-[64px] font-black leading-none text-red-600" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;" x-text="'$' + calcAirbnb()"></div>
- <div class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-black">
- <button @click="customQty = Math.max(12, (parseInt(customQty.toString().replace(/,/g,'')) || 12) - 1); haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
- <span class="text-[20px] font-black text-black text-center" style="min-width:24px;" x-text="formatNumber(customQty) || '12'"></span>
- <button @click="customQty = (parseInt(customQty.toString().replace(/,/g,'')) || 12) + 1; haptic()" class="w-9 h-9 bg-white text-black rounded-full font-bold flex-none text-[17px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
+ <div class="flex items-start justify-center leading-none text-red-600" style="letter-spacing:-0.05em;font-variant-numeric:tabular-nums;"><span class="text-[26px] font-black" style="margin-top:6px;">$</span><span class="text-[64px] font-black" x-text="calcAirbnb()"></span></div>
+ <div class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-gray-300">
+ <button @click="customQty = Math.max(12, (parseInt(customQty.toString().replace(/,/g,'')) || 12) - 1); haptic()" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
+ <span class="text-[24px] font-black text-black text-center" style="min-width:24px;" x-text="formatNumber(customQty) || '12'"></span>
+ <button @click="customQty = (parseInt(customQty.toString().replace(/,/g,'')) || 12) + 1; haptic()" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
  </div>
  </div>
  <div class="bg-black">
