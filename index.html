@@ -353,6 +353,10 @@
  aerialType: '',
  aerialQty: 0,
  selectedAddOn: '',
+ mlsVideoExpanded: '',
+ portVideoExpanded: '',
+ aerialExpanded: '',
+ portBrandLabels: { BCD: 'Builder | Contractor | Designer', CR: 'Commercial | Retail', AMF: 'Apartment | Multi-Family' },
  addOnQty: 0,
  addOnHrs: 1,
  addOnMins: 0,
@@ -432,6 +436,7 @@
  this.sqft = ''; this.customQty = ''; this.selectedTier = ''; this.mpCustomSqft = ''; this.videoType = ''; this.mlsPackage = '';
  this.aerialType = ''; this.aerialQty = 0; this.planType = '2D'; this.numFloors = 1; this.mpService = 'Standard';
  this.selectedAddOn = ''; this.addOnQty = 0; this.addOnHrs = 1; this.addOnMins = 0; this.addOnCategory = ''; this.brand = '';
+ this.aerialExpanded = ''; this.mlsVideoExpanded = ''; this.portVideoExpanded = '';
  if (this.mode === 'AIRBNB') {
  this.selectedTier = 'custom';
  this.customQty = '12';
@@ -448,6 +453,12 @@
  this.screen = targetScreen;
  },
  goBack() {
+ if (this.mlsPackage) { this.mlsPackage=''; this.sqft=''; this.selectedTier=''; this.customQty=''; this.sqftPickerOpen=false; return; }
+ if (this.selectedAddOn) { this.selectedAddOn=''; this.addOnQty=0; this.addOnHrs=1; this.addOnMins=0; return; }
+ if (this.addOnCategory) { this.addOnCategory=''; return; }
+ if (this.aerialExpanded) { this.aerialExpanded=''; this.aerialType=''; this.aerialQty=0; return; }
+ if (this.mlsVideoExpanded) { this.mlsVideoExpanded=''; this.videoType=''; return; }
+ if (this.portVideoExpanded) { this.portVideoExpanded=''; this.videoType='pending'; return; }
  const prev = this.screenHistory.pop();
  this.navDir = 'back';
  this.screen = prev || 'START';
@@ -1960,7 +1971,7 @@
  </div>
  </div>
 
- <div x-data="{ mlsVideoExpanded: '' }" x-show="mode === 'MLS VIDEO'" class="flex flex-col gap-1.5 flex-grow">
+ <div x-show="mode === 'MLS VIDEO'" class="flex flex-col gap-1.5 flex-grow">
  <template x-for="name in Object.keys(videoPrices['MLS'])" :key="name">
  <div x-show="mlsVideoExpanded === '' || mlsVideoExpanded === name">
  <button x-show="mlsVideoExpanded !== name"
@@ -2037,7 +2048,7 @@
  </div>
  </template>
  <template x-if="videoType">
- <div x-data="{ portVideoExpanded: '', portBrandLabels: { BCD: 'Builder | Contractor | Designer', CR: 'Commercial | Retail', AMF: 'Apartment | Multi-Family' } }" class="flex flex-col gap-1.5 flex-grow">
+ <div class="flex flex-col gap-1.5 flex-grow">
  <div class="flex flex-col items-start px-1.5 mb-1">
  <span class="text-[13px] font-black uppercase tracking-[0.04em] text-white" x-text="brand"></span>
  <span class="text-[10px] font-bold tracking-widest text-white" x-text="portBrandLabels[brand]"></span>
@@ -2080,7 +2091,7 @@
  </template>
  </div>
 
- <div x-data="{ aerialExpanded: '' }" x-show="mode.includes('AERIAL')" class="flex flex-col gap-1.5 flex-grow">
+ <div x-show="mode.includes('AERIAL')" class="flex flex-col gap-1.5 flex-grow">
 
  <template x-for="group in [
  {label:'Aerial Photos', items:[
