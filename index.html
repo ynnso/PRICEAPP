@@ -2001,15 +2001,15 @@
  <div x-data="{ aerialExpanded: '' }" x-show="mode.includes('AERIAL')" class="flex flex-col gap-1.5 flex-grow">
 
  <template x-for="group in [
- {label:'Photos', items:[
+ {label:'Aerial Photos', items:[
  {name:'Aerial Mini 2 images', qty:2, min:2, max:4, stepper:'mini'},
  {name:'Aerial Standard 5 images', qty:5, min:5, max:null, stepper:'standard'}
  ]},
- {label:'Video', items:[
+ {label:'Aerial Video', items:[
  {name:'Aerial Curb Appeal Video 30 sec', qty:0, stepper:'none'},
  {name:'Aerial Video 2 min', qty:0, stepper:'none'}
  ]},
- {label:'Bundles', items:[
+ {label:'Aerial Photos + Video', items:[
  {name:'Aerial Mini 2 Images + Curb Appeal Vid 30 sec', qty:2, min:2, max:4, stepper:'mini'},
  {name:'Aerial Standard 5 images + Curb Appeal Vid 30 sec', qty:5, min:5, max:null, stepper:'standard'},
  {name:'Aerial Mini 2 images + Aerial Video 2 min', qty:2, min:2, max:4, stepper:'mini'},
@@ -2017,7 +2017,7 @@
  ]}
  ]" :key="group.label">
  <div x-show="aerialExpanded === '' || group.items.some(i => i.name === aerialExpanded)" class="flex flex-col gap-1.5 mb-1.5">
- <span x-show="aerialExpanded === ''" x-cloak class="text-[11px] font-semibold uppercase tracking-[0.06em] text-gray-400 px-1.5" x-text="group.label"></span>
+ <span x-show="aerialExpanded === ''" x-cloak class="text-[11px] font-semibold tracking-[0.06em] text-white px-1.5" x-text="group.label"></span>
  <template x-for="item in group.items" :key="item.name">
  <div x-show="aerialExpanded === '' || aerialExpanded === item.name">
  <button x-show="aerialExpanded !== item.name"
