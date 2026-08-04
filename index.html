@@ -1837,7 +1837,7 @@
  </button>
  </div>
  <div x-data="{ portBrandLabelsPhotos: { BCD: 'Builder | Contractor | Designer', CR: 'Commercial | Retail', AMF: 'Apartment | Multi-Family' } }" x-show="brand" x-cloak class="rounded-2xl overflow-hidden card-frosted border-black mb-4 fade-in" style="border-width:2px;">
- <div class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white">
+ <div class="flex flex-col gap-3 px-5 pt-4 pb-4 bg-white">
  <div class="flex flex-col items-center text-center gap-2">
  <template x-if="brand === 'BCD'">
  <svg class="w-9 h-9 flex-none text-red-600" viewBox="0 0 122.88 105.31" fill="currentColor"><path d="M112.29,98.08a1.84,1.84,0,0,1-1.84,1.84H87.85a12.07,12.07,0,0,0-1.54-5.23h20.74V52.31a2.2,2.2,0,0,1,0-.36L61.62,18.58,15.27,52a1.84,1.84,0,0,1,.06.47V94.69H34.65l-.07.14a11.85,11.85,0,0,0-1.41,5.09H11.93a1.83,1.83,0,0,1-1.83-1.84V54.36a8.14,8.14,0,0,1-5.57.26,6.52,6.52,0,0,1-3.07-2.15A6.74,6.74,0,0,1,.05,49a8.78,8.78,0,0,1,2.1-6.47h0a1.64,1.64,0,0,1,.3-.29L60.05.48A1.84,1.84,0,0,1,62.42.39l57.71,41.68h0a1.37,1.37,0,0,1,.22.2,8.27,8.27,0,0,1,2.34,7.62,7,7,0,0,1-4.44,5,7.67,7.67,0,0,1-5.95-.39V98.08Zm-40.65,6c4.27,3.58,10.48-1.75,7.11-6.23C73.07,91.56,68.34,86.45,66.14,84q4.31-5.16,8.62-10.3A12.54,12.54,0,0,0,89.6,70.76a12.48,12.48,0,0,0,2.91-10.62,12.86,12.86,0,0,0-.39-1.6l-2.75,2.31q-5.31,4.5-9.66,2.1t.85-8.75l3.08-3.75a11.15,11.15,0,0,0-2-.38C71.46,49,63.37,61.56,69.92,69.79c-3,2.88-5.87,5.82-8.74,8.78-1.57-1.69-4-4.37-15.09-16.62l3.4-3,1.57,1.81,4.67-4-7.66-8.92-4.74,4.05,1.72,2-3.41,3-2.15-2.48-5.62,4.82,2.18,2.51-3.19,2.76A8.38,8.38,0,0,0,31,66.72c-2.45,4.51,1.17,9.07,4.42,11.87-1.88-5.74,1.3-8.48,5.11-11.79q7.32,9,14.73,18c-3,3.14-8.8,9-12,12-1.26,1.22-2.07,2.35-2,4.16a4.48,4.48,0,0,0,1.54,3.2c2.58,2.28,5.32.9,7.23-1.38l10.29-11.8c3.31,4,7.94,9.24,11.29,13.2Z"/></svg>
@@ -1849,7 +1849,7 @@
  <svg class="w-9 h-9 flex-none text-red-600" stroke-width="1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10 9.01L10.01 8.99889"/><path d="M14 9.01L14.01 8.99889"/><path d="M10 13.01L10.01 12.9989"/><path d="M14 13.01L14.01 12.9989"/><path d="M10 17.01L10.01 16.9989"/><path d="M14 17.01L14.01 16.9989"/><path d="M6 20.4V5.6C6 5.26863 6.26863 5 6.6 5H12V3.6C12 3.26863 12.2686 3 12.6 3H17.4C17.7314 3 18 3.26863 18 3.6V20.4C18 20.7314 17.7314 21 17.4 21H6.6C6.26863 21 6 20.7314 6 20.4Z"/></svg>
  </template>
  <span class="text-[32px] font-black text-black leading-none" x-text="brand"></span>
- <span class="text-[11px] font-bold tracking-widest text-gray-400" x-text="portBrandLabelsPhotos[brand]"></span>
+ <span class="text-[11px] font-bold tracking-widest text-black" x-text="portBrandLabelsPhotos[brand]"></span>
  </div>
 
  <div class="flex items-start justify-center leading-none" :class="subtotal > 0 ? 'text-red-600' : 'text-gray-300'" style="letter-spacing:-0.05em;font-variant-numeric:tabular-nums;">
@@ -1863,9 +1863,9 @@
  <button @click="customQty = (parseInt(customQty.toString().replace(/,/g,'')) || 0) + 1; selectedTier=''; haptic()" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
  </div>
 
- <div class="grid grid-cols-2 gap-4 justify-items-center">
+ <div class="grid grid-cols-2 gap-2.5">
  <template x-for="t in ['2', '10', '15-20', '25-30', '35-40', '45-50']">
- <button @click="selectedTier = t; customQty = ''; haptic()" :class="selectedTier == t ? 'bg-black scale-[1.02] shadow-lg' : 'bg-gray-100'" class="flex flex-col items-center justify-center gap-0.5 rounded-xl aspect-square transition-all duration-150" style="width:120px;">
+ <button @click="selectedTier = t; customQty = ''; haptic()" :class="selectedTier == t ? 'bg-black scale-[1.02] shadow-lg' : 'bg-gray-100'" class="flex items-center justify-between px-4 rounded-full transition-all duration-150" style="height:52px;">
  <span class="text-[20px] font-black" :class="selectedTier == t ? 'text-white' : 'text-black'" x-text="t"></span>
  <span class="flex items-start font-black" :class="selectedTier == t ? 'text-white' : 'text-black'" style="font-variant-numeric:tabular-nums;">
  <span class="text-[13px]" style="margin-top:2px;">$</span><span class="text-[22px]" x-text="Math.floor(portTierPrice(brand, t.includes('-') ? parseInt(t.split('-')[1]) : parseInt(t))).toLocaleString('en-US')"></span>
