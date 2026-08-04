@@ -1865,7 +1865,7 @@
 
  <div class="grid grid-cols-2 gap-2.5">
  <template x-for="t in ['2', '10', '15-20', '25-30', '35-40', '45-50']">
- <button @click="selectedTier = t; customQty = ''; haptic()" :class="selectedTier == t ? 'bg-black scale-[1.02] shadow-lg' : 'bg-gray-100'" class="flex items-center justify-between px-4 rounded-full transition-all duration-150" style="height:52px;">
+ <button @click="selectedTier = t; customQty = ''; haptic()" :class="selectedTier == t ? 'bg-black scale-[1.02] shadow-lg' : 'bg-gray-100'" class="w-full flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all duration-150" style="height:72px;">
  <span class="text-[20px] font-black" :class="selectedTier == t ? 'text-white' : 'text-black'" x-text="t"></span>
  <span class="flex items-start font-black" :class="selectedTier == t ? 'text-white' : 'text-black'" style="font-variant-numeric:tabular-nums;">
  <span class="text-[13px]" style="margin-top:2px;">$</span><span class="text-[22px]" x-text="Math.floor(portTierPrice(brand, t.includes('-') ? parseInt(t.split('-')[1]) : parseInt(t))).toLocaleString('en-US')"></span>
