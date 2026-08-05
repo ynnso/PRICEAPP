@@ -336,7 +336,7 @@
  screen: 'SPLASH',
  screenHistory: [],
  infoOpen: '',
- infoTableExpanded: false,
+ infoTableExpanded: true,
  mlsUpgradeSheetOpen: false,
  mlsUpgradeSqft: '',
  mlsUpgradeShown: false,
@@ -2559,15 +2559,15 @@
  </div>
  <div x-show="infoOpen !== ''" x-cloak
  class="absolute inset-0 z-40 max-w-md mx-auto info-sheet-backdrop" style="background:rgba(0,0,0,0.4);"
- @click="infoOpen = ''; infoTableExpanded=false; haptic()"></div>
+ @click="infoOpen = ''; infoTableExpanded=true; haptic()"></div>
  <div x-show="infoOpen !== ''" x-cloak
  class="absolute left-0 right-0 z-50 bg-white rounded-t-[1.75rem] shadow-2xl flex flex-col sheet-slide-up max-w-md mx-auto w-full min-w-0 info-sheet-panel"
  style="bottom:var(--nav-h,84px);height:66vh;max-height:calc(88% - 84px);"
- @click.outside="infoOpen = ''; infoTableExpanded=false;">
+ @click.outside="infoOpen = ''; infoTableExpanded=true;">
  <div class="w-9 h-1 rounded-full bg-gray-200 mx-auto mt-1.5 mb-0.5 flex-none"></div>
 
  <div class="flex flex-col items-center text-center px-5 pt-1 pb-3 flex-none relative">
- <button @click="infoOpen = ''; infoTableExpanded=false; haptic()" class="absolute top-1 right-5 w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-none">
+ <button @click="infoOpen = ''; infoTableExpanded=true; haptic()" class="absolute top-1 right-5 w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-none">
  <svg class="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
  </button>
  <svg class="w-9 h-9 flex-none text-red-600 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="11"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
