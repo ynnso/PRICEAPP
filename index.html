@@ -336,6 +336,12 @@
  screen: 'SPLASH',
  screenHistory: [],
  infoOpen: '',
+ infoTableExpanded: false,
+ mlsUpgradeSheetOpen: false,
+ mlsUpgradeSqft: '',
+ mlsUpgradeShown: false,
+ miniUpgradeSheetOpen: false,
+ miniUpgradeShown: false,
  ranchPress: false, minusPress: false, plusPress: false, tile25Press: false, tile36Press: false,
  navDir: 'forward',
  type: 'MLS',
@@ -439,6 +445,8 @@
  this.aerialType = ''; this.aerialQty = 0; this.planType = '2D'; this.numFloors = 1; this.mpService = 'Standard';
  this.selectedAddOn = ''; this.addOnQty = 0; this.addOnHrs = 1; this.addOnMins = 0; this.addOnCategory = ''; this.brand = '';
  this.aerialExpanded = ''; this.mlsVideoExpanded = ''; this.portVideoExpanded = '';
+ this.mlsUpgradeSheetOpen = false; this.mlsUpgradeSqft = ''; this.mlsUpgradeShown = false;
+ this.miniUpgradeSheetOpen = false; this.miniUpgradeShown = false;
  if (this.mode === 'AIRBNB') {
  this.selectedTier = 'custom';
  this.customQty = '12';
@@ -820,6 +828,31 @@
  this.$watch('quoteSheetOpen', function(v) { if (v) this.clampSheetWidth('.quote-sheet-panel', '.quote-sheet-backdrop'); }.bind(this));
  this.$watch('startExpand', function(v) { if (v) this.clampSheetWidth('.start-picker-panel', '.start-picker-backdrop'); }.bind(this));
  this.$watch('infoOpen', function(v) { if (v) this.clampSheetWidth('.info-sheet-panel', '.info-sheet-backdrop'); }.bind(this));
+ this.$watch('mlsUpgradeSheetOpen', function(v) { if (v) this.clampSheetWidth('.mls-upgrade-sheet-panel', '.mls-upgrade-sheet-backdrop'); }.bind(this));
+ this.$watch('miniUpgradeSheetOpen', function(v) { if (v) this.clampSheetWidth('.mini-upgrade-sheet-panel', '.mini-upgrade-sheet-backdrop'); }.bind(this));
+ this.$watch('customQty', function(v) {
+ if (this.mlsPackage === 'MINI' && parseInt(v) >= 14 && !this.mlsUpgradeSheetOpen && !this.mlsUpgradeShown) {
+ this.mlsUpgradeShown = true;
+ this.mlsUpgradeSheetOpen = true;
+ }
+ if (this.mlsPackage === 'MINI' && parseInt(v) < 14) {
+ this.mlsUpgradeShown = false;
+ }
+ if (this.mlsPackage === 'RESHOOT' && parseInt(v) >= 11 && !this.miniUpgradeSheetOpen && !this.miniUpgradeShown) {
+ this.miniUpgradeShown = true;
+ this.miniUpgradeSheetOpen = true;
+ }
+ if (this.mlsPackage === 'RESHOOT' && parseInt(v) < 11) {
+ this.miniUpgradeShown = false;
+ }
+ if (this.mlsPackage === 'EXT' && parseInt(v) >= 12 && !this.miniUpgradeSheetOpen && !this.miniUpgradeShown) {
+ this.miniUpgradeShown = true;
+ this.miniUpgradeSheetOpen = true;
+ }
+ if (this.mlsPackage === 'EXT' && parseInt(v) < 12) {
+ this.miniUpgradeShown = false;
+ }
+ }.bind(this));
  },
  clampSheetWidth(panelSel, backdropSel) {
  this.$nextTick(function() {
@@ -1619,7 +1652,7 @@
  <!-- RESHOOT -->
  <div x-show="mlsPackage === '' || mlsPackage === 'RESHOOT'" class="rounded-2xl overflow-hidden card-frosted transition-all duration-150"
  :class="mlsPackage === 'RESHOOT' ? 'border-black mls-row-active-bg mls-row-pulse' : 'border-gray-150'">
- <button @click="mlsPackage=(mlsPackage==='RESHOOT'?'':'RESHOOT');sqft='';selectedTier='custom';customQty='8';haptic()"
+ <button @click="mlsPackage=(mlsPackage==='RESHOOT'?'':'RESHOOT');sqft='';selectedTier='custom';customQty='8';miniUpgradeShown=false;haptic()"
  x-show="mlsPackage !== 'RESHOOT'"
  class="flex items-center w-full" style="height:44px;">
  <div class="h-full flex items-center justify-center flex-none" style="width:44px;" class="bg-gray-100 text-gray-500">
@@ -1629,7 +1662,7 @@
  <span class="mls-price-pop flex-none px-2 flex items-start leading-none text-black" style="font-variant-numeric:tabular-nums;letter-spacing:-0.03em;"><span class="text-[13px] font-black" style="margin-top:2px;">$</span><span class="text-[19px] font-black">89</span></span>
  <svg class="w-3.5 h-3.5 text-gray-300 flex-none mr-3 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
  </button>
- <div x-show="mlsPackage==='RESHOOT'" x-cloak @click.outside="mlsPackage='';sqft='';selectedTier='';customQty='';" class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white relative">
+ <div x-show="mlsPackage==='RESHOOT'" x-cloak @click.outside="if(!$event.target.closest('.mini-upgrade-sheet-panel') && !$event.target.closest('.mini-upgrade-sheet-backdrop')){mlsPackage='';sqft='';selectedTier='';customQty='';miniUpgradeShown=false;}" class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white relative">
  <div class="flex flex-col items-center text-center gap-2 relative">
  <button @click.stop="infoOpen='RESHOOT';haptic()" class="absolute top-0 right-0 w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center" aria-label="Reshoot pricing info">
  <svg class="w-4 h-4 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="11"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
@@ -1650,14 +1683,10 @@
  <button @click="customQty=(parseInt(customQty)||8)+1;haptic()" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
  </div>
  </div>
- <div x-show="mlsPackage==='RESHOOT' && parseInt(customQty) >= 11" x-cloak x-transition class="w-full bg-black rounded-xl px-3 py-3 mt-3">
- <div class="flex items-center justify-center gap-1.5 mb-2">
+ <div x-show="mlsPackage==='RESHOOT' && parseInt(customQty) >= 11" x-cloak x-transition class="w-full mt-3">
+ <button @click="miniUpgradeSheetOpen=true; haptic()" class="w-full bg-black text-white text-[13px] font-semibold rounded-xl py-3 flex items-center justify-center gap-1.5">
  <span class="w-4 h-4 rounded-full bg-white text-black text-[11px] font-black flex items-center justify-center flex-none">!</span>
- <span class="text-[12px] font-semibold text-white text-center">Reshoot 11 img $119 same Mini price!</span>
- </div>
- <button @click.stop="haptic(); mlsPackage='MINI'; sqft=''; selectedTier='custom'; customQty='12'" class="w-full bg-white text-black text-[12px] font-semibold rounded-lg py-2 flex items-center justify-center gap-1.5">
- Upgrade to Mini 12 img
- <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+ Check Mini price
  </button>
  </div>
  <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''" x-show="finalTotal > 0" x-cloak
@@ -1735,7 +1764,7 @@
  <!-- EXTERIOR ONLY -->
  <div x-show="mlsPackage === '' || mlsPackage === 'EXT'" class="rounded-2xl overflow-hidden card-frosted transition-all duration-150"
  :class="mlsPackage === 'EXT' ? 'border-black mls-row-active-bg mls-row-pulse' : 'border-gray-150'">
- <button @click="mlsPackage=(mlsPackage==='EXT'?'':'EXT');sqft='';selectedTier='custom';customQty='8';haptic()"
+ <button @click="mlsPackage=(mlsPackage==='EXT'?'':'EXT');sqft='';selectedTier='custom';customQty='8';miniUpgradeShown=false;haptic()"
  x-show="mlsPackage !== 'EXT'"
  class="flex items-center w-full" style="height:44px;">
  <div class="h-full flex items-center justify-center flex-none" style="width:44px;" class="bg-gray-100 text-gray-500">
@@ -1745,7 +1774,7 @@
  <span class="mls-price-pop flex-none px-2 flex items-start leading-none text-black" style="font-variant-numeric:tabular-nums;letter-spacing:-0.03em;"><span class="text-[13px] font-black" style="margin-top:2px;">$</span><span class="text-[19px] font-black">79</span></span>
  <svg class="w-3.5 h-3.5 text-gray-300 flex-none mr-3 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
  </button>
- <div x-show="mlsPackage==='EXT'" x-cloak @click.outside="mlsPackage='';sqft='';selectedTier='';customQty='';" class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white relative">
+ <div x-show="mlsPackage==='EXT'" x-cloak @click.outside="if(!$event.target.closest('.mini-upgrade-sheet-panel') && !$event.target.closest('.mini-upgrade-sheet-backdrop')){mlsPackage='';sqft='';selectedTier='';customQty='';miniUpgradeShown=false;}" class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white relative">
  <div class="flex flex-col items-center text-center gap-2 relative">
  <button @click.stop="infoOpen='EXT';haptic()" class="absolute top-0 right-0 w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center" aria-label="Exterior Only pricing info">
  <svg class="w-4 h-4 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="11"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
@@ -1766,14 +1795,10 @@
  <button @click="customQty=(parseInt(customQty)||8)+1;haptic()" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
  </div>
  </div>
- <div x-show="mlsPackage==='EXT' && parseInt(customQty) >= 12" x-cloak x-transition class="w-full bg-black rounded-xl px-3 py-3 mt-3">
- <div class="flex items-center justify-center gap-1.5 mb-2">
+ <div x-show="mlsPackage==='EXT' && parseInt(customQty) >= 12" x-cloak x-transition class="w-full mt-3">
+ <button @click="miniUpgradeSheetOpen=true; haptic()" class="w-full bg-black text-white text-[13px] font-semibold rounded-xl py-3 flex items-center justify-center gap-1.5">
  <span class="w-4 h-4 rounded-full bg-white text-black text-[11px] font-black flex items-center justify-center flex-none">!</span>
- <span class="text-[12px] font-semibold text-white text-center">Exterior 12 img $119 same Mini price!</span>
- </div>
- <button @click.stop="haptic(); mlsPackage='MINI'; sqft=''; selectedTier='custom'; customQty='12'" class="w-full bg-white text-black text-[12px] font-semibold rounded-lg py-2 flex items-center justify-center gap-1.5">
- Upgrade to Mini 12 img
- <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+ Check Mini price
  </button>
  </div>
  <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''" x-show="finalTotal > 0" x-cloak
@@ -1789,7 +1814,7 @@
  <!-- MINI -->
  <div x-show="mlsPackage === '' || mlsPackage === 'MINI'" class="rounded-2xl overflow-hidden card-frosted transition-all duration-150"
  :class="mlsPackage === 'MINI' ? 'border-black mls-row-active-bg mls-row-pulse' : 'border-gray-150'">
- <button @click="mlsPackage=(mlsPackage==='MINI'?'':'MINI');sqft='';selectedTier='custom';customQty='12';haptic()"
+ <button @click="mlsPackage=(mlsPackage==='MINI'?'':'MINI');sqft='';selectedTier='custom';customQty='12';mlsUpgradeShown=false;haptic()"
  x-show="mlsPackage !== 'MINI'"
  class="flex items-center w-full" style="height:44px;">
  <div class="h-full flex items-center justify-center flex-none" style="width:44px;" class="bg-gray-100 text-gray-500">
@@ -1799,7 +1824,7 @@
  <span class="mls-price-pop flex-none px-2 flex items-start leading-none text-black" style="font-variant-numeric:tabular-nums;letter-spacing:-0.03em;"><span class="text-[13px] font-black" style="margin-top:2px;">$</span><span class="text-[19px] font-black">119</span></span>
  <svg class="w-3.5 h-3.5 text-gray-300 flex-none mr-3 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
  </button>
- <div x-show="mlsPackage==='MINI'" x-cloak @click.outside="mlsPackage='';sqft='';selectedTier='';customQty='';" class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white relative">
+ <div x-show="mlsPackage==='MINI'" x-cloak @click.outside="if(!$event.target.closest('.mls-upgrade-sheet-panel') && !$event.target.closest('.mls-upgrade-sheet-backdrop')){mlsPackage='';sqft='';selectedTier='';customQty='';mlsUpgradeShown=false;}" class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white relative">
  <div class="flex flex-col items-center text-center gap-2 relative">
  <button @click.stop="infoOpen='MINI';haptic()" class="absolute top-0 right-0 w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center" aria-label="Mini Shoot pricing info">
  <svg class="w-4 h-4 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="11"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
@@ -1819,6 +1844,12 @@
  <input type="number" inputmode="numeric" x-model="customQty" @input="haptic()" class="text-[24px] font-black text-black text-center bg-transparent border-none outline-none" style="width:64px;font-variant-numeric:tabular-nums;-moz-appearance:textfield;">
  <button @click="customQty=(parseInt(customQty)||12)+1;haptic()" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
  </div>
+ </div>
+ <div x-show="mlsPackage==='MINI' && parseInt(customQty) >= 14" x-cloak x-transition class="w-full px-3 pb-3 bg-white">
+ <button @click="mlsUpgradeSheetOpen=true; haptic()" class="w-full bg-black text-white text-[13px] font-semibold rounded-xl py-3 flex items-center justify-center gap-1.5">
+ <span class="w-4 h-4 rounded-full bg-white text-black text-[11px] font-black flex items-center justify-center flex-none">!</span>
+ Check Full Shoot price
+ </button>
  </div>
  <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''" x-show="finalTotal > 0" x-cloak
  class="w-full h-14 flex items-center justify-center gap-2 transition-all bg-red-600 active:scale-[0.97]">
@@ -2334,9 +2365,14 @@
  <div x-show="mode === 'AIRBNB'" class="flex flex-col fade-in">
  <div class="bg-white rounded-2xl overflow-hidden relative border-black card-frosted" style="border-width:2px;">
  <div class="w-full px-5 pt-5 pb-4 flex flex-col items-center text-center gap-4">
+ <div class="flex flex-col items-center text-center gap-2 relative w-full">
+ <button @click.stop="infoOpen='AIRBNB';haptic()" class="absolute top-0 right-0 w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center" aria-label="Airbnb pricing info">
+ <svg class="w-4 h-4 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="11"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
+ </button>
  <svg class="w-9 h-9 flex-none text-red-600" viewBox="0 0 24 24" fill="#dc2626"><path d="M12.001 16.709c-1.013-1.271-1.609-2.386-1.808-3.34-.197-.769-.12-1.385.218-1.848.357-.532.89-.791 1.589-.791s1.231.259 1.589.796c.335.458.419 1.075.215 1.848-.218.974-.813 2.087-1.808 3.341l.005-.006zm7.196.855c-.14.934-.775 1.708-1.65 2.085-1.687.734-3.359-.437-4.789-2.026 2.365-2.961 2.803-5.268 1.787-6.758-.596-.855-1.449-1.271-2.544-1.271-2.206 0-3.419 1.867-2.942 4.034.276 1.173 1.013 2.506 2.186 3.996-.735.813-1.432 1.391-2.047 1.748-.478.258-.934.418-1.37.456-2.008.299-3.582-1.647-2.867-3.656.1-.259.297-.734.634-1.471l.019-.039c1.097-2.382 2.43-5.088 3.961-8.09l.039-.1.435-.836c.338-.616.477-.892 1.014-1.231.258-.157.576-.235.934-.235.715 0 1.271.418 1.511.753.118.18.259.419.436.716l.419.815.06.119c1.53 3.001 2.863 5.702 3.955 8.089l.02.019.401.915.237.573c.183.459.221.915.16 1.393l.001.002zm.913-1.791c-.139-.438-.378-.953-.675-1.569v-.022a262.99 262.99 0 0 0-3.976-8.128l-.084-.121C14.486 4.109 13.849 3.014 12 3.014c-1.827 0-2.604 1.27-3.397 2.922l-.061.119c-1.251 2.426-2.564 5.128-3.975 8.13v.039l-.418.914c-.158.378-.237.575-.259.636C2.878 18.556 4.964 21 7.489 21c.021 0 .099 0 .198-.021h.278c1.313-.159 2.664-.993 4.035-2.485 1.371 1.49 2.725 2.326 4.033 2.485h.279c.1.021.18.021.2.021 2.525.002 4.61-2.444 3.598-5.227z"/></svg>
  <div class="text-center">
  <div class="text-[32px] font-black text-black leading-none">Airbnb / Lease</div>
+ </div>
  </div>
  <div class="flex items-start justify-center leading-none text-red-600" style="letter-spacing:-0.05em;font-variant-numeric:tabular-nums;"><span class="text-[26px] font-black" style="margin-top:6px;">$</span><span class="text-[64px] font-black" x-text="calcAirbnb()"></span></div>
  <div class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-gray-300">
@@ -2523,20 +2559,22 @@
  </div>
  <div x-show="infoOpen !== ''" x-cloak
  class="absolute inset-0 z-40 max-w-md mx-auto info-sheet-backdrop" style="background:rgba(0,0,0,0.4);"
- @click="infoOpen = ''; haptic()"></div>
+ @click="infoOpen = ''; infoTableExpanded=false; haptic()"></div>
  <div x-show="infoOpen !== ''" x-cloak
  class="absolute left-0 right-0 z-50 bg-white rounded-t-[1.75rem] shadow-2xl flex flex-col sheet-slide-up max-w-md mx-auto w-full min-w-0 info-sheet-panel"
- style="bottom:var(--nav-h,84px);max-height:calc(88% - 84px);"
- @click.outside="infoOpen = ''">
+ style="bottom:var(--nav-h,84px);height:66vh;max-height:calc(88% - 84px);"
+ @click.outside="infoOpen = ''; infoTableExpanded=false;">
  <div class="w-9 h-1 rounded-full bg-gray-200 mx-auto mt-1.5 mb-0.5 flex-none"></div>
- <div class="flex items-center justify-between px-5 pt-1 pb-2 flex-none">
- <span class="text-[16px] font-black text-black" x-text="({'FULL':'Full Shoot','RESHOOT':'Reshoot','RANCH':'Ranch Shoot','EXT':'Exterior Only','MINI':'Mini Shoot'})[infoOpen]"></span>
- <button @click="infoOpen = ''; haptic()" class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-none">
+
+ <div class="flex flex-col items-center text-center px-5 pt-1 pb-3 flex-none relative">
+ <button @click="infoOpen = ''; infoTableExpanded=false; haptic()" class="absolute top-1 right-5 w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-none">
  <svg class="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
  </button>
+ <svg class="w-9 h-9 flex-none text-red-600 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="11"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
+ <span class="text-[24px] font-black text-black leading-none" x-text="({'FULL':'Full Shoot','RESHOOT':'Reshoot','RANCH':'Ranch Shoot','EXT':'Exterior Only','MINI':'Mini Shoot','AIRBNB':'Airbnb / Lease'})[infoOpen]"></span>
  </div>
 
- <div class="overflow-y-auto px-5 pb-4" style="max-height:calc(88vh - 175px);">
+ <div class="overflow-y-auto px-5 pb-4" style="max-height:calc(66vh - 130px);">
 
  <template x-if="infoOpen === 'FULL'">
  <ul class="flex flex-col gap-0.5 text-[14px] text-black leading-tight list-disc pl-4">
@@ -2633,9 +2671,21 @@
  </ul>
  </template>
 
+ <template x-if="infoOpen === 'AIRBNB'">
+ <ul class="flex flex-col gap-0.5 text-[14px] text-black leading-tight list-disc pl-4">
+ <li>$169 flat &middot; no Sq Ft</li>
+ <li>Covers 12 images</li>
+ <li>+$12/extra</li>
+ </ul>
+ </template>
+
  <template x-if="infoOpen === 'MINI' || infoOpen === 'FULL'">
  <div class="mt-4">
- <div class="text-[13px] font-black text-red-600 mb-2 text-center">When to upgrade: Mini &rarr; Full Shoot (25 img)</div>
+ <button @click="infoTableExpanded = !infoTableExpanded; haptic()" class="w-full flex items-center justify-between gap-2 mb-2">
+ <span class="text-[13px] font-black text-red-600 text-left">When to upgrade: Mini &rarr; Full Shoot (25 img)</span>
+ <svg class="w-3.5 h-3.5 text-red-600 flex-none transition-transform duration-200" :class="infoTableExpanded ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+ </button>
+ <div x-show="infoTableExpanded" x-cloak x-transition>
  <table class="w-full text-[12px]" style="border-collapse:collapse;table-layout:fixed;">
  <colgroup>
  <col style="width:24%;">
@@ -2671,8 +2721,105 @@
  </tbody>
  </table>
  </div>
+ </div>
  </template>
 
+ </div>
+ </div>
+
+ <div x-show="mlsUpgradeSheetOpen" x-cloak
+ class="absolute inset-0 z-40 max-w-md mx-auto mls-upgrade-sheet-backdrop" style="background:rgba(0,0,0,0.4);"
+ @click="mlsUpgradeSheetOpen=false;mlsUpgradeSqft='';haptic()"></div>
+ <div x-show="mlsUpgradeSheetOpen" x-cloak
+ class="absolute left-0 right-0 z-50 bg-white rounded-t-[1.75rem] shadow-2xl flex flex-col sheet-slide-up max-w-md mx-auto w-full min-w-0 mls-upgrade-sheet-panel"
+ style="bottom:var(--nav-h,84px);height:66vh;max-height:calc(88% - 84px);"
+ @click.outside="mlsUpgradeSheetOpen=false;mlsUpgradeSqft='';">
+ <div class="w-9 h-1 rounded-full bg-gray-200 mx-auto mt-1.5 mb-0.5 flex-none"></div>
+ <div class="flex items-center justify-between px-5 pt-1 pb-2 flex-none">
+ <span class="text-[16px] font-black text-black" x-text="'Mini ' + customQty + ' img'"></span>
+ <button @click="mlsUpgradeSheetOpen=false;mlsUpgradeSqft='';haptic()" class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-none">
+ <svg class="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+ </button>
+ </div>
+
+ <div class="overflow-y-auto px-5 pb-5 flex flex-col justify-center flex-1" style="max-height:calc(66vh - 100px);">
+
+ <template x-if="mlsUpgradeSqft === ''">
+ <div>
+ <div class="border-2 border-dashed border-gray-300 rounded-xl px-4 py-3 mb-3">
+ <div class="flex items-center justify-center gap-1.5 mb-1">
+ <svg class="w-3.5 h-3.5 text-red-600 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+ <span class="text-[11px] font-black text-red-600 tracking-wide">ACTION REQUIRED</span>
+ </div>
+ <p class="text-[13px] font-semibold text-black text-center leading-snug">Select Sq Ft below to check your Full Shoot 25 img rate</p>
+ </div>
+ <div class="relative">
+ <select x-model="mlsUpgradeSqft" @change="haptic()" class="w-full h-[44px] rounded-lg text-[13px] font-bold text-center outline-none appearance-none bg-gray-100 border-2 border-gray-300 transition-colors">
+ <option value="" disabled selected>Select Sq Ft</option>
+ <template x-for="opt in ['0 - 1,999', '2,000 - 2,999', '3,000 - 3,999', '4,000 - 4,999', '5,000 - 6,999', '7,000 - 9,999', '10,000+']">
+ <option :value="opt.replace(/ /g, '').replace(/,/g, '')" x-text="opt + ' Sq Ft'"></option>
+ </template>
+ </select>
+ <svg class="w-3.5 h-3.5 text-gray-400 absolute pointer-events-none" style="right:12px;top:50%;transform:translateY(-50%);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+ </div>
+ </div>
+ </template>
+
+ <template x-if="mlsUpgradeSqft !== '' && mlsPrices[mlsUpgradeSqft]">
+ <div>
+ <div class="flex items-start gap-3 mb-4">
+ <div class="flex-1 rounded-xl px-3 py-3 relative" :class="subtotal < mlsPrices[mlsUpgradeSqft]['25'] ? 'bg-green-50 border-2 border-green-500' : 'bg-gray-50 border-2 border-gray-200'">
+ <span x-show="subtotal < mlsPrices[mlsUpgradeSqft]['25']" x-cloak class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-green-500 text-white text-[9px] font-black rounded-full px-2 py-0.5 whitespace-nowrap" style="transform:translateX(-50%);">BEST PRICE</span>
+ <p class="text-[11px] font-semibold mb-0.5 text-center" :class="subtotal < mlsPrices[mlsUpgradeSqft]['25'] ? 'text-green-700' : 'text-gray-400'">Mini <span x-text="customQty"></span> img</p>
+ <p class="text-[22px] font-black text-center" :class="subtotal < mlsPrices[mlsUpgradeSqft]['25'] ? 'text-green-600' : 'text-gray-400'" x-text="'$' + Math.floor(subtotal)"></p>
+ </div>
+ <div class="flex-1 rounded-xl px-3 py-3 relative" :class="subtotal >= mlsPrices[mlsUpgradeSqft]['25'] ? 'bg-green-50 border-2 border-green-500' : 'bg-gray-50 border-2 border-gray-200'">
+ <span x-show="subtotal >= mlsPrices[mlsUpgradeSqft]['25']" x-cloak class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-green-500 text-white text-[9px] font-black rounded-full px-2 py-0.5 whitespace-nowrap" style="transform:translateX(-50%);">BEST PRICE</span>
+ <p class="text-[11px] font-semibold mb-0.5 text-center" :class="subtotal >= mlsPrices[mlsUpgradeSqft]['25'] ? 'text-green-700' : 'text-gray-400'">Full 25 img</p>
+ <p class="text-[22px] font-black text-center" :class="subtotal >= mlsPrices[mlsUpgradeSqft]['25'] ? 'text-green-600' : 'text-gray-400'" x-text="'$' + mlsPrices[mlsUpgradeSqft]['25']"></p>
+ </div>
+ </div>
+ <div class="flex gap-2">
+ <button @click="haptic();mlsUpgradeSheetOpen=false;mlsUpgradeSqft='';" class="flex-1 rounded-lg py-2.5 text-[12px] font-semibold" :class="subtotal < mlsPrices[mlsUpgradeSqft]['25'] ? 'bg-black text-white' : 'bg-gray-100 text-gray-500'">Stay on Mini</button>
+ <button @click="haptic();sqft=mlsUpgradeSqft;mlsPackage='FULL';selectedTier='';customQty='';mlsUpgradeSheetOpen=false;mlsUpgradeSqft='';" class="flex-1 rounded-lg py-2.5 text-[12px] font-semibold" :class="subtotal >= mlsPrices[mlsUpgradeSqft]['25'] ? 'bg-black text-white' : 'bg-gray-100 text-gray-500'" x-text="subtotal < mlsPrices[mlsUpgradeSqft]['25'] ? 'Go to Full anyway' : 'Upgrade to Full 25 img'"></button>
+ </div>
+ </div>
+ </template>
+
+ </div>
+ </div>
+
+ <div x-show="miniUpgradeSheetOpen" x-cloak
+ class="absolute inset-0 z-40 max-w-md mx-auto mini-upgrade-sheet-backdrop" style="background:rgba(0,0,0,0.4);"
+ @click="miniUpgradeSheetOpen=false;haptic()"></div>
+ <div x-show="miniUpgradeSheetOpen" x-cloak
+ class="absolute left-0 right-0 z-50 bg-white rounded-t-[1.75rem] shadow-2xl flex flex-col sheet-slide-up max-w-md mx-auto w-full min-w-0 mini-upgrade-sheet-panel"
+ style="bottom:var(--nav-h,84px);height:66vh;max-height:calc(88% - 84px);"
+ @click.outside="miniUpgradeSheetOpen=false;">
+ <div class="w-9 h-1 rounded-full bg-gray-200 mx-auto mt-1.5 mb-0.5 flex-none"></div>
+ <div class="flex items-center justify-between px-5 pt-1 pb-2 flex-none">
+ <span class="text-[16px] font-black text-black" x-text="(mlsPackage==='RESHOOT'?'Reshoot ':'Exterior ') + customQty + ' img'"></span>
+ <button @click="miniUpgradeSheetOpen=false;haptic()" class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-none">
+ <svg class="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+ </button>
+ </div>
+
+ <div class="overflow-y-auto px-5 pb-5 flex flex-col justify-center flex-1" style="max-height:calc(66vh - 100px);">
+ <div class="flex items-start gap-3 mb-4">
+ <div class="flex-1 rounded-xl px-3 py-3 relative bg-gray-50 border-2 border-gray-200">
+ <p class="text-[11px] font-semibold mb-0.5 text-center text-gray-400" x-text="(mlsPackage==='RESHOOT'?'Reshoot ':'Exterior ') + customQty + ' img'"></p>
+ <p class="text-[22px] font-black text-center text-gray-400" x-text="'$' + Math.floor(subtotal)"></p>
+ </div>
+ <div class="flex-1 rounded-xl px-3 py-3 relative bg-green-50 border-2 border-green-500">
+ <span class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-green-500 text-white text-[9px] font-black rounded-full px-2 py-0.5 whitespace-nowrap" style="transform:translateX(-50%);">BEST PRICE</span>
+ <p class="text-[11px] font-semibold mb-0.5 text-center text-green-700">Mini 12 img</p>
+ <p class="text-[22px] font-black text-center text-green-600">$119</p>
+ </div>
+ </div>
+ <div class="flex gap-2">
+ <button @click="haptic();miniUpgradeSheetOpen=false;" class="flex-1 rounded-lg py-2.5 text-[12px] font-semibold bg-gray-100 text-gray-500" x-text="'Stay on ' + (mlsPackage==='RESHOOT'?'Reshoot':'Exterior')"></button>
+ <button @click="haptic();mlsPackage='MINI';sqft='';selectedTier='custom';customQty='12';miniUpgradeSheetOpen=false;" class="flex-1 rounded-lg py-2.5 text-[12px] font-semibold bg-black text-white">Upgrade to Mini 12 img</button>
+ </div>
  </div>
  </div>
 
