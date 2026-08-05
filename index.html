@@ -335,6 +335,7 @@
  return { 
  screen: 'SPLASH',
  screenHistory: [],
+ ranchPress: false, minusPress: false, plusPress: false, tile25Press: false, tile36Press: false,
  navDir: 'forward',
  type: 'MLS',
  mode: 'MLS',
@@ -807,6 +808,14 @@
  saveQuote() {
  try { sessionStorage.setItem('pricex_quote', JSON.stringify(this.quoteItems)); } catch(e) {}
  },
+ setNavHeight() {
+ const nav = document.querySelector('.nav-pill-wrap');
+ if (nav) document.body.style.setProperty('--nav-h', nav.offsetHeight + 'px');
+ },
+ initNavHeight() {
+ this.setNavHeight();
+ window.addEventListener('resize', () => this.setNavHeight());
+ },
  loadQuote() {
  try {
  const saved = sessionStorage.getItem('pricex_quote');
@@ -946,7 +955,7 @@
  </script>
 </head>
 <body class="bg-gray-200 text-gray-900" style="height:100%;" 
- x-data="pricex()" x-init="loadQuote(); $nextTick(() => { const setNavH = () => { const nav = $el.querySelector('.nav-pill-wrap'); if (nav) $el.style.setProperty('--nav-h', nav.offsetHeight + 'px'); }; setNavH(); window.addEventListener('resize', setNavH); });">
+ x-data="pricex()" x-init="loadQuote(); $nextTick(initNavHeight)">
 
  <div class="app-container max-w-md mx-auto shadow-xl relative flex flex-col sm:rounded-[2.5rem] sm:h-[600px] sm:my-4" style="background:#000;">
  
