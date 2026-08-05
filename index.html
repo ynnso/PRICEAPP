@@ -808,6 +808,10 @@
  saveQuote() {
  try { sessionStorage.setItem('pricex_quote', JSON.stringify(this.quoteItems)); } catch(e) {}
  },
+ init() {
+ this.loadQuote();
+ this.$nextTick(function() { this.initNavHeight(); }.bind(this));
+ },
  setNavHeight() {
  const nav = document.querySelector('.nav-pill-wrap');
  if (nav) document.body.style.setProperty('--nav-h', nav.offsetHeight + 'px');
@@ -955,7 +959,7 @@
  </script>
 </head>
 <body class="bg-gray-200 text-gray-900" style="height:100%;" 
- x-data="pricex()" x-init="loadQuote(); $nextTick(initNavHeight)">
+ x-data="pricex()" x-init="init()">
 
  <div class="app-container max-w-md mx-auto shadow-xl relative flex flex-col sm:rounded-[2.5rem] sm:h-[600px] sm:my-4" style="background:#000;">
  
@@ -2376,7 +2380,7 @@
  <div style="max-height:calc(88vh - 175px);overflow-y:auto;">
  <div class="border-t border-gray-100">
  <template x-for="(item, idx) in quoteItems" :key="item.id">
- <div class="px-4 py-3.5 flex items-center justify-between gap-3" :class="idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'">
+ <div class="px-4 py-2.5 flex items-center justify-between gap-3" :class="idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'">
  <div class="pr-2 leading-snug">
  <div class="text-[12px] font-bold text-black tracking-wide" x-text="item.description.includes(': ') ? item.description.split(': ')[0] + ':' : ''"></div>
  <div class="text-[14px] font-semibold text-black" x-text="item.description.includes(': ') ? item.description.split(': ').slice(1).join(': ') : item.description"></div>
@@ -2392,22 +2396,22 @@
  </div>
  </div>
 
- <div class="border-t border-gray-100 px-4 py-3 flex-none">
- <div class="flex items-center justify-between mb-1.5">
+ <div class="border-t border-gray-100 px-4 py-2 flex-none">
+ <div class="flex items-center justify-between mb-1">
  <span class="text-[12px] font-semibold text-gray-500">Sub Total</span>
  <div class="flex items-center gap-2.5">
  <span class="text-[14px] font-bold text-black" style="font-variant-numeric:tabular-nums;" x-text="'$' + quoteSubtotal.toFixed(2)"></span>
  <span class="w-6 h-6 flex-none"></span>
  </div>
  </div>
- <div class="flex items-center justify-between mb-2.5">
+ <div class="flex items-center justify-between mb-1.5">
  <span class="text-[12px] font-semibold text-gray-500" x-text="'Tax (' + (taxRate*100).toFixed(2) + '%)'"></span>
  <div class="flex items-center gap-2.5">
  <span class="text-[14px] font-bold text-black" style="font-variant-numeric:tabular-nums;" x-text="'$' + quoteTax.toFixed(2)"></span>
  <span class="w-6 h-6 flex-none"></span>
  </div>
  </div>
- <div class="flex items-center justify-between mb-2.5 pt-2 border-t border-gray-100">
+ <div class="flex items-center justify-between mb-2 pt-1.5 border-t border-gray-100">
  <span class="text-[13px] font-black tracking-wide text-black">Total</span>
  <div class="flex items-center gap-2.5">
  <span class="flex items-start leading-none text-red-600" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;"><span class="text-[16px] font-black" style="margin-top:2px;">$</span><span><span class="text-2xl font-black" x-text="Math.floor(quoteTotal).toLocaleString('en-US')"></span><span class="text-[13px] font-black align-baseline" x-text="'.' + quoteTotal.toFixed(2).split('.')[1]"></span></span></span>
