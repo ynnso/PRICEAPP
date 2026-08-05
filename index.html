@@ -1620,8 +1620,11 @@
  x-show="mlsPackage === '' || mlsPackage === 'RANCH'"
  :class="mlsPackage === 'RANCH' ? 'border-black mls-row-active-bg mls-row-pulse' : 'border-gray-150'">
  <button @click="mlsPackage=(mlsPackage==='RANCH'?'':'RANCH');sqft='';selectedTier='';customQty='';haptic()"
+ @touchstart="ranchPress=true" @touchend="ranchPress=false" @touchcancel="ranchPress=false"
+ @mousedown="ranchPress=true" @mouseup="ranchPress=false" @mouseleave="ranchPress=false"
  x-show="mlsPackage !== 'RANCH'"
- class="flex items-center w-full transition-transform duration-100 active:scale-[0.98]" style="height:44px;">
+ :class="ranchPress ? 'scale-[0.97]' : 'scale-100'"
+ class="flex items-center w-full transition-transform duration-100" style="height:44px;">
  <div class="h-full flex items-center justify-center flex-none" style="width:44px;" class="bg-gray-100 text-gray-500">
  <svg class="w-5 h-5 flex-none" viewBox="0 0 256 256" fill="currentColor"><path d="M240,192h-8V130.57l1.49,2.08a8,8,0,1,0,13-9.3l-40-56a8,8,0,0,0-2-1.94L137,18.77l-.1-.07a16,16,0,0,0-17.76,0l-.1.07L51.45,65.42a8,8,0,0,0-2,1.94l-40,56a8,8,0,1,0,13,9.3L24,130.57V192H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM40,108.17,61.7,77.79,128,32l66.3,45.78L216,108.17V192H192V120a8,8,0,0,0-8-8H72a8,8,0,0,0-8,8v72H40Zm88,42L97,128H159Zm48-14.62v48.91L141.76,160ZM114.24,160,80,184.46V135.55ZM128,169.83,159,192H97ZM104,88a8,8,0,0,1,8-8h32a8,8,0,1,1,0,16H112A8,8,0,0,1,104,88Z"/></svg>
  </div>
@@ -1642,19 +1645,19 @@
  <span class="text-[64px] font-black" x-text="customQty !== '' ? Math.floor(subtotal) : 'Select'"></span>
  </div>
  <div class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-gray-300">
- <button @click="customQty=Math.max(25,(parseInt(customQty)||26)-1);haptic()" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px] transition-transform duration-150 active:scale-90" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);transition-timing-function:cubic-bezier(0.34,1.56,0.64,1);">-</button>
+ <button @click="customQty=Math.max(25,(parseInt(customQty)||26)-1);haptic()" @touchstart="minusPress=true" @touchend="minusPress=false" @touchcancel="minusPress=false" @mousedown="minusPress=true" @mouseup="minusPress=false" @mouseleave="minusPress=false" :class="minusPress ? 'scale-90' : 'scale-100'" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px] transition-transform duration-150" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);transition-timing-function:cubic-bezier(0.34,1.56,0.64,1);">-</button>
  <input type="number" inputmode="numeric" x-model="customQty" @input="haptic()" placeholder="—" class="text-[24px] font-black text-black text-center bg-transparent border-none outline-none" style="width:64px;font-variant-numeric:tabular-nums;-moz-appearance:textfield;">
- <button @click="customQty=(parseInt(customQty)||24)+1;haptic()" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px] transition-transform duration-150 active:scale-90" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);transition-timing-function:cubic-bezier(0.34,1.56,0.64,1);">+</button>
+ <button @click="customQty=(parseInt(customQty)||24)+1;haptic()" @touchstart="plusPress=true" @touchend="plusPress=false" @touchcancel="plusPress=false" @mousedown="plusPress=true" @mouseup="plusPress=false" @mouseleave="plusPress=false" :class="plusPress ? 'scale-90' : 'scale-100'" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px] transition-transform duration-150" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);transition-timing-function:cubic-bezier(0.34,1.56,0.64,1);">+</button>
  </div>
  </div>
  <div class="grid grid-cols-2 gap-4 p-3 bg-white justify-items-center">
- <button @click="customQty='25';haptic()" :class="customQty=='25' ? 'bg-black scale-[1.02] shadow-lg' : 'bg-gray-100'" class="flex flex-col items-center justify-center gap-0.5 rounded-xl aspect-square transition-all duration-150 active:scale-95" style="width:120px;">
+ <button @click="customQty='25';haptic()" @touchstart="tile25Press=true" @touchend="tile25Press=false" @touchcancel="tile25Press=false" @mousedown="tile25Press=true" @mouseup="tile25Press=false" @mouseleave="tile25Press=false" :class="customQty=='25' ? (tile25Press ? 'bg-black scale-95 shadow-lg' : 'bg-black scale-[1.02] shadow-lg') : (tile25Press ? 'bg-gray-100 scale-95' : 'bg-gray-100 scale-100')" class="flex flex-col items-center justify-center gap-0.5 rounded-xl aspect-square transition-all duration-150" style="width:120px;">
  <span class="text-[20px] font-black" :class="customQty=='25' ? 'text-white' : 'text-black'">25</span>
  <span class="flex items-start font-black" :class="customQty=='25' ? 'text-white' : 'text-black'" style="font-variant-numeric:tabular-nums;">
  <span class="text-[13px]" style="margin-top:2px;">$</span><span class="text-[22px]">299</span>
  </span>
  </button>
- <button @click="customQty='36';haptic()" :class="customQty=='36' ? 'bg-black scale-[1.02] shadow-lg' : 'bg-gray-100'" class="flex flex-col items-center justify-center gap-0.5 rounded-xl aspect-square transition-all duration-150 active:scale-95" style="width:120px;">
+ <button @click="customQty='36';haptic()" @touchstart="tile36Press=true" @touchend="tile36Press=false" @touchcancel="tile36Press=false" @mousedown="tile36Press=true" @mouseup="tile36Press=false" @mouseleave="tile36Press=false" :class="customQty=='36' ? (tile36Press ? 'bg-black scale-95 shadow-lg' : 'bg-black scale-[1.02] shadow-lg') : (tile36Press ? 'bg-gray-100 scale-95' : 'bg-gray-100 scale-100')" class="flex flex-col items-center justify-center gap-0.5 rounded-xl aspect-square transition-all duration-150" style="width:120px;">
  <span class="text-[20px] font-black" :class="customQty=='36' ? 'text-white' : 'text-black'">36</span>
  <span class="flex items-start font-black" :class="customQty=='36' ? 'text-white' : 'text-black'" style="font-variant-numeric:tabular-nums;">
  <span class="text-[13px]" style="margin-top:2px;">$</span><span class="text-[22px]">349</span>
