@@ -816,6 +816,25 @@
  init() {
  this.loadQuote();
  this.$nextTick(function() { this.initNavHeight(); }.bind(this));
+ this.$watch('quoteSheetOpen', function(v) { if (v) this.clampSheetWidth('.quote-sheet-panel', '.quote-sheet-backdrop'); }.bind(this));
+ this.$watch('startExpand', function(v) { if (v) this.clampSheetWidth('.start-picker-panel', '.start-picker-backdrop'); }.bind(this));
+ },
+ clampSheetWidth(panelSel, backdropSel) {
+ this.$nextTick(function() {
+ const container = document.querySelector('.app-container');
+ const panel = document.querySelector(panelSel);
+ const backdrop = backdropSel ? document.querySelector(backdropSel) : null;
+ if (!container || !panel) return;
+ const r = container.getBoundingClientRect();
+ panel.style.left = '0px';
+ panel.style.width = r.width + 'px';
+ panel.style.right = 'auto';
+ if (backdrop) {
+ backdrop.style.left = '0px';
+ backdrop.style.width = r.width + 'px';
+ backdrop.style.right = 'auto';
+ }
+ }.bind(this));
  },
  setNavHeight() {
  const nav = document.querySelector('.nav-pill-wrap');
@@ -1072,8 +1091,8 @@
 
  <!-- Inline expand overlay — MLS / PORT / Airbnb chooser -->
  <div x-show="startExpand !== ''" x-cloak x-transition:enter="transition-all ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
- class="absolute inset-0 bg-black/60 flex items-end z-30 max-w-md mx-auto" @click.self="startExpand = ''" style="border-radius: inherit;">
- <div class="w-full bg-white rounded-t-[2rem] overflow-hidden" @click.stop>
+ class="absolute inset-0 bg-black/60 flex items-end z-30 max-w-md mx-auto start-picker-backdrop" @click.self="startExpand = ''" style="border-radius: inherit;">
+ <div class="w-full bg-white rounded-t-[2rem] overflow-hidden start-picker-panel" @click.stop>
  <div class="flex items-center justify-center gap-2 px-5 pt-5 pb-3 relative">
  <template x-if="startExpand === 'PHOTOS'">
  <svg class="w-9 h-9 text-black flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16C13.6569 16 15 14.6569 15 13C15 11.3431 13.6569 10 12 10C10.3431 10 9 11.3431 9 13C9 14.6569 10.3431 16 12 16Z"/><path d="M3 16.8V9.2C3 8.0799 3 7.51984 3.21799 7.09202C3.40973 6.71569 3.71569 6.40973 4.09202 6.21799C4.51984 6 5.0799 6 6.2 6H7.25464C7.37758 6 7.43905 6 7.49576 5.9935C7.79166 5.95961 8.05705 5.79559 8.21969 5.54609C8.25086 5.49827 8.27836 5.44328 8.33333 5.33333C8.44329 5.11342 8.49827 5.00346 8.56062 4.90782C8.8859 4.40882 9.41668 4.08078 10.0085 4.01299C10.1219 4 10.2448 4 10.4907 4H13.5093C13.7552 4 13.8781 4 13.9915 4.01299C14.5833 4.08078 15.1141 4.40882 15.4394 4.90782C15.5017 5.00345 15.5567 5.11345 15.6667 5.33333C15.7216 5.44329 15.7491 5.49827 15.7803 5.54609C15.943 5.79559 16.2083 5.95961 16.5042 5.9935C16.561 6 16.6224 6 16.7454 6H17.8C18.9201 6 19.4802 6 19.908 6.21799C20.2843 6.40973 20.5903 6.71569 20.782 7.09202C21 7.51984 21 8.0799 21 9.2V16.8C21 17.9201 21 18.4802 20.782 18.908C20.5903 19.2843 20.2843 19.5903 19.908 19.782C19.4802 20 18.9201 20 17.8 20H6.2C5.0799 20 4.51984 20 4.09202 19.782C3.71569 19.5903 3.40973 19.2843 3.21799 18.908C3 18.4802 3 17.9201 3 16.8Z"/></svg>
@@ -2399,16 +2418,16 @@
  </div>
 
  <div x-show="quoteSheetOpen" x-cloak
- class="absolute inset-0 z-40 max-w-md mx-auto" style="background:rgba(0,0,0,0.4);"
+ class="absolute inset-0 z-40 max-w-md mx-auto quote-sheet-backdrop" style="background:rgba(0,0,0,0.4);"
  @click="quoteSheetOpen = false; haptic()">
  </div>
  <div x-show="quoteSheetOpen" x-cloak
- class="absolute left-0 right-0 z-50 bg-white rounded-t-[1.75rem] shadow-2xl flex flex-col sheet-slide-up max-w-md mx-auto w-full min-w-0"
+ class="absolute left-0 right-0 z-50 bg-white rounded-t-[1.75rem] shadow-2xl flex flex-col sheet-slide-up max-w-md mx-auto w-full min-w-0 quote-sheet-panel"
  style="bottom:var(--nav-h,84px);max-height:calc(88% - 84px);"
  @click.outside="quoteSheetOpen = false; haptic()">
- <div class="w-9 h-1 rounded-full bg-gray-200 mx-auto mt-2.5 mb-1 flex-none"></div>
+ <div class="w-9 h-1 rounded-full bg-gray-200 mx-auto mt-1.5 mb-0.5 flex-none"></div>
 
- <div class="flex items-center px-4 pt-0.5 pb-1.5 flex-none relative w-full min-w-0">
+ <div class="flex items-center px-4 pt-0 pb-1 flex-none relative w-full min-w-0">
  <div class="flex items-center gap-3 flex-1 min-w-0">
  <button @click="copyQuote()" class="flex-1 min-w-0 h-11 bg-red-600 text-white text-[12px] font-black tracking-wide rounded-lg flex items-center justify-center gap-1.5">
  <svg class="w-4 h-4 flex-none" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -2446,20 +2465,20 @@
  </div>
  </div>
 
- <div class="border-t border-gray-100 px-4 py-1 flex-none">
- <div class="flex items-center justify-end gap-2.5 mb-0.5">
- <span class="text-[12px] font-semibold text-gray-500 text-right">Sub Total</span>
- <span class="flex items-start leading-none text-black" style="letter-spacing:-0.02em;font-variant-numeric:tabular-nums;min-width:88px;justify-content:flex-end;"><span class="text-[10px] font-bold" style="margin-top:2px;">$</span><span><span class="text-[14px] font-bold" x-text="Math.floor(quoteSubtotal).toLocaleString('en-US')"></span><span class="text-[9px] font-bold align-baseline" x-text="'.' + quoteSubtotal.toFixed(2).split('.')[1]"></span></span></span>
+ <div class="border-t border-gray-100 px-4 py-0.5 flex-none">
+ <div class="flex items-center justify-end gap-2 mb-0">
+ <span class="text-[12px] font-semibold text-gray-500 text-right" style="min-width:100px;">Sub Total</span>
+ <span class="flex items-start leading-none text-black" style="letter-spacing:-0.02em;font-variant-numeric:tabular-nums;min-width:96px;justify-content:flex-end;"><span class="text-[10px] font-bold" style="margin-top:2px;">$</span><span><span class="text-[14px] font-bold" x-text="Math.floor(quoteSubtotal).toLocaleString('en-US')"></span><span class="text-[9px] font-bold align-baseline" x-text="'.' + quoteSubtotal.toFixed(2).split('.')[1]"></span></span></span>
  <span class="w-6 h-6 flex-none"></span>
  </div>
- <div class="flex items-center justify-end gap-2.5 mb-1">
- <span class="text-[12px] font-semibold text-gray-500 text-right" x-text="'Tax (' + (taxRate*100).toFixed(2) + '%)'"></span>
- <span class="flex items-start leading-none text-black" style="letter-spacing:-0.02em;font-variant-numeric:tabular-nums;min-width:88px;justify-content:flex-end;"><span class="text-[10px] font-bold" style="margin-top:2px;">$</span><span><span class="text-[14px] font-bold" x-text="Math.floor(quoteTax).toLocaleString('en-US')"></span><span class="text-[9px] font-bold align-baseline" x-text="'.' + quoteTax.toFixed(2).split('.')[1]"></span></span></span>
+ <div class="flex items-center justify-end gap-2 mb-0.5">
+ <span class="text-[12px] font-semibold text-gray-500 text-right" style="min-width:100px;" x-text="'Tax (' + (taxRate*100).toFixed(2) + '%)'"></span>
+ <span class="flex items-start leading-none text-black" style="letter-spacing:-0.02em;font-variant-numeric:tabular-nums;min-width:96px;justify-content:flex-end;"><span class="text-[10px] font-bold" style="margin-top:2px;">$</span><span><span class="text-[14px] font-bold" x-text="Math.floor(quoteTax).toLocaleString('en-US')"></span><span class="text-[9px] font-bold align-baseline" x-text="'.' + quoteTax.toFixed(2).split('.')[1]"></span></span></span>
  <span class="w-6 h-6 flex-none"></span>
  </div>
- <div class="flex items-center justify-end gap-2.5 mb-1 pt-1 border-t border-gray-100">
- <span class="text-[13px] font-black tracking-wide text-black text-right">Total</span>
- <span class="flex items-start leading-none text-red-600" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;min-width:88px;justify-content:flex-end;"><span class="text-[18px] font-black" style="margin-top:6px;">$</span><span><span class="text-[32px] font-black" x-text="Math.floor(quoteTotal).toLocaleString('en-US')"></span><span class="text-[15px] font-black align-baseline" x-text="'.' + quoteTotal.toFixed(2).split('.')[1]"></span></span></span>
+ <div class="flex items-center justify-end gap-2 mb-0.5 pt-0.5 border-t border-gray-100">
+ <span class="text-[13px] font-black tracking-wide text-black text-right" style="min-width:100px;">Total</span>
+ <span class="flex items-start leading-none text-red-600" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;min-width:96px;justify-content:flex-end;"><span class="text-[13px] font-black" style="margin-top:3px;">$</span><span><span class="text-[20px] font-black" x-text="Math.floor(quoteTotal).toLocaleString('en-US')"></span><span class="text-[11px] font-black align-baseline" x-text="'.' + quoteTotal.toFixed(2).split('.')[1]"></span></span></span>
  <span class="w-6 h-6 flex-none"></span>
  </div>
  </div>
