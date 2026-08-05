@@ -2534,6 +2534,33 @@
  </ul>
  </template>
 
+ <template x-if="infoOpen === 'RESHOOT'">
+ <div class="mt-4">
+ <div class="text-[13px] font-black text-red-600 mb-2 text-center">When to upgrade: Reshoot &rarr; Mini</div>
+ <table class="w-full text-[12px]" style="border-collapse:collapse;table-layout:fixed;">
+ <colgroup>
+ <col style="width:33%;">
+ <col style="width:33%;">
+ <col style="width:34%;">
+ </colgroup>
+ <thead>
+ <tr class="border-b border-gray-200">
+ <th class="text-center py-1.5 font-black text-red-600">Reshoot Qty</th>
+ <th class="text-center py-1.5 font-black text-black">Reshoot</th>
+ <th class="text-center py-1.5 font-black text-black">Mini 12 img</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr class="bg-red-600">
+ <td class="py-1.5 px-1 text-center text-white font-semibold">11 img</td>
+ <td class="py-1.5 px-1 text-center text-white font-semibold">$119</td>
+ <td class="py-1.5 px-1 text-center text-white font-semibold">$119</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
+ </template>
+
  <template x-if="infoOpen === 'RANCH'">
  <ul class="flex flex-col gap-0.5 text-[14px] text-black leading-tight list-disc pl-4">
  <li>No Sq Ft</li>
@@ -2549,6 +2576,33 @@
  <li>Covers 8 images</li>
  <li>+$10/extra</li>
  </ul>
+ </template>
+
+ <template x-if="infoOpen === 'EXT'">
+ <div class="mt-4">
+ <div class="text-[13px] font-black text-red-600 mb-2 text-center">When to upgrade: Exterior &rarr; Mini</div>
+ <table class="w-full text-[12px]" style="border-collapse:collapse;table-layout:fixed;">
+ <colgroup>
+ <col style="width:33%;">
+ <col style="width:33%;">
+ <col style="width:34%;">
+ </colgroup>
+ <thead>
+ <tr class="border-b border-gray-200">
+ <th class="text-center py-1.5 font-black text-red-600">Exterior Qty</th>
+ <th class="text-center py-1.5 font-black text-black">Exterior</th>
+ <th class="text-center py-1.5 font-black text-black">Mini 12 img</th>
+ </tr>
+ </thead>
+ <tbody>
+ <tr class="bg-red-600">
+ <td class="py-1.5 px-1 text-center text-white font-semibold">12 img</td>
+ <td class="py-1.5 px-1 text-center text-white font-semibold">$119</td>
+ <td class="py-1.5 px-1 text-center text-white font-semibold">$119</td>
+ </tr>
+ </tbody>
+ </table>
+ </div>
  </template>
 
  <template x-if="infoOpen === 'MINI'">
