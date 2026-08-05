@@ -782,6 +782,13 @@
  this.quoteSheetOpen = false;
  this.saveQuote();
  },
+ get quoteSubtotal() {
+ const sub = this.quoteItems.reduce((sum, i) => sum + i.subtotal, 0);
+ return Math.round(sub * 100) / 100;
+ },
+ get quoteTax() {
+ return Math.round((this.quoteTotal - this.quoteSubtotal) * 100) / 100;
+ },
  get quoteTotal() {
  const sub = this.quoteItems.reduce((sum, i) => sum + this.itemPrice(i), 0);
  return Math.round(sub * 100) / 100;
@@ -950,7 +957,7 @@
  </button>
  <!-- Back button — shown on all other screens, mirrors cart icon size/style -->
  <button x-show="screen !== 'START'" x-cloak @click="haptic(); goBack()" class="w-11 h-11 flex items-center justify-center rounded-full transition-colors relative flex-none bg-white hover:bg-gray-100" aria-label="Back">
- <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+ <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
  </button>
  <!-- Mode pill — centered, icon + title-case label -->
  <div class="flex-1 flex justify-center">
@@ -1614,13 +1621,13 @@
  :class="mlsPackage === 'RANCH' ? 'border-black mls-row-active-bg mls-row-pulse' : 'border-gray-150'">
  <button @click="mlsPackage=(mlsPackage==='RANCH'?'':'RANCH');sqft='';selectedTier='';customQty='';haptic()"
  x-show="mlsPackage !== 'RANCH'"
- class="flex items-center w-full" style="height:44px;">
+ class="flex items-center w-full transition-transform duration-100 active:scale-[0.98]" style="height:44px;">
  <div class="h-full flex items-center justify-center flex-none" style="width:44px;" class="bg-gray-100 text-gray-500">
  <svg class="w-5 h-5 flex-none" viewBox="0 0 256 256" fill="currentColor"><path d="M240,192h-8V130.57l1.49,2.08a8,8,0,1,0,13-9.3l-40-56a8,8,0,0,0-2-1.94L137,18.77l-.1-.07a16,16,0,0,0-17.76,0l-.1.07L51.45,65.42a8,8,0,0,0-2,1.94l-40,56a8,8,0,1,0,13,9.3L24,130.57V192H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM40,108.17,61.7,77.79,128,32l66.3,45.78L216,108.17V192H192V120a8,8,0,0,0-8-8H72a8,8,0,0,0-8,8v72H40Zm88,42L97,128H159Zm48-14.62v48.91L141.76,160ZM114.24,160,80,184.46V135.55ZM128,169.83,159,192H97ZM104,88a8,8,0,0,1,8-8h32a8,8,0,1,1,0,16H112A8,8,0,0,1,104,88Z"/></svg>
  </div>
  <span class="font-semibold text-[17px] tracking-normal truncate px-2 flex-1 text-left text-black">Ranch Shoot</span>
  <span class="mls-price-pop flex-none px-2 flex items-center leading-none text-black" style="font-variant-numeric:tabular-nums;">from<span class="flex items-start leading-none" style="letter-spacing:-0.03em;margin-left:4px;"><span class="text-[13px] font-black" style="margin-top:2px;">$</span><span class="text-[19px] font-black">299</span></span></span>
- <svg class="w-3.5 h-3.5 text-gray-300 flex-none mr-3 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+ <svg class="w-3.5 h-3.5 text-gray-300 flex-none mr-3 transition-transform duration-200" :class="mlsPackage === 'RANCH' ? 'rotate-180' : ''" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
  </button>
  <div x-show="mlsPackage==='RANCH'" x-cloak @click.outside="mlsPackage='';sqft='';selectedTier='';customQty='';" class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white relative">
  <div class="flex flex-col items-center text-center gap-2">
@@ -1635,19 +1642,19 @@
  <span class="text-[64px] font-black" x-text="customQty !== '' ? Math.floor(subtotal) : 'Select'"></span>
  </div>
  <div class="flex items-center justify-center gap-4 bg-gray-100 rounded-full px-4 py-2.5 border-2 border-gray-300">
- <button @click="customQty=Math.max(25,(parseInt(customQty)||26)-1);haptic()" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">-</button>
+ <button @click="customQty=Math.max(25,(parseInt(customQty)||26)-1);haptic()" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px] transition-transform duration-150 active:scale-90" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);transition-timing-function:cubic-bezier(0.34,1.56,0.64,1);">-</button>
  <input type="number" inputmode="numeric" x-model="customQty" @input="haptic()" placeholder="—" class="text-[24px] font-black text-black text-center bg-transparent border-none outline-none" style="width:64px;font-variant-numeric:tabular-nums;-moz-appearance:textfield;">
- <button @click="customQty=(parseInt(customQty)||24)+1;haptic()" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
+ <button @click="customQty=(parseInt(customQty)||24)+1;haptic()" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px] transition-transform duration-150 active:scale-90" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);transition-timing-function:cubic-bezier(0.34,1.56,0.64,1);">+</button>
  </div>
  </div>
  <div class="grid grid-cols-2 gap-4 p-3 bg-white justify-items-center">
- <button @click="customQty='25';haptic()" :class="customQty=='25' ? 'bg-black scale-[1.02] shadow-lg' : 'bg-gray-100'" class="flex flex-col items-center justify-center gap-0.5 rounded-xl aspect-square transition-all duration-150" style="width:120px;">
+ <button @click="customQty='25';haptic()" :class="customQty=='25' ? 'bg-black scale-[1.02] shadow-lg' : 'bg-gray-100'" class="flex flex-col items-center justify-center gap-0.5 rounded-xl aspect-square transition-all duration-150 active:scale-95" style="width:120px;">
  <span class="text-[20px] font-black" :class="customQty=='25' ? 'text-white' : 'text-black'">25</span>
  <span class="flex items-start font-black" :class="customQty=='25' ? 'text-white' : 'text-black'" style="font-variant-numeric:tabular-nums;">
  <span class="text-[13px]" style="margin-top:2px;">$</span><span class="text-[22px]">299</span>
  </span>
  </button>
- <button @click="customQty='36';haptic()" :class="customQty=='36' ? 'bg-black scale-[1.02] shadow-lg' : 'bg-gray-100'" class="flex flex-col items-center justify-center gap-0.5 rounded-xl aspect-square transition-all duration-150" style="width:120px;">
+ <button @click="customQty='36';haptic()" :class="customQty=='36' ? 'bg-black scale-[1.02] shadow-lg' : 'bg-gray-100'" class="flex flex-col items-center justify-center gap-0.5 rounded-xl aspect-square transition-all duration-150 active:scale-95" style="width:120px;">
  <span class="text-[20px] font-black" :class="customQty=='36' ? 'text-white' : 'text-black'">36</span>
  <span class="flex items-start font-black" :class="customQty=='36' ? 'text-white' : 'text-black'" style="font-variant-numeric:tabular-nums;">
  <span class="text-[13px]" style="margin-top:2px;">$</span><span class="text-[22px]">349</span>
@@ -2363,7 +2370,7 @@
  <div class="text-[14px] font-semibold text-black" x-text="item.description.includes(': ') ? item.description.split(': ').slice(1).join(': ') : item.description"></div>
  </div>
  <div class="flex items-center gap-2.5 flex-none">
- <span class="flex items-start leading-none" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;"><span class="text-[12px] font-black" style="margin-top:1px;">$</span><span><span class="text-[17px] font-black" x-text="Math.floor(itemPrice(item)).toLocaleString('en-US')"></span><span class="text-[10px] font-black align-baseline" x-text="'.' + itemPrice(item).toFixed(2).split('.')[1]"></span></span></span>
+ <span class="flex items-start leading-none" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;"><span class="text-[12px] font-black" style="margin-top:1px;">$</span><span><span class="text-[17px] font-black" x-text="Math.floor(item.subtotal).toLocaleString('en-US')"></span><span class="text-[10px] font-black align-baseline" x-text="'.' + item.subtotal.toFixed(2).split('.')[1]"></span></span></span>
  <button @click="removeFromQuote(item.id)" class="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-600 flex-none" aria-label="Remove item">
  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
  </button>
@@ -2374,7 +2381,21 @@
  </div>
 
  <div class="border-t border-gray-100 px-4 py-3 flex-none">
+ <div class="flex items-center justify-between mb-1.5">
+ <span class="text-[12px] font-semibold text-gray-500">Sub Total</span>
+ <div class="flex items-center gap-2.5">
+ <span class="text-[14px] font-bold text-black" style="font-variant-numeric:tabular-nums;" x-text="'$' + quoteSubtotal.toFixed(2)"></span>
+ <span class="w-6 h-6 flex-none"></span>
+ </div>
+ </div>
  <div class="flex items-center justify-between mb-2.5">
+ <span class="text-[12px] font-semibold text-gray-500" x-text="'Tax (' + (taxRate*100).toFixed(2) + '%)'"></span>
+ <div class="flex items-center gap-2.5">
+ <span class="text-[14px] font-bold text-black" style="font-variant-numeric:tabular-nums;" x-text="'$' + quoteTax.toFixed(2)"></span>
+ <span class="w-6 h-6 flex-none"></span>
+ </div>
+ </div>
+ <div class="flex items-center justify-between mb-2.5 pt-2 border-t border-gray-100">
  <span class="text-[13px] font-black tracking-wide text-black">Total</span>
  <div class="flex items-center gap-2.5">
  <span class="flex items-start leading-none text-red-600" style="letter-spacing:-0.03em;font-variant-numeric:tabular-nums;"><span class="text-[16px] font-black" style="margin-top:2px;">$</span><span><span class="text-2xl font-black" x-text="Math.floor(quoteTotal).toLocaleString('en-US')"></span><span class="text-[13px] font-black align-baseline" x-text="'.' + quoteTotal.toFixed(2).split('.')[1]"></span></span></span>
