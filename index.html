@@ -1650,6 +1650,16 @@
  <button @click="customQty=(parseInt(customQty)||8)+1;haptic()" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
  </div>
  </div>
+ <div x-show="mlsPackage==='RESHOOT' && parseInt(customQty) >= 11" x-cloak x-transition class="w-full bg-black rounded-xl px-3 py-3 mt-3">
+ <div class="flex items-center justify-center gap-1.5 mb-2">
+ <span class="w-4 h-4 rounded-full bg-white text-black text-[11px] font-black flex items-center justify-center flex-none">!</span>
+ <span class="text-[12px] font-semibold text-white text-center">Reshoot 11 img $119 same Mini price!</span>
+ </div>
+ <button @click.stop="haptic(); mlsPackage='MINI'; sqft=''; selectedTier='custom'; customQty='12'" class="w-full bg-white text-black text-[12px] font-semibold rounded-lg py-2 flex items-center justify-center gap-1.5">
+ Upgrade to Mini 12 img
+ <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+ </button>
+ </div>
  <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''" x-show="finalTotal > 0" x-cloak
  class="w-full h-14 flex items-center justify-center gap-2 transition-all bg-red-600 active:scale-[0.97]">
  <svg x-show="!justAdded" class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
@@ -1755,6 +1765,16 @@
  <input type="number" inputmode="numeric" x-model="customQty" @input="haptic()" class="text-[24px] font-black text-black text-center bg-transparent border-none outline-none" style="width:64px;font-variant-numeric:tabular-nums;-moz-appearance:textfield;">
  <button @click="customQty=(parseInt(customQty)||8)+1;haptic()" class="w-9 h-9 bg-black text-white rounded-full font-black flex-none text-[22px]" style="box-shadow:0 1px 2px rgba(0,0,0,0.08);">+</button>
  </div>
+ </div>
+ <div x-show="mlsPackage==='EXT' && parseInt(customQty) >= 12" x-cloak x-transition class="w-full bg-black rounded-xl px-3 py-3 mt-3">
+ <div class="flex items-center justify-center gap-1.5 mb-2">
+ <span class="w-4 h-4 rounded-full bg-white text-black text-[11px] font-black flex items-center justify-center flex-none">!</span>
+ <span class="text-[12px] font-semibold text-white text-center">Exterior 12 img $119 same Mini price!</span>
+ </div>
+ <button @click.stop="haptic(); mlsPackage='MINI'; sqft=''; selectedTier='custom'; customQty='12'" class="w-full bg-white text-black text-[12px] font-semibold rounded-lg py-2 flex items-center justify-center gap-1.5">
+ Upgrade to Mini 12 img
+ <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+ </button>
  </div>
  <button @click="addToQuote(); mlsPackage=''; sqft=''; selectedTier=''; customQty=''" x-show="finalTotal > 0" x-cloak
  class="w-full h-14 flex items-center justify-center gap-2 transition-all bg-red-600 active:scale-[0.97]">
