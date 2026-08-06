@@ -40,6 +40,8 @@
  @keyframes slideOutRight { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(32px); } }
  @keyframes slideInUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
  .sheet-slide-up { animation: slideInUp 0.28s cubic-bezier(0.22,1,0.36,1) both; }
+ @keyframes wizardPulse { 0%,100% { box-shadow:0 0 0 0 rgba(226,75,74,0.4); } 50% { box-shadow:0 0 0 6px rgba(226,75,74,0); } }
+ .wizard-sqft-pulse { animation: wizardPulse 1.6s ease-in-out infinite; }
  @keyframes slideOutDown { from { opacity:1; transform:translateY(0); } to { opacity:0; transform:translateY(40px); } }
  .screen-enter-forward { animation: slideInRight 0.28s cubic-bezier(0.22,1,0.36,1) both; }
  .screen-leave-forward { animation: slideOutLeft 0.22s cubic-bezier(0.4,0,1,1) both; }
@@ -2758,38 +2760,38 @@
  <div class="w-9 h-1 rounded-full bg-white/15 mx-auto mt-1.5 flex-none cursor-grab"
  @touchstart="wizardDragStartY = $event.touches[0].clientY"
  @touchmove="if($event.touches[0].clientY - wizardDragStartY > 60){wizardSheetOpen=false;wizardSqft='';haptic();}"></div>
- <button @click="wizardSheetOpen=false;wizardSqft='';haptic()" class="absolute top-2 right-5 w-7 h-7 rounded-full bg-white/10 flex items-center justify-center flex-none z-10">
- <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
- </button>
 
- <div class="flex items-center gap-1.5 px-5 pt-3 flex-none">
+ <div class="flex items-center justify-between px-5 pt-3 flex-none">
  <div class="flex items-center gap-1.5 bg-white/10 rounded-full pl-1.5 pr-3 py-1.5">
  <div class="w-6 h-6 rounded-full bg-red-500/15 flex items-center justify-center flex-none">
  <svg class="w-3.5 h-3.5 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><path d="M12 8l1.2 2.8L16 12l-2.8 1.2L12 16l-1.2-2.8L8 12l2.8-1.2z"/></svg>
  </div>
- <span class="text-[13px] font-medium text-white/85 leading-none">Wizard</span>
+ <span class="text-[13px] font-medium text-white leading-none">Wizard</span>
  </div>
+ <button @click="wizardSheetOpen=false;wizardSqft='';haptic()" class="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center flex-none">
+ <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+ </button>
  </div>
 
- <div class="overflow-y-auto px-5 pt-5 pb-6 flex flex-col flex-1" style="-webkit-overflow-scrolling:touch;">
+ <div class="overflow-y-auto px-5 pt-4 pb-6 flex flex-col flex-1" style="-webkit-overflow-scrolling:touch;">
 
- <h1 class="text-[24px] font-medium text-white text-center mb-6" x-text="mlsPackage==='RESHOOT'?'Reshoot':(mlsPackage==='EXT'?'Exterior Only':'Mini Shoot')"></h1>
+ <h1 class="text-[24px] font-medium text-white text-center mb-5" x-text="mlsPackage==='RESHOOT'?'Reshoot':(mlsPackage==='EXT'?'Exterior Only':'Mini Shoot')"></h1>
 
  <div class="flex justify-center mb-6">
  <div class="bg-red-500 rounded-[14px] px-6 py-4 text-center">
  <p class="text-[10px] font-semibold text-white tracking-wide leading-none mb-2">Live Price</p>
- <p class="flex items-start justify-center leading-none text-white" style="letter-spacing:-0.02em;"><span class="text-[14px] font-medium" style="margin-top:4px;">$</span><span class="text-[32px] font-medium" x-text="wizardPrices().find(c=>c.key==='current').price"></span></p>
+ <p class="flex items-start justify-center leading-none text-white" style="letter-spacing:-0.03em;"><span class="text-[15px] font-bold" style="margin-top:5px;">$</span><span class="text-[36px] font-bold" x-text="wizardPrices().find(c=>c.key==='current').price"></span></p>
  </div>
  </div>
 
- <div class="grid grid-cols-2 gap-2.5 mb-6">
- <div class="bg-white/[0.08] rounded-[10px] py-4 flex items-center justify-center gap-3">
- <button @click="customQty=String(Math.max(mlsPackage==='MINI'?12:8,(parseInt(customQty)||0)-1));haptic()" class="w-[28px] h-[28px] bg-white text-black rounded-full font-medium flex-none text-[16px]">-</button>
- <span class="text-[22px] font-medium text-white text-center" style="min-width:26px;" x-text="customQty"></span>
- <button @click="customQty=String((parseInt(customQty)||0)+1);haptic()" class="w-[28px] h-[28px] bg-white text-black rounded-full font-medium flex-none text-[16px]">+</button>
+ <div class="grid grid-cols-2 gap-2.5 mb-2">
+ <div class="rounded-[10px] py-4 flex items-center justify-center gap-3 transition-colors" :class="wizardSqft ? 'bg-white/[0.08]' : 'bg-white/[0.03]'">
+ <button @click="if(!wizardSqft){haptic();return;} customQty=String(Math.max(mlsPackage==='MINI'?12:8,(parseInt(customQty)||0)-1));haptic()" :disabled="!wizardSqft" class="w-[28px] h-[28px] rounded-full font-medium flex-none text-[16px] transition-colors" :class="wizardSqft ? 'bg-white text-black' : 'bg-white/10 text-white/20'">-</button>
+ <span class="text-[22px] font-medium text-center transition-colors" :class="wizardSqft ? 'text-white' : 'text-white/20'" style="min-width:26px;" x-text="customQty"></span>
+ <button @click="if(!wizardSqft){haptic();return;} customQty=String((parseInt(customQty)||0)+1);haptic()" :disabled="!wizardSqft" class="w-[28px] h-[28px] rounded-full font-medium flex-none text-[16px] transition-colors" :class="wizardSqft ? 'bg-white text-black' : 'bg-white/10 text-white/20'">+</button>
  </div>
- <div class="bg-white/[0.08] rounded-[10px] flex items-center justify-center px-2">
- <select x-model="wizardSqft" @change="haptic()" class="w-full h-[60px] bg-transparent text-white text-[16px] font-medium text-center outline-none appearance-none tracking-wide">
+ <div class="rounded-[10px] flex items-center justify-center px-2 transition-colors" :class="wizardSqft ? 'bg-white/[0.08]' : 'bg-red-500/15 wizard-sqft-pulse'">
+ <select x-model="wizardSqft" @change="haptic()" class="w-full h-[60px] bg-transparent text-[16px] font-medium text-center outline-none appearance-none tracking-wide" :class="wizardSqft ? 'text-white' : 'text-red-400'">
  <option value="" class="text-black">Select Sq Ft</option>
  <template x-for="opt in ['0 - 1,999', '2,000 - 2,999', '3,000 - 3,999', '4,000 - 4,999', '5,000 - 6,999', '7,000 - 9,999', '10,000+']">
  <option :value="opt.replace(/ /g, '').replace(/,/g, '')" class="text-black" x-text="opt + '  Sq Ft'"></option>
@@ -2797,6 +2799,8 @@
  </select>
  </div>
  </div>
+
+ <p x-show="!wizardSqft" x-cloak class="text-[11px] font-medium text-red-400 text-center mb-4">Select sq ft first to unlock the stepper and see live comparisons</p>
 
  <template x-if="!wizardSqft">
  <div class="flex-1 flex flex-col items-center justify-center gap-2 text-center px-6">
@@ -2806,13 +2810,14 @@
  </template>
 
  <template x-if="wizardSqft">
- <div class="flex flex-col flex-1">
+ <div class="flex flex-col flex-1 justify-between">
 
- <div class="grid gap-2.5 mb-3 items-end flex-1" :class="wizardPrices().length === 3 ? 'grid-cols-3' : 'grid-cols-2'" style="align-content:end;">
+ <div class="grid gap-2.5 items-end flex-1" :class="wizardPrices().length === 3 ? 'grid-cols-3' : 'grid-cols-2'" style="align-content:center;">
  <template x-for="c in wizardPrices()" :key="c.key">
+ <div class="flex flex-col justify-end h-full">
  <div :class="c.isBest ? 'border-[1.5px] border-red-500 rounded-[16px] overflow-hidden -translate-y-2' : 'border border-white/20 rounded-[14px] px-2 py-5 text-center'" :style="c.isBest ? 'box-shadow:0 6px 16px rgba(226,75,74,0.22);' : ''">
  <div x-show="c.isBest" x-cloak class="bg-red-500 py-3 px-2 flex items-center justify-center gap-1.5">
- <span class="text-[12px] font-medium text-black">Best Pkg</span>
+ <span class="text-[12px] font-medium text-white">Best Pkg</span>
  <span class="w-[17px] h-[17px] rounded-full bg-black flex items-center justify-center flex-none">
  <svg class="w-[9px] h-[9px] text-red-500" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
  </span>
@@ -2822,18 +2827,20 @@
  <p class="flex items-start justify-center leading-none text-white" style="letter-spacing:-0.02em;"><span class="font-medium" :class="c.isBest ? 'text-[11px]' : 'text-[10px]'" style="margin-top:3px;">$</span><span class="font-medium" :class="c.isBest ? 'text-[22px]' : 'text-[19px]'" x-text="c.price"></span></p>
  </div>
  </div>
+ </div>
  </template>
  </div>
 
- <div class="grid gap-2.5" :class="wizardPrices().length === 3 ? 'grid-cols-3' : 'grid-cols-2'">
+ <div class="grid gap-2.5 mt-6" :class="wizardPrices().length === 3 ? 'grid-cols-3' : 'grid-cols-2'">
  <template x-for="c in wizardPrices()" :key="c.key">
  <button @click="haptic();
  if(c.key==='current'){ wizardSheetOpen=false; wizardSqft=''; }
  else if(c.key==='mini'){ mlsPackage='MINI'; sqft=''; selectedTier='custom'; customQty=String(Math.max(parseInt(customQty)||12,12)); wizardSheetOpen=false; wizardSqft=''; }
  else if(c.key==='full'){ sqft=wizardSqft; mlsPackage='FULL'; selectedTier=''; customQty=''; wizardSheetOpen=false; wizardSqft=''; }"
- class="rounded-[10px] py-3.5 text-[13px] font-medium flex items-center justify-center gap-1.5" :class="c.isBest ? 'bg-red-500 text-black' : 'border border-white/25 text-white/75'">
+ class="rounded-[10px] py-3.5 text-[13px] font-medium flex items-center justify-center gap-1.5 text-white" :class="c.isBest ? 'bg-red-500' : 'border border-white/25'">
+ <svg x-show="c.key==='current'" class="w-3 h-3 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 7 7 17M7 7v10h10"/></svg>
  <span x-text="c.key==='current' ? ('Stay ' + c.label.split(' ')[0]) : (c.key==='mini' ? 'Switch to Mini' : 'Switch to Full')"></span>
- <svg class="w-3 h-3 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path :d="c.key==='current' ? 'M17 7 7 17M7 7v10h10' : 'M7 17 17 7M7 7h10v10'"/></svg>
+ <svg x-show="c.key!=='current'" class="w-3 h-3 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg>
  </button>
  </template>
  </div>
