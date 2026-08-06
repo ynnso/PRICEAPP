@@ -1586,7 +1586,7 @@
  <div x-show="mode === 'MLS'" class="flex-grow flex flex-col gap-2.5 fade-in relative">
 
  <!-- FULL SHOOT -->
- <div x-data="{ sqftPickerOpen: false }" x-show="mlsPackage === '' || mlsPackage === 'FULL'" class="rounded-2xl overflow-hidden card-frosted transition-all duration-150"
+ <div x-ref="fullShootRow" x-data="{ sqftPickerOpen: false }" x-show="mlsPackage === '' || mlsPackage === 'FULL'" class="rounded-2xl overflow-hidden card-frosted transition-all duration-150"
  :class="mlsPackage === 'FULL' ? 'border-black mls-row-active-bg mls-row-pulse' : 'border-gray-150'">
  <button @click="mlsPackage=(mlsPackage==='FULL'?'':'FULL');sqft='';selectedTier='';customQty='';sqftPickerOpen=false;haptic()"
  x-show="mlsPackage !== 'FULL'"
@@ -2775,23 +2775,40 @@
 
  <div class="overflow-y-auto px-5 pt-4 pb-6 flex flex-col flex-1" style="-webkit-overflow-scrolling:touch;">
 
- <h1 class="text-[24px] font-medium text-white text-center mb-5" x-text="mlsPackage==='RESHOOT'?'Reshoot':(mlsPackage==='EXT'?'Exterior Only':'Mini Shoot')"></h1>
+ <h1 class="text-[24px] font-medium text-white text-center mb-6 flex-none" x-text="mlsPackage==='RESHOOT'?'Reshoot':(mlsPackage==='EXT'?'Exterior Only':'Mini Shoot')"></h1>
 
- <div class="flex justify-center mb-6">
+ <template x-if="!wizardSqft">
+ <div class="flex-1 flex flex-col items-center justify-center gap-5 text-center px-4">
+ <p class="text-[15px] font-medium text-white/60">What's the property's sq ft?</p>
+ <div class="w-full rounded-[10px] px-2 transition-colors bg-red-500/15 wizard-sqft-pulse">
+ <select x-model="wizardSqft" @change="haptic()" class="w-full h-[60px] bg-transparent text-red-400 text-[16px] font-medium text-center outline-none appearance-none tracking-wide">
+ <option value="" class="text-black">Select Sq Ft</option>
+ <template x-for="opt in ['0 - 1,999', '2,000 - 2,999', '3,000 - 3,999', '4,000 - 4,999', '5,000 - 6,999', '7,000 - 9,999', '10,000+']">
+ <option :value="opt.replace(/ /g, '').replace(/,/g, '')" class="text-black" x-text="opt + '  Sq Ft'"></option>
+ </template>
+ </select>
+ </div>
+ </div>
+ </template>
+
+ <template x-if="wizardSqft">
+ <div class="flex flex-col flex-1 justify-between">
+
+ <div class="flex justify-center mb-6 flex-none">
  <div class="bg-red-500 rounded-[14px] px-6 py-4 text-center">
  <p class="text-[10px] font-semibold text-white tracking-wide leading-none mb-2">Live Price</p>
  <p class="flex items-start justify-center leading-none text-white" style="letter-spacing:-0.03em;"><span class="text-[15px] font-bold" style="margin-top:5px;">$</span><span class="text-[36px] font-bold" x-text="wizardPrices().find(c=>c.key==='current').price"></span></p>
  </div>
  </div>
 
- <div class="grid grid-cols-2 gap-2.5 mb-2">
- <div class="rounded-[10px] py-4 flex items-center justify-center gap-3 transition-colors" :class="wizardSqft ? 'bg-white/[0.08]' : 'bg-white/[0.03]'">
- <button @click="if(!wizardSqft){haptic();return;} customQty=String(Math.max(mlsPackage==='MINI'?12:8,(parseInt(customQty)||0)-1));haptic()" :disabled="!wizardSqft" class="w-[28px] h-[28px] rounded-full font-medium flex-none text-[16px] transition-colors" :class="wizardSqft ? 'bg-white text-black' : 'bg-white/10 text-white/20'">-</button>
- <span class="text-[22px] font-medium text-center transition-colors" :class="wizardSqft ? 'text-white' : 'text-white/20'" style="min-width:26px;" x-text="customQty"></span>
- <button @click="if(!wizardSqft){haptic();return;} customQty=String((parseInt(customQty)||0)+1);haptic()" :disabled="!wizardSqft" class="w-[28px] h-[28px] rounded-full font-medium flex-none text-[16px] transition-colors" :class="wizardSqft ? 'bg-white text-black' : 'bg-white/10 text-white/20'">+</button>
+ <div class="grid grid-cols-2 gap-2.5 mb-6 flex-none">
+ <div class="rounded-[10px] py-4 flex items-center justify-center gap-3 bg-white/[0.08]">
+ <button @click="customQty=String(Math.max(mlsPackage==='MINI'?12:8,(parseInt(customQty)||0)-1));haptic()" class="w-[28px] h-[28px] rounded-full font-medium flex-none text-[16px] bg-white text-black">-</button>
+ <span class="text-[22px] font-medium text-center text-white" style="min-width:26px;" x-text="customQty"></span>
+ <button @click="customQty=String((parseInt(customQty)||0)+1);haptic()" class="w-[28px] h-[28px] rounded-full font-medium flex-none text-[16px] bg-white text-black">+</button>
  </div>
- <div class="rounded-[10px] flex items-center justify-center px-2 transition-colors" :class="wizardSqft ? 'bg-white/[0.08]' : 'bg-red-500/15 wizard-sqft-pulse'">
- <select x-model="wizardSqft" @change="haptic()" class="w-full h-[60px] bg-transparent text-[16px] font-medium text-center outline-none appearance-none tracking-wide" :class="wizardSqft ? 'text-white' : 'text-red-400'">
+ <div class="rounded-[10px] flex items-center justify-center px-2 bg-white/[0.08]">
+ <select x-model="wizardSqft" @change="haptic()" class="w-full h-[60px] bg-transparent text-white text-[16px] font-medium text-center outline-none appearance-none tracking-wide">
  <option value="" class="text-black">Select Sq Ft</option>
  <template x-for="opt in ['0 - 1,999', '2,000 - 2,999', '3,000 - 3,999', '4,000 - 4,999', '5,000 - 6,999', '7,000 - 9,999', '10,000+']">
  <option :value="opt.replace(/ /g, '').replace(/,/g, '')" class="text-black" x-text="opt + '  Sq Ft'"></option>
@@ -2800,26 +2817,14 @@
  </div>
  </div>
 
- <p x-show="!wizardSqft" x-cloak class="text-[11px] font-medium text-red-400 text-center mb-4">Select sq ft first to unlock the stepper and see live comparisons</p>
-
- <template x-if="!wizardSqft">
- <div class="flex-1 flex flex-col items-center justify-center gap-2 text-center px-6">
- <svg class="w-6 h-6 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9.14,3.43h0a7.64,7.64,0,0,1,7.64,7.64V18.7a0,0,0,0,1,0,0H3.41A1.91,1.91,0,0,1,1.5,16.8V11.07A7.64,7.64,0,0,1,9.14,3.43Z"/><polyline points="14.86 18.7 22.5 18.7 22.5 21.57"/><line x1="17.73" y1="11.07" x2="17.73" y2="15.84"/><circle cx="9.14" cy="11.07" r="3.82"/></svg>
- <p class="text-[13px] font-medium text-white/40">Select a sq ft range to see<br>package comparisons</p>
- </div>
- </template>
-
- <template x-if="wizardSqft">
- <div class="flex flex-col flex-1 justify-between">
-
  <div class="grid gap-2.5 items-end flex-1" :class="wizardPrices().length === 3 ? 'grid-cols-3' : 'grid-cols-2'" style="align-content:center;">
  <template x-for="c in wizardPrices()" :key="c.key">
  <div class="flex flex-col justify-end h-full">
  <div :class="c.isBest ? 'border-[1.5px] border-red-500 rounded-[16px] overflow-hidden -translate-y-2' : 'border border-white/20 rounded-[14px] px-2 py-5 text-center'" :style="c.isBest ? 'box-shadow:0 6px 16px rgba(226,75,74,0.22);' : ''">
- <div x-show="c.isBest" x-cloak class="bg-red-500 py-3 px-2 flex items-center justify-center gap-1.5">
- <span class="text-[12px] font-medium text-white">Best Pkg</span>
- <span class="w-[17px] h-[17px] rounded-full bg-black flex items-center justify-center flex-none">
- <svg class="w-[9px] h-[9px] text-red-500" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+ <div x-show="c.isBest" x-cloak class="bg-red-500 py-3.5 px-2 flex items-center justify-center gap-2">
+ <span class="text-[14px] font-semibold text-white">Best Pkg</span>
+ <span class="w-[18px] h-[18px] rounded-full bg-white flex items-center justify-center flex-none">
+ <svg class="w-[10px] h-[10px] text-black" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
  </span>
  </div>
  <div :class="c.isBest ? 'px-2 py-5 text-center' : ''">
@@ -2831,12 +2836,12 @@
  </template>
  </div>
 
- <div class="grid gap-2.5 mt-6" :class="wizardPrices().length === 3 ? 'grid-cols-3' : 'grid-cols-2'">
+ <div class="grid gap-2.5 mt-4 flex-none" :class="wizardPrices().length === 3 ? 'grid-cols-3' : 'grid-cols-2'">
  <template x-for="c in wizardPrices()" :key="c.key">
  <button @click="haptic();
  if(c.key==='current'){ wizardSheetOpen=false; wizardSqft=''; }
  else if(c.key==='mini'){ mlsPackage='MINI'; sqft=''; selectedTier='custom'; customQty=String(Math.max(parseInt(customQty)||12,12)); wizardSheetOpen=false; wizardSqft=''; }
- else if(c.key==='full'){ sqft=wizardSqft; mlsPackage='FULL'; selectedTier=''; customQty=''; wizardSheetOpen=false; wizardSqft=''; }"
+ else if(c.key==='full'){ sqft=wizardSqft; mlsPackage='FULL'; selectedTier=''; customQty=''; wizardSheetOpen=false; wizardSqft=''; $nextTick(() => { $refs.fullShootRow?.scrollIntoView({behavior:'smooth', block:'center'}); }); }"
  class="rounded-[10px] py-3.5 text-[13px] font-medium flex items-center justify-center gap-1.5 text-white" :class="c.isBest ? 'bg-red-500' : 'border border-white/25'">
  <svg x-show="c.key==='current'" class="w-3 h-3 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 7 7 17M7 7v10h10"/></svg>
  <span x-text="c.key==='current' ? ('Stay ' + c.label.split(' ')[0]) : (c.key==='mini' ? 'Switch to Mini' : 'Switch to Full')"></span>
