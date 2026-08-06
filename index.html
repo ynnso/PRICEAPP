@@ -2761,7 +2761,7 @@
  @touchstart="wizardDragStartY = $event.touches[0].clientY"
  @touchmove="if($event.touches[0].clientY - wizardDragStartY > 60){wizardSheetOpen=false;wizardSqft='';haptic();}"></div>
 
- <div class="flex items-center justify-between px-5 pt-3 flex-none">
+ <div class="flex items-center justify-between px-5 pt-2 pb-1 flex-none">
  <div class="flex items-center gap-1.5 bg-white/10 rounded-full pl-1.5 pr-3 py-1.5">
  <div class="w-6 h-6 rounded-full bg-red-500/15 flex items-center justify-center flex-none">
  <svg class="w-3.5 h-3.5 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><path d="M12 8l1.2 2.8L16 12l-2.8 1.2L12 16l-1.2-2.8L8 12l2.8-1.2z"/></svg>
@@ -2773,9 +2773,9 @@
  </button>
  </div>
 
- <div class="overflow-y-auto px-5 pt-4 pb-6 flex flex-col flex-1" style="-webkit-overflow-scrolling:touch;">
+ <h1 class="text-[24px] font-medium text-white text-center px-5 pt-1 pb-5 m-0 flex-none leading-none" x-text="mlsPackage==='RESHOOT'?'Reshoot':(mlsPackage==='EXT'?'Exterior Only':'Mini Shoot')"></h1>
 
- <h1 class="text-[24px] font-medium text-white text-center mb-6 flex-none" x-text="mlsPackage==='RESHOOT'?'Reshoot':(mlsPackage==='EXT'?'Exterior Only':'Mini Shoot')"></h1>
+ <div class="overflow-y-auto px-5 pb-6 flex flex-col flex-1" style="-webkit-overflow-scrolling:touch;">
 
  <template x-if="!wizardSqft">
  <div class="flex-1 flex flex-col items-center justify-center gap-5 text-center px-4">
