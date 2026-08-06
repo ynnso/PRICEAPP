@@ -2754,8 +2754,8 @@
  class="absolute inset-0 z-40 max-w-md mx-auto wizard-sheet-backdrop" style="background:rgba(0,0,0,0.4);"
  @click="wizardSheetOpen=false;wizardSqft='';haptic()"></div>
  <div x-show="wizardSheetOpen" x-cloak
- class="absolute left-0 right-0 z-50 bg-[#111111] rounded-t-[1.75rem] shadow-2xl flex flex-col sheet-slide-up max-w-md mx-auto w-full min-w-0 wizard-sheet-panel"
- style="bottom:var(--nav-h,84px);height:74vh;max-height:calc(88% - 84px);"
+ class="absolute left-0 right-0 z-50 bg-[#111111] rounded-t-[1.75rem] shadow-2xl flex flex-col sheet-slide-up max-w-md mx-auto w-full min-w-0 wizard-sheet-panel transition-all duration-300"
+ :style="wizardSqft ? 'bottom:var(--nav-h,84px);height:74vh;max-height:calc(88% - 84px);' : 'bottom:var(--nav-h,84px);height:auto;max-height:calc(88% - 84px);'"
  @click.outside="wizardSheetOpen=false;wizardSqft='';">
  <div class="w-9 h-1 rounded-full bg-white/15 mx-auto mt-1.5 flex-none cursor-grab"
  @touchstart="wizardDragStartY = $event.touches[0].clientY"
@@ -2778,7 +2778,7 @@
  <div class="overflow-y-auto px-5 pb-6 flex flex-col flex-1" style="-webkit-overflow-scrolling:touch;">
 
  <template x-if="!wizardSqft">
- <div class="flex-1 flex flex-col items-center justify-center gap-5 text-center px-4">
+ <div class="flex flex-col items-center gap-5 text-center px-4 pt-10 pb-12">
  <p class="text-[15px] font-medium text-white/60">What's the property's sq ft?</p>
  <div class="w-full rounded-[10px] px-2 transition-colors bg-red-500/15 wizard-sqft-pulse">
  <select x-model="wizardSqft" @change="haptic()" class="w-full h-[60px] bg-transparent text-red-400 text-[16px] font-medium text-center outline-none appearance-none tracking-wide">
@@ -2792,7 +2792,7 @@
  </template>
 
  <template x-if="wizardSqft">
- <div class="flex flex-col flex-1 justify-between">
+ <div class="flex flex-col flex-1 justify-center">
 
  <div class="flex justify-center mb-6 flex-none">
  <div class="bg-red-500 rounded-[14px] px-6 py-4 text-center">
@@ -2817,9 +2817,7 @@
  </div>
  </div>
 
- <div class="flex-1"></div>
-
- <div class="grid gap-2.5" :class="wizardPrices().length === 3 ? 'grid-cols-3' : 'grid-cols-2'">
+ <div class="grid gap-2.5 flex-none" :class="wizardPrices().length === 3 ? 'grid-cols-3' : 'grid-cols-2'">
  <template x-for="c in wizardPrices()" :key="c.key">
  <div class="flex flex-col justify-end h-full">
  <div :class="c.isBest ? 'border-[1.5px] border-red-500 rounded-[16px] overflow-hidden -translate-y-2' : 'border border-white/20 rounded-[14px] px-2 py-5 text-center'" :style="c.isBest ? 'box-shadow:0 6px 16px rgba(226,75,74,0.22);' : ''">
