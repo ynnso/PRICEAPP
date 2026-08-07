@@ -873,23 +873,22 @@
  const full = sqftTable ? sqftTable[String(fullTier)] : null;
  const current = this.mlsPackage === 'RESHOOT' ? reshoot : (this.mlsPackage === 'EXT' ? ext : (this.mlsPackage === 'FULL' ? full : mini));
  const currentLabel = this.mlsPackage === 'RESHOOT' ? 'Reshoot' : (this.mlsPackage === 'EXT' ? 'Exterior' : (this.mlsPackage === 'FULL' ? 'Full' : 'Mini'));
- const currentImgs = this.mlsPackage === 'FULL' ? fullTier : q;
- const candidates = [{ key: 'current', label: currentLabel + ' ' + currentImgs + ' img', price: current, imgs: currentImgs }];
- if (this.mlsPackage !== 'MINI') candidates.push({ key: 'mini', label: 'Mini ' + Math.max(q, 12) + ' img', price: mini, imgs: Math.max(q, 12) });
+ const currentImgs = q;
+ const candidates = [{ key: 'current', label: currentLabel + ' ' + (this.mlsPackage === 'FULL' ? q + ' img (' + fullTier + ' tier)' : q + ' img'), price: current, imgs: currentImgs }];
+ if (this.mlsPackage !== 'MINI' && q <= 24) candidates.push({ key: 'mini', label: 'Mini ' + Math.max(q, 12) + ' img', price: mini, imgs: Math.max(q, 12) });
  if (full !== null && this.mlsPackage !== 'FULL') candidates.push({ key: 'full', label: 'Full ' + fullTier + ' img', price: full, imgs: fullTier });
  const validCandidates = candidates.filter(c => c.price !== null && c.price !== undefined);
  if (!validCandidates.length) { candidates.forEach(c => { c.isBest = false; }); return candidates; }
  const minPrice = Math.min(...validCandidates.map(c => c.price));
  const tiedForLowest = validCandidates.filter(c => c.price === minPrice);
  const mostImagesAtLowest = Math.max(...tiedForLowest.map(c => c.imgs));
- candidates.forEach(c => { c.isBest = c.price === minPrice && c.imgs === mostImagesAtLowest; });
- if (this.mlsPackage === 'EXT') {
- const extC = candidates.find(c => c.key === 'current');
- const miniC = candidates.find(c => c.key === 'mini');
- if (extC && miniC && extC.isBest && miniC.isBest) {
- extC.isBest = false;
+ const winners = tiedForLowest.filter(c => c.imgs === mostImagesAtLowest);
+ let winner = winners.find(c => c.key === 'current') || winners[0];
+ if (this.mlsPackage === 'EXT' && winner && winner.key === 'current') {
+ const miniC = winners.find(c => c.key === 'mini');
+ if (miniC) winner = miniC;
  }
- }
+ candidates.forEach(c => { c.isBest = (c === winner); });
  return candidates;
  },
  clampSheetWidth(panelSel, backdropSel) {
@@ -2925,20 +2924,11 @@
  </div>
 
  <div class="grid grid-cols-2 gap-2.5 mb-6 flex-none">
- <template x-if="mlsPackage !== 'FULL'">
  <div class="rounded-[10px] py-4 flex items-center justify-center gap-3 bg-white/[0.08]">
- <button @click="customQty=String(Math.max(mlsPackage==='MINI'?12:8,(parseInt(customQty)||(mlsPackage==='MINI'?12:8))-1));haptic()" class="w-[28px] h-[28px] rounded-full font-medium flex-none text-[16px] bg-white text-black">-</button>
- <span class="text-[22px] font-medium text-center text-white" style="min-width:26px;" x-text="customQty || (mlsPackage==='MINI'?12:8)"></span>
- <button @click="customQty=String((parseInt(customQty)||(mlsPackage==='MINI'?12:8))+1);haptic()" class="w-[28px] h-[28px] rounded-full font-medium flex-none text-[16px] bg-white text-black">+</button>
+ <button @click="customQty=String(Math.max(mlsPackage==='MINI'?12:(mlsPackage==='FULL'?1:8),(parseInt(customQty)||(mlsPackage==='MINI'?12:(mlsPackage==='FULL'?25:8)))-1));selectedTier='custom';haptic()" class="w-[28px] h-[28px] rounded-full font-medium flex-none text-[16px] bg-white text-black">-</button>
+ <span class="text-[22px] font-medium text-center text-white" style="min-width:26px;" x-text="customQty || (mlsPackage==='MINI'?12:(mlsPackage==='FULL'?25:8))"></span>
+ <button @click="customQty=String((parseInt(customQty)||(mlsPackage==='MINI'?12:(mlsPackage==='FULL'?25:8)))+1);selectedTier='custom';haptic()" class="w-[28px] h-[28px] rounded-full font-medium flex-none text-[16px] bg-white text-black">+</button>
  </div>
- </template>
- <template x-if="mlsPackage === 'FULL'">
- <div class="rounded-[10px] flex items-center justify-center gap-1 bg-white/[0.08] px-1.5">
- <template x-for="t in ['25','36','40','50']" :key="t">
- <button @click="customQty=t;selectedTier='custom';haptic()" class="flex-1 h-[60px] rounded-[8px] text-[13px] font-medium transition-colors" :class="(customQty===t || (!['25','36','40','50'].includes(customQty) && t==='25')) ? 'bg-white text-black' : 'text-white/50'" x-text="t"></button>
- </template>
- </div>
- </template>
  <div class="rounded-[10px] flex items-center justify-center px-2 bg-white/[0.08]">
  <select x-model="wizardSqft" x-init="$nextTick(() => { $el.value = wizardSqft; })" @change="haptic()" class="w-full h-[60px] bg-transparent text-white text-[16px] font-medium text-center outline-none appearance-none tracking-wide">
  <option value="" class="text-black">Select Sq Ft</option>
