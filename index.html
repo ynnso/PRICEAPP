@@ -98,9 +98,8 @@
  }
  @keyframes splashExit { 0% { opacity:1; } 100% { opacity:0; } }
  .splash-bg { animation: splashBg 0.2s ease-out forwards; }
- .splash-s2s { display:inline-flex; will-change:transform,opacity; transform:scale(0.12); opacity:0; }
- .splash-s2s.is-active { animation: s2sBurst 900ms cubic-bezier(0.6,0,0.85,0.35) 250ms both; }
- .splash-exit { animation: splashExit 260ms cubic-bezier(0.4,0,1,1) forwards; }
+ .splash-s2s { display:inline-flex; will-change:transform,opacity; animation: s2sBurst 900ms cubic-bezier(0.6,0,0.85,0.35) 250ms forwards; }
+ .splash-exit-auto { animation: splashExit 260ms cubic-bezier(0.4,0,1,1) 1200ms forwards; }
 
  /* ── Active press states — all interactive elements ── */
  button:active, [role="button"]:active { transform: scale(0.96); filter: brightness(0.92); transition: transform 0.08s ease, filter 0.08s ease; }
@@ -1168,11 +1167,11 @@
 
  <!-- SPLASH SCREEN -->
  <div x-show="screen === 'SPLASH'" x-cloak
- class="splash-bg absolute inset-0 bg-black z-50 flex flex-col items-center justify-center gap-0 overflow-hidden"
- x-init="$nextTick(() => { const m=$refs.s2sMark; void m.offsetWidth; m.classList.add('is-active'); }); setTimeout(() => { $el.classList.add('splash-exit'); setTimeout(() => { navDir='forward'; screen = 'START'; }, 260); }, 1300)">
+ class="splash-bg splash-exit-auto absolute inset-0 bg-black z-50 flex flex-col items-center justify-center gap-0 overflow-hidden"
+ x-init="setTimeout(() => { navDir='forward'; screen = 'START'; }, 1460)">
 
  <!-- S2S mark: tiny centered, bursts to fill screen -->
- <span x-ref="s2sMark" class="splash-s2s tracking-tighter leading-none" style="transform-origin:center;align-items:baseline;">
+ <span class="splash-s2s tracking-tighter leading-none" style="transform-origin:center;align-items:baseline;">
  <span class="font-bold text-[23px] text-white">S</span><span class="font-black text-[31px] text-red-600">2</span><span class="font-bold text-[23px] text-white">S</span>
  </span>
  </div>
