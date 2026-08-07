@@ -42,6 +42,7 @@
  .sheet-slide-up { animation: slideInUp 300ms cubic-bezier(0,0,0.2,1) both; }
  @keyframes slideOutDown { from { opacity:1; transform:translateY(0); } to { opacity:0; transform:translateY(40px); } }
  .sheet-slide-down { animation: slideOutDown 200ms cubic-bezier(0.4,0,1,1) both; }
+ .sheet-dragging { transition: none !important; will-change: transform; }
  @keyframes wizardPulse { 0%,100% { box-shadow:0 0 0 0 rgba(226,75,74,0.4); } 50% { box-shadow:0 0 0 6px rgba(226,75,74,0); } }
  .wizard-sqft-pulse { animation: wizardPulse 1.6s ease-in-out infinite; }
  @keyframes slideOutDown { from { opacity:1; transform:translateY(0); } to { opacity:0; transform:translateY(40px); } }
@@ -923,6 +924,7 @@
  if (scrollEl && scrollEl.scrollTop > 0 && evt.target.closest('[data-drag-handle]') === null) { if (window.__diagLog) window.__diagLog('dragStart BLOCKED by scroll guard'); return; }
  const y = evt.touches ? evt.touches[0].clientY : evt.clientY;
  this.sheetDrag = { active: true, startY: y, startT: performance.now(), lastY: y, lastT: performance.now(), velocity: 0, panelEl: panel, closeFn };
+ panel.classList.add('sheet-dragging');
  panel.style.transition = 'none';
  },
  sheetDragMove(evt) {
@@ -935,7 +937,7 @@
  d.lastY = y; d.lastT = now;
  let delta = y - d.startY;
  if (delta < 0) delta = -Math.sqrt(-delta) * 4;
- d.panelEl.style.transform = 'translateY(' + delta + 'px)';
+ d.panelEl.style.transform = 'translate3d(0,' + delta + 'px,0)';
  if (window.__diagLog) window.__diagLog('dragMove delta=' + Math.round(delta) + ' cancelable=' + evt.cancelable);
  if (delta > 0 && evt.cancelable) evt.preventDefault();
  },
@@ -948,13 +950,14 @@
  const height = panel.offsetHeight || 1;
  const distanceRatio = delta / height;
  const shouldDismiss = delta > 0 && (d.velocity > 0.6 || distanceRatio > 0.35);
+ panel.classList.remove('sheet-dragging');
  panel.style.transition = 'transform 200ms cubic-bezier(0.4,0,1,1)';
  if (shouldDismiss) {
- panel.style.transform = 'translateY(100%)';
+ panel.style.transform = 'translate3d(0,100%,0)';
  this.haptic();
  setTimeout(() => { if (d.closeFn) d.closeFn(); panel.style.transition = ''; panel.style.transform = ''; }, 200);
  } else {
- panel.style.transform = 'translateY(0)';
+ panel.style.transform = 'translate3d(0,0,0)';
  setTimeout(() => { panel.style.transition = ''; }, 200);
  }
  this.sheetDrag = { active: false, startY: 0, startT: 0, lastY: 0, lastT: 0, velocity: 0, panelEl: null, closeFn: null };
@@ -1174,7 +1177,7 @@
  <!-- SPLASH SCREEN -->
  <div x-show="screen === 'SPLASH'" x-cloak
  class="splash-bg absolute inset-0 bg-black z-50 flex flex-col items-center justify-center gap-0 overflow-hidden"
- x-init="if(window.__diagLog) window.__diagLog('splash x-init ran, screen=' + screen); setTimeout(() => { if(window.__diagLog) window.__diagLog('splash timer fired at 1300ms'); $el.classList.add('splash-exit'); setTimeout(() => { if(window.__diagLog) window.__diagLog('splash -> START'); navDir='forward'; screen = 'START'; }, 260); }, 1300)">
+ x-init="if(window.__diagLog) window.__diagLog('splash x-init ran, screen=' + screen); setTimeout(() => { if(window.__diagLog){ const s=getComputedStyle(document.querySelector('.splash-s2s')); window.__diagLog('mid-burst opacity=' + s.opacity + ' transform=' + s.transform.slice(0,40)); } }, 700); setTimeout(() => { if(window.__diagLog) window.__diagLog('splash timer fired at 1300ms'); $el.classList.add('splash-exit'); setTimeout(() => { if(window.__diagLog) window.__diagLog('splash -> START'); navDir='forward'; screen = 'START'; }, 260); }, 1300)">
 
  <!-- S2S mark: tiny centered, bursts to fill screen -->
  <span class="splash-s2s tracking-tighter leading-none flex items-baseline" style="transform-origin:center;">
