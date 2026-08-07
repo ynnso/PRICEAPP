@@ -42,7 +42,7 @@
  .sheet-slide-up { animation: slideInUp 300ms cubic-bezier(0,0,0.2,1) both; }
  @keyframes slideOutDown { from { opacity:1; transform:translateY(0); } to { opacity:0; transform:translateY(40px); } }
  .sheet-slide-down { animation: slideOutDown 200ms cubic-bezier(0.4,0,1,1) both; }
- .sheet-dragging { transition: none !important; will-change: transform; }
+ .sheet-dragging { transition: none !important; will-change: transform; -webkit-backface-visibility: hidden; -webkit-transform-style: preserve-3d; }
  @keyframes wizardPulse { 0%,100% { box-shadow:0 0 0 0 rgba(226,75,74,0.4); } 50% { box-shadow:0 0 0 6px rgba(226,75,74,0); } }
  .wizard-sqft-pulse { animation: wizardPulse 1.6s ease-in-out infinite; }
  @keyframes slideOutDown { from { opacity:1; transform:translateY(0); } to { opacity:0; transform:translateY(40px); } }
@@ -942,6 +942,7 @@
  d.rafPending = true;
  requestAnimationFrame(() => {
  d.rafPending = false;
+ panelEl.style.setProperty('-webkit-transform', 'translate3d(0,' + delta + 'px,0)', 'important');
  panelEl.style.setProperty('transform', 'translate3d(0,' + delta + 'px,0)', 'important');
  });
  }
@@ -1184,10 +1185,10 @@
  <!-- SPLASH SCREEN -->
  <div x-show="screen === 'SPLASH'" x-cloak
  class="splash-bg absolute inset-0 bg-black z-50 flex flex-col items-center justify-center gap-0 overflow-hidden"
- x-init="if(window.__diagLog) window.__diagLog('splash x-init ran, screen=' + screen); $nextTick(() => { const el=$el.querySelector('.splash-s2s'); if(window.__diagLog) window.__diagLog('splash el found=' + !!el); const start=performance.now(); function frame(t){ const e=t-start; let p; if(e<250){p=0;} else if(e<1150){p=(e-250)/900; const eased=Math.pow(p,1.8); el.style.setProperty('opacity', (p<0.1 ? p*10 : 1), 'important'); el.style.setProperty('transform', 'scale('+(0.12+eased*41.88)+')', 'important');} else {el.style.setProperty('opacity','1','important'); el.style.setProperty('transform','scale(42)','important');} if(e<1150) requestAnimationFrame(frame); } requestAnimationFrame(frame); setTimeout(() => { if(window.__diagLog){ const s=getComputedStyle(el); window.__diagLog('mid-burst opacity=' + s.opacity + ' transform=' + s.transform.slice(0,40)); } }, 700); }); setTimeout(() => { if(window.__diagLog) window.__diagLog('splash timer fired at 1300ms'); $el.classList.add('splash-exit'); setTimeout(() => { if(window.__diagLog) window.__diagLog('splash -> START'); navDir='forward'; screen = 'START'; }, 260); }, 1300)">
+ x-init="if(window.__diagLog) window.__diagLog('splash x-init ran, screen=' + screen); $nextTick(() => { const el=$refs.s2sMark; if(window.__diagLog) window.__diagLog('splash el found=' + !!el); const start=performance.now(); function frame(t){ const e=t-start; let p; if(e<250){p=0;} else if(e<1150){p=(e-250)/900; const eased=Math.pow(p,1.8); el.style.setProperty('opacity', (p<0.1 ? p*10 : 1), 'important'); el.style.setProperty('transform', 'scale('+(0.12+eased*41.88)+')', 'important');} else {el.style.setProperty('opacity','1','important'); el.style.setProperty('transform','scale(42)','important');} if(e<1150) requestAnimationFrame(frame); } requestAnimationFrame(frame); setTimeout(() => { if(window.__diagLog){ const s=getComputedStyle(el); window.__diagLog('mid-burst opacity=' + s.opacity + ' transform=' + s.transform.slice(0,40)); } }, 700); }); setTimeout(() => { if(window.__diagLog) window.__diagLog('splash timer fired at 1300ms'); $el.classList.add('splash-exit'); setTimeout(() => { if(window.__diagLog) window.__diagLog('splash -> START'); navDir='forward'; screen = 'START'; }, 260); }, 1300)">
 
  <!-- S2S mark: tiny centered, bursts to fill screen -->
- <span class="splash-s2s tracking-tighter leading-none" style="transform-origin:center;align-items:baseline;">
+ <span x-ref="s2sMark" class="splash-s2s tracking-tighter leading-none" style="transform-origin:center;align-items:baseline;">
  <span class="font-bold text-[23px] text-white">S</span><span class="font-black text-[31px] text-red-600">2</span><span class="font-bold text-[23px] text-white">S</span>
  </span>
  </div>
