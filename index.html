@@ -860,19 +860,25 @@
  }.bind(this));
  },
  wizardPrices() {
- const fullTier = this.mlsPackage === 'FULL' ? (['25','36','40','50'].includes(this.customQty) ? this.customQty : '25') : null;
- const qFloor = this.mlsPackage === 'MINI' ? 12 : (this.mlsPackage === 'RESHOOT' || this.mlsPackage === 'EXT' ? 8 : 0);
- const q = this.mlsPackage === 'FULL' ? parseInt(fullTier) : Math.max(qFloor, parseInt(this.customQty) || qFloor);
+ const rawQty = parseInt(String(this.customQty).replace(/,/g, '')) || 0;
+ const tiers = [25, 36, 40, 50];
+ const sqftTable = (this.wizardSqft && this.mlsPrices[this.wizardSqft]) ? this.mlsPrices[this.wizardSqft] : null;
+ const fullTierFor = (n) => { for (const t of tiers) { if (n <= t) return t; } return 50; };
+ const qFloor = this.mlsPackage === 'MINI' ? 12 : (this.mlsPackage === 'FULL' ? 1 : 8);
+ const q = Math.max(qFloor, rawQty || (this.mlsPackage === 'FULL' ? 25 : qFloor));
  const reshoot = 89 + Math.max(0, q - 8) * 10;
  const ext = 79 + Math.max(0, q - 8) * 10;
  const mini = 119 + Math.max(0, q - 12) * 10;
- const full = (this.wizardSqft && this.mlsPrices[this.wizardSqft]) ? this.mlsPrices[this.wizardSqft][this.mlsPackage === 'FULL' ? fullTier : '25'] : null;
+ const fullTier = fullTierFor(q);
+ const full = sqftTable ? sqftTable[String(fullTier)] : null;
  const current = this.mlsPackage === 'RESHOOT' ? reshoot : (this.mlsPackage === 'EXT' ? ext : (this.mlsPackage === 'FULL' ? full : mini));
  const currentLabel = this.mlsPackage === 'RESHOOT' ? 'Reshoot' : (this.mlsPackage === 'EXT' ? 'Exterior' : (this.mlsPackage === 'FULL' ? 'Full' : 'Mini'));
- const candidates = [{ key: 'current', label: currentLabel + ' ' + q + ' img', price: current, imgs: q }];
- if (this.mlsPackage !== 'MINI' && this.mlsPackage !== 'FULL') candidates.push({ key: 'mini', label: 'Mini ' + Math.max(q, 12) + ' img', price: mini, imgs: Math.max(q, 12) });
- if (full !== null && this.mlsPackage !== 'FULL') candidates.push({ key: 'full', label: 'Full 25 img', price: full, imgs: 25 });
- const validCandidates = candidates.filter(c => c.price !== null);
+ const currentImgs = this.mlsPackage === 'FULL' ? fullTier : q;
+ const candidates = [{ key: 'current', label: currentLabel + ' ' + currentImgs + ' img', price: current, imgs: currentImgs }];
+ if (this.mlsPackage !== 'MINI') candidates.push({ key: 'mini', label: 'Mini ' + Math.max(q, 12) + ' img', price: mini, imgs: Math.max(q, 12) });
+ if (full !== null && this.mlsPackage !== 'FULL') candidates.push({ key: 'full', label: 'Full ' + fullTier + ' img', price: full, imgs: fullTier });
+ const validCandidates = candidates.filter(c => c.price !== null && c.price !== undefined);
+ if (!validCandidates.length) { candidates.forEach(c => { c.isBest = false; }); return candidates; }
  const minPrice = Math.min(...validCandidates.map(c => c.price));
  const tiedForLowest = validCandidates.filter(c => c.price === minPrice);
  const mostImagesAtLowest = Math.max(...tiedForLowest.map(c => c.imgs));
@@ -1611,7 +1617,7 @@
  </button>
  <div x-show="mlsPackage==='FULL'" x-cloak @click.outside="mlsPackage='';sqft='';selectedTier='';customQty='';sqftPickerOpen=false;" class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white relative">
  <div class="flex flex-col items-center text-center gap-2 relative">
- <button @click.stop="haptic(); mlsPackage='FULL'; wizardSqft=''; wizardSheetOpen=true;" class="absolute top-0 left-0 flex items-center bg-[#111111] rounded-full pr-3 overflow-hidden" style="height:32px;" aria-label="Open Wizard for best package">
+ <button @click.stop="haptic(); mlsPackage='FULL'; wizardSqft=(mlsPrices[sqft] ? sqft : ''); wizardSheetOpen=true;" class="absolute top-0 left-0 flex items-center bg-[#111111] rounded-full pr-3 overflow-hidden" style="height:32px;" aria-label="Open Wizard for best package">
  <span class="h-full aspect-square rounded-full bg-red-500/20 flex items-center justify-center flex-none">
  <svg class="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><path d="M12 8l1.2 2.8L16 12l-2.8 1.2L12 16l-1.2-2.8L8 12l2.8-1.2z"/></svg>
  </span>
