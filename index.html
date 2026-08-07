@@ -937,7 +937,14 @@
  d.lastY = y; d.lastT = now;
  let delta = y - d.startY;
  if (delta < 0) delta = -Math.sqrt(-delta) * 4;
- d.panelEl.style.transform = 'translate3d(0,' + delta + 'px,0)';
+ const panelEl = d.panelEl;
+ if (!d.rafPending) {
+ d.rafPending = true;
+ requestAnimationFrame(() => {
+ d.rafPending = false;
+ panelEl.style.setProperty('transform', 'translate3d(0,' + delta + 'px,0)', 'important');
+ });
+ }
  if (window.__diagLog) window.__diagLog('dragMove delta=' + Math.round(delta) + ' cancelable=' + evt.cancelable);
  if (delta > 0 && evt.cancelable) evt.preventDefault();
  },
@@ -1177,7 +1184,7 @@
  <!-- SPLASH SCREEN -->
  <div x-show="screen === 'SPLASH'" x-cloak
  class="splash-bg absolute inset-0 bg-black z-50 flex flex-col items-center justify-center gap-0 overflow-hidden"
- x-init="if(window.__diagLog) window.__diagLog('splash x-init ran, screen=' + screen); const el=$el.querySelector('.splash-s2s'); const start=performance.now(); function frame(t){ const e=t-start; let p; if(e<250){p=0;} else if(e<1150){p=(e-250)/900; const eased=Math.pow(p,1.8); el.style.opacity = p<0.1 ? p*10 : 1; el.style.transform='scale('+(0.12+eased*41.88)+')';} else {el.style.opacity=1; el.style.transform='scale(42)';} if(e<1150) requestAnimationFrame(frame); } requestAnimationFrame(frame); setTimeout(() => { if(window.__diagLog){ const s=getComputedStyle(el); window.__diagLog('mid-burst opacity=' + s.opacity + ' transform=' + s.transform.slice(0,40)); } }, 700); setTimeout(() => { if(window.__diagLog) window.__diagLog('splash timer fired at 1300ms'); $el.classList.add('splash-exit'); setTimeout(() => { if(window.__diagLog) window.__diagLog('splash -> START'); navDir='forward'; screen = 'START'; }, 260); }, 1300)">
+ x-init="if(window.__diagLog) window.__diagLog('splash x-init ran, screen=' + screen); $nextTick(() => { const el=$el.querySelector('.splash-s2s'); if(window.__diagLog) window.__diagLog('splash el found=' + !!el); const start=performance.now(); function frame(t){ const e=t-start; let p; if(e<250){p=0;} else if(e<1150){p=(e-250)/900; const eased=Math.pow(p,1.8); el.style.setProperty('opacity', (p<0.1 ? p*10 : 1), 'important'); el.style.setProperty('transform', 'scale('+(0.12+eased*41.88)+')', 'important');} else {el.style.setProperty('opacity','1','important'); el.style.setProperty('transform','scale(42)','important');} if(e<1150) requestAnimationFrame(frame); } requestAnimationFrame(frame); setTimeout(() => { if(window.__diagLog){ const s=getComputedStyle(el); window.__diagLog('mid-burst opacity=' + s.opacity + ' transform=' + s.transform.slice(0,40)); } }, 700); }); setTimeout(() => { if(window.__diagLog) window.__diagLog('splash timer fired at 1300ms'); $el.classList.add('splash-exit'); setTimeout(() => { if(window.__diagLog) window.__diagLog('splash -> START'); navDir='forward'; screen = 'START'; }, 260); }, 1300)">
 
  <!-- S2S mark: tiny centered, bursts to fill screen -->
  <span class="splash-s2s tracking-tighter leading-none" style="transform-origin:center;align-items:baseline;">
