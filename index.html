@@ -9,7 +9,7 @@
  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
  <style>
  html, body { height: 100%; overscroll-behavior-y: none; }
- body { font-family: 'Red Hat Display', sans-serif; transition: background-color 0.3s; margin: 0; padding: 0; touch-action: pan-x; }
+ body { font-family: 'Red Hat Display', sans-serif; transition: background-color 0.3s; margin: 0; padding: 0; touch-action: pan-y; }
  [x-cloak] { display: none !important; }
  .app-container { height: 100dvh; width: 100%; overflow-x: hidden; overflow-y: hidden; overscroll-behavior: contain; }
  html, body { overflow-x: hidden; }
@@ -98,7 +98,8 @@
  }
  @keyframes splashExit { 0% { opacity:1; } 100% { opacity:0; } }
  .splash-bg { animation: splashBg 0.2s ease-out forwards; }
- .splash-s2s { display:inline-flex; will-change:transform; transform:scale(0.12); opacity:0; }
+ .splash-s2s { display:inline-flex; will-change:transform,opacity; transform:scale(0.12); opacity:0; }
+ .splash-s2s.is-active { animation: s2sBurst 900ms cubic-bezier(0.6,0,0.85,0.35) 250ms both; }
  .splash-exit { animation: splashExit 260ms cubic-bezier(0.4,0,1,1) forwards; }
 
  /* ── Active press states — all interactive elements ── */
@@ -834,7 +835,7 @@
  this.loadQuote();
  window.addEventListener('pageshow', function(e) {
  if (e.persisted) {
- this.screen = 'SPLASH';
+ this.screen = 'START';
  this.navDir = 'forward';
  }
  }.bind(this));
@@ -1165,7 +1166,7 @@
  <!-- SPLASH SCREEN -->
  <div x-show="screen === 'SPLASH'" x-cloak
  class="splash-bg absolute inset-0 bg-black z-50 flex flex-col items-center justify-center gap-0 overflow-hidden"
- x-init="$nextTick(() => { const el=$refs.s2sMark; const start=performance.now(); function frame(t){ const e=t-start; let p; if(e<250){p=0;} else if(e<1150){p=(e-250)/900; const eased=Math.pow(p,1.8); el.style.setProperty('opacity', (p<0.1 ? p*10 : 1), 'important'); el.style.setProperty('transform', 'scale('+(0.12+eased*41.88)+')', 'important');} else {el.style.setProperty('opacity','1','important'); el.style.setProperty('transform','scale(42)','important');} if(e<1150) requestAnimationFrame(frame); } requestAnimationFrame(frame); }); setTimeout(() => { $el.classList.add('splash-exit'); setTimeout(() => { navDir='forward'; screen = 'START'; }, 260); }, 1300)">
+ x-init="$nextTick(() => { $refs.s2sMark.classList.add('is-active'); }); setTimeout(() => { $el.classList.add('splash-exit'); setTimeout(() => { navDir='forward'; screen = 'START'; }, 260); }, 1300)">
 
  <!-- S2S mark: tiny centered, bursts to fill screen -->
  <span x-ref="s2sMark" class="splash-s2s tracking-tighter leading-none" style="transform-origin:center;align-items:baseline;">
