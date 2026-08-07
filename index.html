@@ -920,9 +920,12 @@
  sheetDragStart(evt, panelSel, closeFn) {
  const panel = document.querySelector(panelSel);
  if (!panel) return;
- const scrollEl = evt.target.closest('.overflow-y-auto');
- if (scrollEl && scrollEl.scrollTop > 0 && evt.target.closest('[data-drag-handle]') === null) { return; }
  const y = evt.touches ? evt.touches[0].clientY : evt.clientY;
+ const rect = panel.getBoundingClientRect();
+ const relY = y - rect.top;
+ if (relY > rect.height / 3) return;
+ const scrollEl = evt.target.closest('.overflow-y-auto');
+ if (scrollEl && scrollEl.scrollTop > 0) return;
  this.sheetDrag = { active: true, startY: y, startT: performance.now(), lastY: y, lastT: performance.now(), velocity: 0, panelEl: panel, closeFn };
  panel.classList.add('sheet-dragging');
  panel.style.transition = 'none';
@@ -1214,9 +1217,9 @@
  <!-- Inline expand overlay — MLS / PORT / Airbnb chooser -->
  <div x-show="startExpand !== ''" x-cloak x-transition:enter="transition-all ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
  class="absolute inset-0 bg-black/60 flex items-end z-30 max-w-md mx-auto start-picker-backdrop" @click.self="startExpand = ''" style="border-radius: inherit;">
- <div class="w-full bg-white rounded-t-[2rem] overflow-hidden start-picker-panel" @click.stop>
- <div class="flex items-center justify-center pt-3 pb-1" style="touch-action:none;" data-drag-handle
+ <div class="w-full bg-white rounded-t-[2rem] overflow-hidden start-picker-panel" @click.stop style="touch-action:none;"
  x-init="$el.addEventListener('touchstart', (e) => sheetDragStart(e, '.start-picker-panel', () => { startExpand=''; }), {passive:false}); $el.addEventListener('touchmove', (e) => sheetDragMove(e), {passive:false}); $el.addEventListener('touchend', () => sheetDragEnd(), {passive:false});">
+ <div class="flex items-center justify-center pt-3 pb-1">
  <div class="w-9 h-1 rounded-full bg-gray-200"></div>
  </div>
  <div class="flex items-center justify-center gap-2 px-5 pt-5 pb-3 relative">
@@ -2614,10 +2617,10 @@
  </div>
  <div x-show="quoteSheetOpen" x-cloak
  class="absolute left-0 right-0 z-50 bg-white rounded-t-[1.75rem] shadow-2xl flex flex-col sheet-slide-up max-w-md mx-auto w-full min-w-0 quote-sheet-panel"
- style="top:var(--header-h,64px);bottom:var(--nav-h,84px);"
- @click.outside="quoteSheetOpen = false; haptic()">
- <div class="flex flex-col flex-none" style="touch-action:none;" data-drag-handle
+ style="top:var(--header-h,64px);bottom:var(--nav-h,84px);touch-action:none;"
+ @click.outside="quoteSheetOpen = false; haptic()"
  x-init="$el.addEventListener('touchstart', (e) => sheetDragStart(e, '.quote-sheet-panel', () => { quoteSheetOpen=false; }), {passive:false}); $el.addEventListener('touchmove', (e) => sheetDragMove(e), {passive:false}); $el.addEventListener('touchend', () => sheetDragEnd(), {passive:false});">
+ <div class="flex flex-col flex-none">
  <div class="flex items-center justify-center pt-3 pb-1">
  <div class="w-9 h-1 rounded-full bg-gray-200"></div>
  </div>
@@ -2681,10 +2684,10 @@
  @click="infoOpen = ''; infoTableExpanded=true; haptic()"></div>
  <div x-show="infoOpen !== ''" x-cloak
  class="absolute left-0 right-0 z-50 bg-white rounded-t-[1.75rem] shadow-2xl flex flex-col sheet-slide-up max-w-md mx-auto w-full min-w-0 info-sheet-panel"
- style="bottom:var(--nav-h,84px);height:66vh;max-height:calc(88% - 84px);"
- @click.outside="infoOpen = ''; infoTableExpanded=true;">
- <div class="flex items-center justify-center flex-none" style="touch-action:none;padding:20px 80px;margin:-20px auto -12px;position:relative;z-index:5;" data-drag-handle
+ style="bottom:var(--nav-h,84px);height:66vh;max-height:calc(88% - 84px);touch-action:none;"
+ @click.outside="infoOpen = ''; infoTableExpanded=true;"
  x-init="$el.addEventListener('touchstart', (e) => sheetDragStart(e, '.info-sheet-panel', () => { infoOpen=''; infoTableExpanded=true; }), {passive:false}); $el.addEventListener('touchmove', (e) => sheetDragMove(e), {passive:false}); $el.addEventListener('touchend', () => sheetDragEnd(), {passive:false});">
+ <div class="flex items-center justify-center flex-none pt-3 pb-1">
  <div class="w-9 h-1 rounded-full bg-gray-200"></div>
  </div>
 
@@ -2937,10 +2940,10 @@
  @click="wizardSheetOpen=false;wizardSqft='';haptic()"></div>
  <div x-show="wizardSheetOpen" x-cloak
  class="absolute left-0 right-0 z-50 bg-[#111111] rounded-t-[1.75rem] shadow-2xl flex flex-col sheet-slide-up max-w-md mx-auto w-full min-w-0 wizard-sheet-panel transition-all duration-300"
- style="top:var(--header-h,64px);bottom:var(--nav-h,84px);"
- @click.outside="wizardSheetOpen=false;wizardSqft='';">
- <div class="flex flex-col flex-none" style="touch-action:none;" data-drag-handle
+ style="top:var(--header-h,64px);bottom:var(--nav-h,84px);touch-action:none;"
+ @click.outside="wizardSheetOpen=false;wizardSqft='';"
  x-init="$el.addEventListener('touchstart', (e) => sheetDragStart(e, '.wizard-sheet-panel', () => { wizardSheetOpen=false; wizardSqft=''; }), {passive:false}); $el.addEventListener('touchmove', (e) => sheetDragMove(e), {passive:false}); $el.addEventListener('touchend', () => sheetDragEnd(), {passive:false});">
+ <div class="flex flex-col flex-none">
  <div class="flex items-center justify-center pt-3 pb-1">
  <div class="w-9 h-1 rounded-full bg-white/15"></div>
  </div>
