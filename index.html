@@ -831,6 +831,12 @@
  },
  init() {
  this.loadQuote();
+ window.addEventListener('pageshow', function(e) {
+ if (e.persisted) {
+ this.screen = 'SPLASH';
+ this.navDir = 'forward';
+ }
+ }.bind(this));
  this.$nextTick(function() { this.initNavHeight(); }.bind(this));
  this.$watch('quoteSheetOpen', function(v) { if (v) this.clampSheetWidth('.quote-sheet-panel', '.quote-sheet-backdrop'); }.bind(this));
  this.$watch('startExpand', function(v) { if (v) this.clampSheetWidth('.start-picker-panel', '.start-picker-backdrop'); }.bind(this));
@@ -2595,9 +2601,7 @@
  style="top:var(--header-h,64px);bottom:var(--nav-h,84px);"
  @click.outside="quoteSheetOpen = false; haptic()">
  <div class="flex items-center justify-center flex-none" style="touch-action:none;padding:12px 40px 8px;margin:-12px auto -8px;" data-drag-handle
- @touchstart="sheetDragStart($event, '.quote-sheet-panel', () => { quoteSheetOpen=false; })"
- @touchmove="sheetDragMove($event)"
- @touchend="sheetDragEnd()">
+ x-init="$el.addEventListener('touchstart', (e) => sheetDragStart(e, '.quote-sheet-panel', () => { quoteSheetOpen=false; }), {passive:false}); $el.addEventListener('touchmove', (e) => sheetDragMove(e), {passive:false}); $el.addEventListener('touchend', () => sheetDragEnd(), {passive:false});">
  <div class="w-9 h-1 rounded-full bg-gray-200"></div>
  </div>
 
@@ -2662,9 +2666,7 @@
  style="bottom:var(--nav-h,84px);height:66vh;max-height:calc(88% - 84px);"
  @click.outside="infoOpen = ''; infoTableExpanded=true;">
  <div class="flex items-center justify-center flex-none" style="touch-action:none;padding:12px 40px 8px;margin:-12px auto -8px;" data-drag-handle
- @touchstart="sheetDragStart($event, '.info-sheet-panel', () => { infoOpen=''; infoTableExpanded=true; })"
- @touchmove="sheetDragMove($event)"
- @touchend="sheetDragEnd()">
+ x-init="$el.addEventListener('touchstart', (e) => sheetDragStart(e, '.info-sheet-panel', () => { infoOpen=''; infoTableExpanded=true; }), {passive:false}); $el.addEventListener('touchmove', (e) => sheetDragMove(e), {passive:false}); $el.addEventListener('touchend', () => sheetDragEnd(), {passive:false});">
  <div class="w-9 h-1 rounded-full bg-gray-200"></div>
  </div>
 
@@ -2920,9 +2922,7 @@
  style="top:var(--header-h,64px);bottom:var(--nav-h,84px);"
  @click.outside="wizardSheetOpen=false;wizardSqft='';">
  <div class="flex items-center justify-center flex-none" style="touch-action:none;padding:12px 40px 8px;margin:-12px auto -8px;" data-drag-handle
- @touchstart="sheetDragStart($event, '.wizard-sheet-panel', () => { wizardSheetOpen=false; wizardSqft=''; })"
- @touchmove="sheetDragMove($event)"
- @touchend="sheetDragEnd()">
+ x-init="$el.addEventListener('touchstart', (e) => sheetDragStart(e, '.wizard-sheet-panel', () => { wizardSheetOpen=false; wizardSqft=''; }), {passive:false}); $el.addEventListener('touchmove', (e) => sheetDragMove(e), {passive:false}); $el.addEventListener('touchend', () => sheetDragEnd(), {passive:false});">
  <div class="w-9 h-1 rounded-full bg-white/15"></div>
  </div>
 
