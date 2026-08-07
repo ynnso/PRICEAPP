@@ -1614,7 +1614,7 @@
  <span class="mls-price-pop flex-none px-2 flex items-center leading-none text-black" style="font-variant-numeric:tabular-nums;">from<span class="flex items-start leading-none" style="letter-spacing:-0.03em;margin-left:4px;"><span class="text-[13px] font-black" style="margin-top:2px;">$</span><span class="text-[19px] font-black">139</span></span></span>
  <svg class="w-3.5 h-3.5 text-gray-300 flex-none mr-3 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
  </button>
- <div x-show="mlsPackage==='FULL'" x-cloak @click.outside="mlsPackage='';sqft='';selectedTier='';customQty='';sqftPickerOpen=false;" class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white relative">
+ <div x-show="mlsPackage==='FULL'" x-cloak @click.outside="if(!$event.target.closest('.wizard-sheet-panel') && !$event.target.closest('.wizard-sheet-backdrop') && !$event.target.closest('.info-sheet-panel') && !$event.target.closest('.info-sheet-backdrop')){mlsPackage='';sqft='';selectedTier='';customQty='';sqftPickerOpen=false;}" class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white relative">
  <div class="flex flex-col items-center text-center gap-2 relative">
  <button @click.stop="haptic(); mlsPackage='FULL'; wizardSqft=(mlsPrices[sqft] ? sqft : ''); wizardSheetOpen=true;" class="absolute top-0 left-0 flex items-center bg-[#111111] rounded-full pr-3 overflow-hidden" style="height:32px;" aria-label="Open Wizard for best package">
  <span class="h-full aspect-square rounded-full bg-red-500/20 flex items-center justify-center flex-none">
@@ -1707,7 +1707,7 @@
  <span class="mls-price-pop flex-none px-2 flex items-start leading-none text-black" style="font-variant-numeric:tabular-nums;letter-spacing:-0.03em;"><span class="text-[13px] font-black" style="margin-top:2px;">$</span><span class="text-[19px] font-black">89</span></span>
  <svg class="w-3.5 h-3.5 text-gray-300 flex-none mr-3 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
  </button>
- <div x-show="mlsPackage==='RESHOOT'" x-cloak @click.outside="if(!$event.target.closest('.wizard-sheet-panel') && !$event.target.closest('.wizard-sheet-backdrop')){mlsPackage='';sqft='';selectedTier='';customQty='';wizardShown=false;}" class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white relative">
+ <div x-show="mlsPackage==='RESHOOT'" x-cloak @click.outside="if(!$event.target.closest('.wizard-sheet-panel') && !$event.target.closest('.wizard-sheet-backdrop') && !$event.target.closest('.info-sheet-panel') && !$event.target.closest('.info-sheet-backdrop')){mlsPackage='';sqft='';selectedTier='';customQty='';wizardShown=false;}" class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white relative">
  <div class="flex flex-col items-center text-center gap-2 relative">
  <button @click.stop="haptic(); mlsPackage='RESHOOT'; wizardSqft=''; wizardSheetOpen=true;" class="absolute top-0 left-0 flex items-center bg-[#111111] rounded-full pr-3 overflow-hidden" style="height:32px;" aria-label="Open Wizard for best package">
  <span class="h-full aspect-square rounded-full bg-red-500/20 flex items-center justify-center flex-none">
@@ -1825,7 +1825,7 @@
  <span class="mls-price-pop flex-none px-2 flex items-start leading-none text-black" style="font-variant-numeric:tabular-nums;letter-spacing:-0.03em;"><span class="text-[13px] font-black" style="margin-top:2px;">$</span><span class="text-[19px] font-black">79</span></span>
  <svg class="w-3.5 h-3.5 text-gray-300 flex-none mr-3 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
  </button>
- <div x-show="mlsPackage==='EXT'" x-cloak @click.outside="if(!$event.target.closest('.wizard-sheet-panel') && !$event.target.closest('.wizard-sheet-backdrop')){mlsPackage='';sqft='';selectedTier='';customQty='';wizardShown=false;}" class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white relative">
+ <div x-show="mlsPackage==='EXT'" x-cloak @click.outside="if(!$event.target.closest('.wizard-sheet-panel') && !$event.target.closest('.wizard-sheet-backdrop') && !$event.target.closest('.info-sheet-panel') && !$event.target.closest('.info-sheet-backdrop')){mlsPackage='';sqft='';selectedTier='';customQty='';wizardShown=false;}" class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white relative">
  <div class="flex flex-col items-center text-center gap-2 relative">
  <button @click.stop="haptic(); mlsPackage='EXT'; wizardSqft=''; wizardSheetOpen=true;" class="absolute top-0 left-0 flex items-center bg-[#111111] rounded-full pr-3 overflow-hidden" style="height:32px;" aria-label="Open Wizard for best package">
  <span class="h-full aspect-square rounded-full bg-red-500/20 flex items-center justify-center flex-none">
@@ -1881,7 +1881,7 @@
  <span class="mls-price-pop flex-none px-2 flex items-start leading-none text-black" style="font-variant-numeric:tabular-nums;letter-spacing:-0.03em;"><span class="text-[13px] font-black" style="margin-top:2px;">$</span><span class="text-[19px] font-black">119</span></span>
  <svg class="w-3.5 h-3.5 text-gray-300 flex-none mr-3 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
  </button>
- <div x-show="mlsPackage==='MINI'" x-cloak @click.outside="if(!$event.target.closest('.wizard-sheet-panel') && !$event.target.closest('.wizard-sheet-backdrop')){mlsPackage='';sqft='';selectedTier='';customQty='';wizardShown=false;}" class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white relative">
+ <div x-show="mlsPackage==='MINI'" x-cloak @click.outside="if(!$event.target.closest('.wizard-sheet-panel') && !$event.target.closest('.wizard-sheet-backdrop') && !$event.target.closest('.info-sheet-panel') && !$event.target.closest('.info-sheet-backdrop')){mlsPackage='';sqft='';selectedTier='';customQty='';wizardShown=false;}" class="flex flex-col gap-4 px-5 pt-5 pb-4 bg-white relative">
  <div class="flex flex-col items-center text-center gap-2 relative">
  <button @click.stop="haptic(); mlsPackage='MINI'; wizardSqft=''; wizardSheetOpen=true;" class="absolute top-0 left-0 flex items-center bg-[#111111] rounded-full pr-3 overflow-hidden" style="height:32px;" aria-label="Open Wizard for best package">
  <span class="h-full aspect-square rounded-full bg-red-500/20 flex items-center justify-center flex-none">
@@ -2895,7 +2895,7 @@
  </button>
  </div>
 
- <h1 class="text-[24px] font-medium text-white text-center px-5 pt-1 pb-5 m-0 flex-none leading-none" x-text="mlsPackage==='RESHOOT'?'Reshoot':(mlsPackage==='EXT'?'Exterior Only':(mlsPackage==='FULL'?'Full Shoot':'Mini Shoot'))"></h1>
+ <h1 class="text-[24px] font-medium text-white text-center px-5 pt-1 pb-5 m-0 flex-none leading-none" x-text="mlsPackage==='RESHOOT'?'Reshoot':(mlsPackage==='EXT'?'Exterior Only':(mlsPackage==='FULL'?'Full Shoot':(mlsPackage==='MINI'?'Mini Shoot':'Pkg Wizard')))"></h1>
 
  <div class="overflow-y-auto px-5 pb-6 flex flex-col flex-1" style="-webkit-overflow-scrolling:touch;">
 
