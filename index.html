@@ -88,19 +88,6 @@
  /* ── Price pop animation ── */
  /* old pricePop replaced by priceRoll in price card CSS above */
 
- /* ── Splash screen ── */
- @keyframes splashBg { from { opacity:0; } to { opacity:1; } }
- @keyframes s2sBurst {
- 0% { transform:scale(0.12); opacity:0; }
- 22% { transform:scale(0.32); opacity:1; }
- 42% { transform:scale(0.30); opacity:1; }
- 100% { transform:scale(42); opacity:1; }
- }
- @keyframes splashExit { 0% { opacity:1; } 100% { opacity:0; } }
- .splash-bg { animation: splashBg 0.2s ease-out forwards; }
- .splash-s2s { display:inline-flex; will-change:transform,opacity; animation: s2sBurst 900ms cubic-bezier(0.6,0,0.85,0.35) 250ms forwards; }
- .splash-exit-auto { animation: splashExit 260ms cubic-bezier(0.4,0,1,1) 1200ms forwards; }
-
  /* ── Active press states — all interactive elements ── */
  button:active, [role="button"]:active { transform: scale(0.96); filter: brightness(0.92); transition: transform 0.08s ease, filter 0.08s ease; }
  button { transition: transform 0.15s ease, filter 0.15s ease, background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease; }
@@ -337,7 +324,7 @@
  <script>
  function pricex() {
  return { 
- screen: 'SPLASH',
+ screen: 'START',
  screenHistory: [],
  infoOpen: '',
  infoTableExpanded: true,
@@ -1121,6 +1108,24 @@
 <body class="bg-gray-200 text-gray-900" style="height:100%;" 
  x-data="pricex()" x-init="init()">
 
+ <!-- Standalone Splash Overlay - outside Alpine scope, cannot be blocked by x-cloak/init timing -->
+ <div id="splash-overlay" class="fixed inset-0 bg-black z-[9999] flex items-center justify-center transition-opacity duration-300">
+ <span class="tracking-tighter leading-none flex items-baseline">
+ <span class="font-bold text-[32px] text-white">S</span><span class="font-black text-[42px] text-red-600">2</span><span class="font-bold text-[32px] text-white">S</span>
+ </span>
+ </div>
+ <script>
+ window.addEventListener('DOMContentLoaded', () => {
+ setTimeout(() => {
+ const splash = document.getElementById('splash-overlay');
+ if (splash) {
+ splash.style.opacity = '0';
+ setTimeout(() => splash.remove(), 300);
+ }
+ }, 1000);
+ });
+ </script>
+
  <div class="app-container max-w-md mx-auto shadow-xl relative flex flex-col sm:rounded-[2.5rem] sm:h-[600px] sm:my-4" style="background:#000;">
 
  <div class="app-header flex items-center justify-between px-6 py-4 flex-none" x-cloak>
@@ -1165,18 +1170,7 @@
  </button>
  </div>
 
- <!-- SPLASH SCREEN -->
- <div x-show="screen === 'SPLASH'" x-cloak
- class="splash-bg splash-exit-auto absolute inset-0 bg-black z-50 flex flex-col items-center justify-center gap-0 overflow-hidden"
- x-init="setTimeout(() => { navDir='forward'; screen = 'START'; }, 1460)">
-
- <!-- S2S mark: tiny centered, bursts to fill screen -->
- <span class="splash-s2s tracking-tighter leading-none" style="transform-origin:center;align-items:baseline;">
- <span class="font-bold text-[23px] text-white">S</span><span class="font-black text-[31px] text-red-600">2</span><span class="font-bold text-[23px] text-white">S</span>
- </span>
- </div>
-
- <div x-show="screen === 'START'" class="flex-grow overflow-hidden relative min-h-0"
+  <div x-show="screen === 'START'" class="flex-grow overflow-hidden relative min-h-0"
  :class="screen==='START' ? (navDir==='back' ? 'screen-enter-back' : 'screen-enter-forward') : ''"
  @animationend="$el.classList.remove('screen-enter-forward','screen-enter-back')">
  <div class="absolute inset-0" style="background:#000;"></div>
