@@ -918,10 +918,9 @@
  },
  sheetDragStart(evt, panelSel, closeFn) {
  const panel = document.querySelector(panelSel);
- if (window.__diagLog) window.__diagLog('dragStart panel=' + panelSel + ' found=' + !!panel + ' cancelable=' + evt.cancelable);
  if (!panel) return;
  const scrollEl = evt.target.closest('.overflow-y-auto');
- if (scrollEl && scrollEl.scrollTop > 0 && evt.target.closest('[data-drag-handle]') === null) { if (window.__diagLog) window.__diagLog('dragStart BLOCKED by scroll guard'); return; }
+ if (scrollEl && scrollEl.scrollTop > 0 && evt.target.closest('[data-drag-handle]') === null) { return; }
  const y = evt.touches ? evt.touches[0].clientY : evt.clientY;
  this.sheetDrag = { active: true, startY: y, startT: performance.now(), lastY: y, lastT: performance.now(), velocity: 0, panelEl: panel, closeFn };
  panel.classList.add('sheet-dragging');
@@ -929,7 +928,7 @@
  },
  sheetDragMove(evt) {
  const d = this.sheetDrag;
- if (!d.active || !d.panelEl) { if (window.__diagLog) window.__diagLog('dragMove SKIPPED active=' + (d?d.active:'no-d')); return; }
+ if (!d.active || !d.panelEl) { return; }
  const y = evt.touches ? evt.touches[0].clientY : evt.clientY;
  const now = performance.now();
  const dt = Math.max(1, now - d.lastT);
@@ -946,12 +945,10 @@
  panelEl.style.setProperty('transform', 'translate3d(0,' + delta + 'px,0)', 'important');
  });
  }
- if (window.__diagLog) window.__diagLog('dragMove delta=' + Math.round(delta) + ' cancelable=' + evt.cancelable);
  if (delta > 0 && evt.cancelable) evt.preventDefault();
  },
  sheetDragEnd() {
  const d = this.sheetDrag;
- if (window.__diagLog) window.__diagLog('dragEnd active=' + (d?d.active:'no-d'));
  if (!d.active || !d.panelEl) return;
  const panel = d.panelEl;
  const delta = d.lastY - d.startY;
@@ -1123,23 +1120,6 @@
 
  <div class="app-container max-w-md mx-auto shadow-xl relative flex flex-col sm:rounded-[2.5rem] sm:h-[600px] sm:my-4" style="background:#000;">
 
- <!-- DIAGNOSTIC OVERLAY - temporary, remove after debugging -->
- <div x-data="{ log: [], visible: true }" x-init="
- window.__diagLog = (msg) => { log.unshift((new Date()).toLocaleTimeString() + ' ' + msg); if (log.length > 12) log.pop(); };
- window.__diagLog('page loaded, screen=' + $root.screen);
- window.addEventListener('pageshow', (e) => window.__diagLog('pageshow persisted=' + e.persisted));
- "
- class="absolute z-[999] bottom-0 left-0 right-0 bg-black/95 text-white text-[9px] font-mono p-2 max-h-[40vh] overflow-y-auto"
- style="border-top:2px solid #dc2626;" x-show="visible">
- <div class="flex justify-between items-center mb-1">
- <span class="text-red-500 font-bold">DIAG (tap to hide)</span>
- <span x-text="'screen=' + screen + ' sheetDrag.active=' + sheetDrag.active"></span>
- </div>
- <div @click="visible=false" class="cursor-pointer">
- <template x-for="(l,i) in log" :key="i"><div x-text="l"></div></template>
- </div>
- </div>
-
  <div class="app-header flex items-center justify-between px-6 py-4 flex-none" x-cloak>
  <!-- S2S logo — shown only on START, tap to reset -->
  <button x-show="screen === 'START'" @click="resetAll()" class="w-12 h-12 flex items-center justify-center hover:bg-white/10 rounded-full transition-colors flex-none">
@@ -1185,7 +1165,7 @@
  <!-- SPLASH SCREEN -->
  <div x-show="screen === 'SPLASH'" x-cloak
  class="splash-bg absolute inset-0 bg-black z-50 flex flex-col items-center justify-center gap-0 overflow-hidden"
- x-init="if(window.__diagLog) window.__diagLog('splash x-init ran, screen=' + screen); $nextTick(() => { const el=$refs.s2sMark; if(window.__diagLog) window.__diagLog('splash el found=' + !!el); const start=performance.now(); function frame(t){ const e=t-start; let p; if(e<250){p=0;} else if(e<1150){p=(e-250)/900; const eased=Math.pow(p,1.8); el.style.setProperty('opacity', (p<0.1 ? p*10 : 1), 'important'); el.style.setProperty('transform', 'scale('+(0.12+eased*41.88)+')', 'important');} else {el.style.setProperty('opacity','1','important'); el.style.setProperty('transform','scale(42)','important');} if(e<1150) requestAnimationFrame(frame); } requestAnimationFrame(frame); setTimeout(() => { if(window.__diagLog){ const s=getComputedStyle(el); window.__diagLog('mid-burst opacity=' + s.opacity + ' transform=' + s.transform.slice(0,40)); } }, 700); }); setTimeout(() => { if(window.__diagLog) window.__diagLog('splash timer fired at 1300ms'); $el.classList.add('splash-exit'); setTimeout(() => { if(window.__diagLog) window.__diagLog('splash -> START'); navDir='forward'; screen = 'START'; }, 260); }, 1300)">
+ x-init="$nextTick(() => { const el=$refs.s2sMark; const start=performance.now(); function frame(t){ const e=t-start; let p; if(e<250){p=0;} else if(e<1150){p=(e-250)/900; const eased=Math.pow(p,1.8); el.style.setProperty('opacity', (p<0.1 ? p*10 : 1), 'important'); el.style.setProperty('transform', 'scale('+(0.12+eased*41.88)+')', 'important');} else {el.style.setProperty('opacity','1','important'); el.style.setProperty('transform','scale(42)','important');} if(e<1150) requestAnimationFrame(frame); } requestAnimationFrame(frame); }); setTimeout(() => { $el.classList.add('splash-exit'); setTimeout(() => { navDir='forward'; screen = 'START'; }, 260); }, 1300)">
 
  <!-- S2S mark: tiny centered, bursts to fill screen -->
  <span x-ref="s2sMark" class="splash-s2s tracking-tighter leading-none" style="transform-origin:center;align-items:baseline;">
