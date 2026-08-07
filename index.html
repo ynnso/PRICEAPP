@@ -1180,7 +1180,7 @@
  x-init="if(window.__diagLog) window.__diagLog('splash x-init ran, screen=' + screen); setTimeout(() => { if(window.__diagLog){ const s=getComputedStyle(document.querySelector('.splash-s2s')); window.__diagLog('mid-burst opacity=' + s.opacity + ' transform=' + s.transform.slice(0,40)); } }, 700); setTimeout(() => { if(window.__diagLog) window.__diagLog('splash timer fired at 1300ms'); $el.classList.add('splash-exit'); setTimeout(() => { if(window.__diagLog) window.__diagLog('splash -> START'); navDir='forward'; screen = 'START'; }, 260); }, 1300)">
 
  <!-- S2S mark: tiny centered, bursts to fill screen -->
- <span class="splash-s2s tracking-tighter leading-none flex items-baseline" style="transform-origin:center;">
+ <span class="splash-s2s tracking-tighter leading-none" style="transform-origin:center;align-items:baseline;">
  <span class="font-bold text-[23px] text-white">S</span><span class="font-black text-[31px] text-red-600">2</span><span class="font-bold text-[23px] text-white">S</span>
  </span>
  </div>
