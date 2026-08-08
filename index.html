@@ -348,7 +348,7 @@
  wizardShown: false,
  wizardSqft: '',
  sheetDrag: { active: false, startY: 0, startT: 0, lastY: 0, lastT: 0, velocity: 0, panelEl: null, closeFn: null },
- edgeSwipe: { active: false, startX: 0, startT: 0, lastX: 0, lastT: 0, velocity: 0, panelEl: null, pct: 0, hapticFired: false },
+ edgeSwipe: { active: false, startX: 0, startY: 0, startT: 0, lastX: 0, lastT: 0, velocity: 0, panelEl: null, pct: 0, hapticFired: false, isHorizontal: null },
  ranchPress: false, minusPress: false, plusPress: false, tile25Press: false, tile36Press: false,
  navDir: 'forward',
  type: 'MLS',
@@ -992,19 +992,31 @@
  },
  edgeSwipeStart(evt, panelOverride) {
  if (this.screen === 'START') return;
- const x = evt.touches ? evt.touches[0].clientX : evt.clientX;
+ const t = evt.touches ? evt.touches[0] : evt;
+ const x = t.clientX, y = t.clientY;
  window.__edgeDiag = (window.__edgeDiag||[]).concat('start x='+x+' cancelable='+evt.cancelable).slice(-10);
- if (x > 60) return;
- if (evt.cancelable) evt.preventDefault();
+ if (x > 90) return;
  const panel = panelOverride || evt.currentTarget;
- this.edgeSwipe = { active: true, startX: x, startT: performance.now(), lastX: x, lastT: performance.now(), velocity: 0, panelEl: panel, pct: 0, hapticFired: false };
+ this.edgeSwipe = { active: true, startX: x, startY: y, startT: performance.now(), lastX: x, lastT: performance.now(), velocity: 0, panelEl: panel, pct: 0, hapticFired: false, isHorizontal: null };
  panel.style.transition = 'none';
  },
  edgeSwipeMove(evt) {
  const d = this.edgeSwipe;
  window.__edgeDiag = (window.__edgeDiag||[]).concat('move active='+d.active+' panelEl='+(!!d.panelEl)).slice(-10);
  if (!d.active || !d.panelEl) return;
- const x = evt.touches ? evt.touches[0].clientX : evt.clientX;
+ const t = evt.touches ? evt.touches[0] : evt;
+ const x = t.clientX, y = t.clientY;
+ const deltaXraw = x - d.startX;
+ const deltaY = Math.abs(y - d.startY);
+ if (d.isHorizontal === null) {
+ if (Math.abs(deltaXraw) > 8 || deltaY > 8) {
+ d.isHorizontal = Math.abs(deltaXraw) > deltaY;
+ } else {
+ return;
+ }
+ if (!d.isHorizontal) { d.active = false; return; }
+ }
+ if (evt.cancelable) evt.preventDefault();
  const now = performance.now();
  const dt = Math.max(1, now - d.lastT);
  d.velocity = (x - d.lastX) / dt;
@@ -1039,7 +1051,7 @@
  panel.style.transform = 'translate3d(0,0,0)';
  setTimeout(() => { panel.style.transition = ''; }, 220);
  }
- this.edgeSwipe = { active: false, startX: 0, startT: 0, lastX: 0, lastT: 0, velocity: 0, panelEl: null, pct: 0, hapticFired: false };
+ this.edgeSwipe = { active: false, startX: 0, startY: 0, startT: 0, lastX: 0, lastT: 0, velocity: 0, panelEl: null, pct: 0, hapticFired: false, isHorizontal: null };
  },
  setNavHeight() {
  const nav = document.querySelector('.nav-pill-wrap');
