@@ -11,7 +11,7 @@
  html, body { height: 100%; overscroll-behavior-y: none; }
  body { font-family: 'Red Hat Display', sans-serif; transition: background-color 0.3s; margin: 0; padding: 0; touch-action: pan-y; }
  [x-cloak] { display: none !important; }
- .app-container { height: 100dvh; width: 100%; overflow-x: hidden; overflow-y: hidden; overscroll-behavior: contain; }
+ .app-container { height: 100dvh; width: 100%; overflow-x: hidden; overflow-y: hidden; overscroll-behavior: contain; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); box-sizing: border-box; }
  html, body { overflow-x: hidden; }
  .input-container::after {
  content: attr(data-value);
