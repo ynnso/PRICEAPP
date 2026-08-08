@@ -327,6 +327,16 @@
  }
  </script>
  <script>
+ const Haptics = {
+ light() {
+ if (window.Capacitor?.isPluginAvailable?.('Haptics')) { window.Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' }); }
+ else if (window.navigator.vibrate) { window.navigator.vibrate(10); }
+ },
+ success() {
+ if (window.Capacitor?.isPluginAvailable?.('Haptics')) { window.Capacitor.Plugins.Haptics.notification({ type: 'SUCCESS' }); }
+ else if (window.navigator.vibrate) { window.navigator.vibrate([40,30,20]); }
+ }
+ };
  function pricex() {
  return { 
  screen: 'START',
@@ -425,8 +435,8 @@
  '0-1999': { 'Standard': 249, 'Premium': 299 }, '2000-2999': { 'Standard': 349, 'Premium': 449 }, '3000-3999': { 'Standard': 449, 'Premium': 599 }, '4000-4999': { 'Standard': 549, 'Premium': 749 }, '5000-5999': { 'Standard': 649, 'Premium': 899 }
  }
  },
- haptic() { if (window.navigator.vibrate) window.navigator.vibrate(10); },
- hapticSuccess() { if (window.navigator.vibrate) window.navigator.vibrate([40,30,20]); },
+ haptic() { Haptics.light(); },
+ hapticSuccess() { Haptics.success(); },
  flyToCart(evt) {
  const target = document.getElementById('cart-nav-icon');
  const btn = evt.currentTarget;
