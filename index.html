@@ -994,7 +994,7 @@
  if (this.screen === 'START') return;
  const x = evt.touches ? evt.touches[0].clientX : evt.clientX;
  window.__edgeDiag = (window.__edgeDiag||[]).concat('start x='+x+' cancelable='+evt.cancelable).slice(-10);
- if (x > 24) return;
+ if (x > 60) return;
  if (evt.cancelable) evt.preventDefault();
  const panel = panelOverride || evt.currentTarget;
  this.edgeSwipe = { active: true, startX: x, startT: performance.now(), lastX: x, lastT: performance.now(), velocity: 0, panelEl: panel, pct: 0, hapticFired: false };
@@ -1002,6 +1002,7 @@
  },
  edgeSwipeMove(evt) {
  const d = this.edgeSwipe;
+ window.__edgeDiag = (window.__edgeDiag||[]).concat('move active='+d.active+' panelEl='+(!!d.panelEl)).slice(-10);
  if (!d.active || !d.panelEl) return;
  const x = evt.touches ? evt.touches[0].clientX : evt.clientX;
  const now = performance.now();
@@ -1026,6 +1027,7 @@
  },
  edgeSwipeEnd() {
  const d = this.edgeSwipe;
+ window.__edgeDiag = (window.__edgeDiag||[]).concat('end active='+d.active+' pct='+d.pct+' vel='+d.velocity).slice(-10);
  if (!d.active || !d.panelEl) return;
  const panel = d.panelEl;
  const shouldPop = d.pct > 0.4 || d.velocity > 0.5;
