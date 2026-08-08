@@ -994,6 +994,7 @@
  if (this.screen === 'START') return;
  const x = evt.touches ? evt.touches[0].clientX : evt.clientX;
  if (x > 24) return;
+ if (evt.cancelable) evt.preventDefault();
  const panel = panelOverride || evt.currentTarget;
  this.edgeSwipe = { active: true, startX: x, startT: performance.now(), lastX: x, lastT: performance.now(), velocity: 0, panelEl: panel, pct: 0, hapticFired: false };
  panel.style.transition = 'none';
