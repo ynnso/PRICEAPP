@@ -34,9 +34,9 @@
  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
  /* ── Page slide transitions ── */
- @keyframes slideInRight { from { opacity:0; transform:translateX(32px); } to { opacity:1; transform:translateX(0); } }
- @keyframes slideOutLeft { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(-32px); } }
- @keyframes slideInLeft { from { opacity:0; transform:translateX(-32px); } to { opacity:1; transform:translateX(0); } }
+ @keyframes slideInRight { from { opacity:0; transform:translateX(6%) scale(0.97); } to { opacity:1; transform:translateX(0) scale(1); } }
+ @keyframes slideOutLeft { from { opacity:1; transform:translateX(0) scale(1); } to { opacity:0.3; transform:translateX(-6%) scale(0.95); } }
+ @keyframes slideInLeft { from { opacity:0; transform:translateX(-6%) scale(0.97); } to { opacity:1; transform:translateX(0) scale(1); } }
  @keyframes slideOutRight { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(32px); } }
  @keyframes slideInUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
  .sheet-slide-up { animation: slideInUp 300ms cubic-bezier(0,0,0.2,1) both; }
@@ -46,10 +46,10 @@
  @keyframes wizardPulse { 0%,100% { box-shadow:0 0 0 0 rgba(226,75,74,0.4); } 50% { box-shadow:0 0 0 6px rgba(226,75,74,0); } }
  .wizard-sqft-pulse { animation: wizardPulse 1.6s ease-in-out infinite; }
  @keyframes slideOutDown { from { opacity:1; transform:translateY(0); } to { opacity:0; transform:translateY(40px); } }
- .screen-enter-forward { animation: slideInRight 0.28s cubic-bezier(0.22,1,0.36,1) both; }
- .screen-leave-forward { animation: slideOutLeft 0.22s cubic-bezier(0.4,0,1,1) both; }
- .screen-enter-back { animation: slideInLeft 0.28s cubic-bezier(0.22,1,0.36,1) both; }
- .screen-leave-back { animation: slideOutRight 0.22s cubic-bezier(0.4,0,1,1) both; }
+ .screen-enter-forward { animation: slideInRight 0.34s cubic-bezier(0.32,0.72,0,1) both; }
+ .screen-leave-forward { animation: slideOutLeft 0.34s cubic-bezier(0.32,0.72,0,1) both; }
+ .screen-enter-back { animation: slideInLeft 0.34s cubic-bezier(0.32,0.72,0,1) both; }
+ .screen-leave-back { animation: slideOutRight 0.34s cubic-bezier(0.32,0.72,0,1) both; }
  .screen-enter-up { animation: slideInUp 0.32s cubic-bezier(0.22,1,0.36,1) both; }
  .screen-leave-down { animation: slideOutDown 0.22s cubic-bezier(0.4,0,1,1) both; }
 
