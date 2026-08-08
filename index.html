@@ -1108,30 +1108,42 @@
 <body class="bg-gray-200 text-gray-900" style="height:100%;" 
  x-data="pricex()" x-init="init()">
 
- <!-- Standalone Splash Overlay - outside Alpine scope, cannot be blocked by x-cloak/init timing -->
+ <!-- Standalone Splash Overlay - S2S Volumetric Backlit Silhouette Reveal -->
  <style>
- @keyframes s2sBurstStandalone {
- 0% { transform:scale(0.12); opacity:0; }
- 22% { transform:scale(0.32); opacity:1; }
- 42% { transform:scale(0.30); opacity:1; }
- 100% { transform:scale(6); opacity:1; }
+ @keyframes silhouetteReveal {
+ 0% { filter: brightness(0); transform: scale(0.8); }
+ 40% { filter: brightness(0.2) drop-shadow(0 0 50px #ffffff); transform: scale(1); }
+ 70% { filter: brightness(1) drop-shadow(0 0 30px #dc2626); transform: scale(1.05); }
+ 88% { transform: scale(10); opacity: 0.9; }
+ 100% { transform: scale(1); opacity: 0; }
  }
- #splash-mark { display:inline-flex; animation: s2sBurstStandalone 700ms cubic-bezier(0.6,0,0.85,0.35) 150ms both; }
+ #splash-container { animation: silhouetteReveal 4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
  </style>
- <div id="splash-overlay" class="fixed inset-0 bg-black z-[9999] flex items-center justify-center transition-opacity duration-300 overflow-hidden">
- <span id="splash-mark" class="tracking-tighter leading-none" style="align-items:baseline;">
- <span class="font-bold text-[32px] text-white">S</span><span class="font-black text-[42px] text-red-600">2</span><span class="font-bold text-[32px] text-white">S</span>
- </span>
+ <div id="splash-stage" class="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center p-6 text-center overflow-hidden">
+ <div id="splash-container" class="relative z-10 flex flex-col items-center justify-center">
+ <div class="mb-4 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.8)] relative">
+ <svg class="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+ <path d="M12 10V14M8 12H16M3 7L7 11M21 7L17 11M3 17L7 13M21 17L17 13" stroke-linecap="round"/>
+ <circle cx="12" cy="12" r="3" fill="#ffffff"/>
+ </svg>
+ </div>
+ <div class="select-none flex items-center justify-center">
+ <span class="text-6xl md:text-8xl font-black tracking-tighter text-white">S</span>
+ <span class="text-9xl md:text-[12rem] font-black text-red-600 inline-block mx-1 drop-shadow-[0_0_40px_rgba(220,38,38,1)] leading-none">2</span>
+ <span class="text-6xl md:text-8xl font-black tracking-tighter text-white">S</span>
+ </div>
+ </div>
  </div>
  <script>
- window.addEventListener('DOMContentLoaded', () => {
+ document.addEventListener('DOMContentLoaded', () => {
+ const stage = document.getElementById('splash-stage');
  setTimeout(() => {
- const splash = document.getElementById('splash-overlay');
- if (splash) {
- splash.style.opacity = '0';
- setTimeout(() => splash.remove(), 300);
+ if (stage) {
+ stage.style.transition = 'opacity 0.5s ease';
+ stage.style.opacity = '0';
+ setTimeout(() => stage.remove(), 500);
  }
- }, 1100);
+ }, 4000);
  });
  </script>
 
