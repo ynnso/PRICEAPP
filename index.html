@@ -1051,12 +1051,15 @@
  const saved = sessionStorage.getItem('pricex_quote');
  if (saved) {
  const parsed = JSON.parse(saved);
+ if (!Array.isArray(parsed)) { this.quoteItems = []; return; }
  // Migrate old {price} shaped items (pre tax-toggle) to {subtotal, taxIncluded}
- this.quoteItems = parsed.map(i => (i.subtotal !== undefined) ? i : {
+ this.quoteItems = parsed
+ .filter(i => i && typeof i === 'object' && (typeof i.subtotal === 'number' || typeof i.price === 'number'))
+ .map(i => (i.subtotal !== undefined) ? i : {
  id: i.id, description: i.description, subtotal: i.price || 0, taxIncluded: false
  });
  }
- } catch(e) {}
+ } catch(e) { this.quoteItems = []; }
  },
  copyQuote() {
  this.haptic();
