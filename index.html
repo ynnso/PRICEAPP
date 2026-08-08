@@ -52,6 +52,7 @@
  .screen-leave-back { animation: slideOutRight 0.34s cubic-bezier(0.32,0.72,0,1) both; }
  .screen-enter-up { animation: slideInUp 0.32s cubic-bezier(0.22,1,0.36,1) both; }
  .screen-leave-down { animation: slideOutDown 0.22s cubic-bezier(0.4,0,1,1) both; }
+ .edge-swipe-scrim { position:absolute; inset:0; background:#000; pointer-events:none; opacity:0; z-index:5; transition:opacity 0.1s linear; }
 
  /* ── Selected tile polish ── */
  .tile-sel {
@@ -336,6 +337,7 @@
  wizardShown: false,
  wizardSqft: '',
  sheetDrag: { active: false, startY: 0, startT: 0, lastY: 0, lastT: 0, velocity: 0, panelEl: null, closeFn: null },
+ edgeSwipe: { active: false, startX: 0, startT: 0, lastX: 0, lastT: 0, velocity: 0, panelEl: null, pct: 0, hapticFired: false },
  ranchPress: false, minusPress: false, plusPress: false, tile25Press: false, tile36Press: false,
  navDir: 'forward',
  type: 'MLS',
@@ -977,6 +979,53 @@
  }
  this.sheetDrag = { active: false, startY: 0, startT: 0, lastY: 0, lastT: 0, velocity: 0, panelEl: null, closeFn: null };
  },
+ edgeSwipeStart(evt) {
+ if (this.screen === 'START') return;
+ const x = evt.touches ? evt.touches[0].clientX : evt.clientX;
+ if (x > 24) return;
+ const panel = evt.currentTarget;
+ this.edgeSwipe = { active: true, startX: x, startT: performance.now(), lastX: x, lastT: performance.now(), velocity: 0, panelEl: panel, pct: 0, hapticFired: false };
+ panel.style.transition = 'none';
+ },
+ edgeSwipeMove(evt) {
+ const d = this.edgeSwipe;
+ if (!d.active || !d.panelEl) return;
+ const x = evt.touches ? evt.touches[0].clientX : evt.clientX;
+ const now = performance.now();
+ const dt = Math.max(1, now - d.lastT);
+ d.velocity = (x - d.lastX) / dt;
+ d.lastX = x; d.lastT = now;
+ let delta = x - d.startX;
+ if (delta < 0) delta = 0;
+ const width = d.panelEl.offsetWidth || 1;
+ d.pct = Math.min(1, delta / width);
+ if (!d.hapticFired && d.pct > 0.4) { d.hapticFired = true; this.haptic(); }
+ const panelEl = d.panelEl;
+ if (!d.rafPending) {
+ d.rafPending = true;
+ requestAnimationFrame(() => {
+ d.rafPending = false;
+ panelEl.style.setProperty('-webkit-transform', 'translate3d(' + delta + 'px,0,0)', 'important');
+ panelEl.style.setProperty('transform', 'translate3d(' + delta + 'px,0,0)', 'important');
+ });
+ }
+ if (delta > 0 && evt.cancelable) evt.preventDefault();
+ },
+ edgeSwipeEnd() {
+ const d = this.edgeSwipe;
+ if (!d.active || !d.panelEl) return;
+ const panel = d.panelEl;
+ const shouldPop = d.pct > 0.4 || d.velocity > 0.5;
+ panel.style.transition = 'transform 220ms cubic-bezier(0.32,0.72,0,1)';
+ if (shouldPop) {
+ panel.style.transform = 'translate3d(100%,0,0)';
+ setTimeout(() => { this.goBack(); panel.style.transition = ''; panel.style.transform = ''; }, 220);
+ } else {
+ panel.style.transform = 'translate3d(0,0,0)';
+ setTimeout(() => { panel.style.transition = ''; }, 220);
+ }
+ this.edgeSwipe = { active: false, startX: 0, startT: 0, lastX: 0, lastT: 0, velocity: 0, panelEl: null, pct: 0, hapticFired: false };
+ },
  setNavHeight() {
  const nav = document.querySelector('.nav-pill-wrap');
  if (nav) document.body.style.setProperty('--nav-h', nav.offsetHeight + 'px');
@@ -1331,7 +1380,9 @@
 
  <div x-show="screen === 'PRODUCT'" class="flex-grow flex flex-col overflow-hidden min-h-0" x-cloak
  :class="screen==='PRODUCT' ? 'screen-enter-forward' : ''"
- @animationend="$el.classList.remove('screen-enter-forward')">
+ @animationend="$el.classList.remove('screen-enter-forward')"
+ x-init="$el.addEventListener('touchstart', (e) => edgeSwipeStart(e), {passive:false}); $el.addEventListener('touchmove', (e) => edgeSwipeMove(e), {passive:false}); $el.addEventListener('touchend', () => edgeSwipeEnd(), {passive:false});">
+ <div class="edge-swipe-scrim" :style="'opacity:' + (edgeSwipe.active ? edgeSwipe.pct * 0.4 : 0)"></div>
  <div class="flex-grow overflow-y-auto p-6 flex flex-col min-h-0 scroll-fade-top" style="padding-bottom: 140px; scroll-padding-bottom: 140px;">
  
  <div x-show="mode === 'ADD ONS'" class="flex-grow flex flex-col fade-in">
